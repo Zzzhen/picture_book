@@ -1,5 +1,5 @@
 {
-  "appid": "touristappid",
+  "appid": "wx1fcff5e113f7cc1a",
   "projectname": "family-picture-book-library",
   "description": "家庭数字绘本馆 V1-Core",
   "miniprogramRoot": "miniprogram/",
@@ -10,6 +10,31 @@
     "enhance": true,
     "postcss": true,
     "minified": true,
-    "urlCheck": true
-  }
+    "urlCheck": true,
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
+  },
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "editorSetting": {},
+  "cloudfunctionTemplateRoot": "cloudfunctionTemplate/"
 }
