@@ -1,0 +1,51 @@
+{
+  "pages": [
+    "pages/bootstrap/index",
+    "pages/onboarding/index",
+    "pages/library/index",
+    "pages/add-book/index",
+    "pages/book-confirm/index",
+    "pages/book-detail/index",
+    "pages/bookshelves/index",
+    "pages/bookshelf-detail/index",
+    "pages/bookshelf-edit/index",
+    "pages/manual-book-edit/index",
+    "pages/profile/index",
+    "pages/profile-edit/index",
+    "pages/feedback/index",
+    "pages/admin/index"
+  ],
+  "window": {
+    "navigationStyle": "custom",
+    "backgroundColor": "#F7F3EA",
+    "backgroundTextStyle": "dark"
+  },
+  "permission": {
+    "scope.camera": {
+      "desc": "用于扫描绘本封底的 ISBN 条码"
+    }
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#687168",
+    "selectedColor": "#315A45",
+    "backgroundColor": "#FFFEFB",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/library/index",
+        "text": "绘本馆"
+      },
+      {
+        "pagePath": "pages/bookshelves/index",
+        "text": "书架"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

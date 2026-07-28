@@ -1,0 +1,31 @@
+.segment {
+  display: inline-grid;
+  grid-auto-flow: column;
+  padding: 5rpx;
+  border-radius: var(--radius-sm);
+  background: var(--color-paper-deep);
+}
+
+.segment__item {
+  min-width: 78rpx;
+  height: 52rpx;
+  margin: 0;
+  padding: 0 18rpx;
+  border: 0;
+  border-radius: 12rpx;
+  color: var(--color-text-secondary);
+  background: transparent;
+  font-size: 23rpx;
+  line-height: 52rpx;
+}
+
+.segment__item::after {
+  border: 0;
+}
+
+.segment__item--active {
+  color: var(--color-forest);
+  background: var(--color-surface);
+  box-shadow: 0 2rpx 8rpx rgba(49, 90, 69, 0.1);
+  font-weight: 650;
+}

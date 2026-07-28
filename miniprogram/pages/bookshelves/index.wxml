@@ -1,0 +1,20 @@
+<view class="shelves">
+  <app-header title="书架">
+    <text slot="action" class="shelves__action" bindtap="createShelf">新建</text>
+  </app-header>
+  <view class="shelves__intro">
+    <text class="shelves__title">按家庭的方式整理</text>
+    <text class="shelves__copy">一本绘本可以放进多个书架，例如“睡前读”“恐龙迷”和“本月借阅”。</text>
+  </view>
+  <view class="shelves__body">
+    <skeleton wx:if="{{state === 'loading'}}" type="list" count="{{4}}" />
+    <empty-state wx:elif="{{state === 'empty'}}" title="还没有自定义书架" description="把绘本按主题、阅读场景或借阅状态分组，会更容易找到。" primary-text="新建第一个书架" bind:primary="createShelf" />
+    <empty-state wx:elif="{{state === 'error'}}" type="offline" title="书架加载失败" description="{{errorMessage || '请稍后重试'}}" primary-text="重新加载" bind:primary="reload" />
+    <view wx:else class="shelves__list">
+      <block wx:for="{{shelves}}" wx:key="_id">
+        <bookshelf-card shelf="{{item}}" bind:open="openShelf" />
+      </block>
+    </view>
+  </view>
+  <button class="shelves__add" bindtap="createShelf" aria-label="新建书架">＋</button>
+</view>

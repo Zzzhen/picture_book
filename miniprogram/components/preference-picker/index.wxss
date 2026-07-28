@@ -1,0 +1,42 @@
+.preference {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10rpx;
+}
+
+.preference__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100rpx;
+  margin: 0;
+  padding: 0;
+  border: 1rpx solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  font-size: 22rpx;
+  line-height: 1.2;
+}
+
+.preference__item::after {
+  border: 0;
+}
+
+.preference__symbol {
+  margin-bottom: 10rpx;
+  color: var(--color-accent-terracotta);
+  font-size: 27rpx;
+}
+
+.preference__item--active {
+  border-color: var(--color-forest);
+  color: var(--color-forest);
+  background: var(--color-forest-soft);
+  font-weight: 650;
+}
+
+.preference--disabled {
+  opacity: 0.5;
+}

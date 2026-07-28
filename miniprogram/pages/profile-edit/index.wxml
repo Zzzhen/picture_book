@@ -1,0 +1,22 @@
+<view class="profile-edit">
+  <app-header title="编辑资料" back="{{true}}" />
+  <view class="profile-edit__content">
+    <view class="profile-edit__intro">
+      <text class="profile-edit__title">小读者资料</text>
+      <text class="profile-edit__copy">出生年月用于展示年龄段，不记录具体生日。修改后会同步到家庭绘本馆。</text>
+    </view>
+    <view class="profile-edit__form">
+      <text-field label="孩子昵称" required="{{true}}" value="{{form.nickname}}" placeholder="请输入昵称" error="{{errors.nickname}}" bind:input="onNickname" />
+      <text-field label="出生年月" required="{{true}}" type="month" value="{{form.birthMonth}}" error="{{errors.birthMonth}}" bind:change="onBirthMonth" />
+      <view>
+        <text class="profile-edit__label">性别 <text>*</text></text>
+        <view class="profile-edit__gender">
+          <button wx:for="{{genderOptions}}" wx:key="value" class="{{form.gender === item.value ? 'profile-edit__gender--active' : ''}}" data-value="{{item.value}}" bindtap="onGender">{{item.label}}</button>
+        </view>
+        <text wx:if="{{errors.gender}}" class="profile-edit__error">{{errors.gender}}</text>
+      </view>
+      <text-field label="绘本馆名称" value="{{form.libraryName}}" placeholder="例如：依依的绘本馆" maxlength="{{30}}" bind:input="onLibraryName" />
+    </view>
+    <ui-button text="保存资料" loading="{{saving}}" bind:tap="save" />
+  </view>
+</view>

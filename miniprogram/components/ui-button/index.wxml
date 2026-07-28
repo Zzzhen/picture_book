@@ -1,0 +1,8 @@
+<button
+  class="button button--{{type}} button--{{size}} {{block ? 'button--block' : ''}}"
+  disabled="{{disabled || loading}}"
+  loading="{{loading}}"
+  bindtap="onTap"
+>
+  {{loading ? '处理中' : text}}
+</button>

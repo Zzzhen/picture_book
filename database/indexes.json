@@ -1,0 +1,118 @@
+{
+  "version": 1,
+  "collections": [
+    {
+      "name": "users",
+      "indexes": [
+        { "name": "deleted_id", "fields": [{ "field": "deleted_at", "order": "asc" }, { "field": "_id", "order": "asc" }] },
+        { "name": "status_created", "fields": [{ "field": "status", "order": "asc" }, { "field": "created_at", "order": "desc" }, { "field": "_id", "order": "desc" }] }
+      ]
+    },
+    {
+      "name": "children",
+      "indexes": [
+        { "name": "owner_primary", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "is_primary", "order": "asc" }, { "field": "deleted_at", "order": "asc" }] }
+      ]
+    },
+    {
+      "name": "book_editions",
+      "indexes": [
+        { "name": "creator_id", "fields": [{ "field": "created_by", "order": "asc" }, { "field": "_id", "order": "asc" }] },
+        { "name": "audit_search_prefix", "fields": [{ "field": "audit_status", "order": "asc" }, { "field": "deleted_at", "order": "asc" }, { "field": "search_prefixes", "order": "array" }] },
+        { "name": "audit_search_token", "fields": [{ "field": "audit_status", "order": "asc" }, { "field": "deleted_at", "order": "asc" }, { "field": "search_tokens", "order": "array" }] }
+      ]
+    },
+    {
+      "name": "manual_book_submissions",
+      "indexes": [
+        { "name": "status_id", "fields": [{ "field": "status", "order": "asc" }, { "field": "_id", "order": "asc" }] },
+        { "name": "status_submitted", "fields": [{ "field": "status", "order": "asc" }, { "field": "submitted_at", "order": "asc" }, { "field": "_id", "order": "asc" }] },
+        { "name": "owner_draft", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "draft_edition_id", "order": "asc" }] },
+        { "name": "status_conflict", "fields": [{ "field": "status", "order": "asc" }, { "field": "conflict_edition_id", "order": "asc" }, { "field": "submitted_at", "order": "asc" }, { "field": "_id", "order": "asc" }] }
+      ]
+    },
+    {
+      "name": "isbn_lookup_cache",
+      "indexes": [
+        { "name": "status_expire", "fields": [{ "field": "status", "order": "asc" }, { "field": "expire_at", "order": "asc" }] }
+      ]
+    },
+    {
+      "name": "user_books",
+      "indexes": [
+        { "name": "active_id", "fields": [{ "field": "deleted_at", "order": "asc" }, { "field": "_id", "order": "asc" }] },
+        { "name": "owner_active_id", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "deleted_at", "order": "asc" }, { "field": "_id", "order": "asc" }] },
+        { "name": "owner_newest", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "deleted_at", "order": "asc" }, { "field": "created_at", "order": "desc" }, { "field": "_id", "order": "desc" }] },
+        { "name": "owner_title", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "deleted_at", "order": "asc" }, { "field": "title_sort", "order": "asc" }, { "field": "_id", "order": "asc" }] },
+        { "name": "owner_custom", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "deleted_at", "order": "asc" }, { "field": "custom_sort", "order": "asc" }, { "field": "_id", "order": "asc" }] },
+        { "name": "owner_search_prefix", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "deleted_at", "order": "asc" }, { "field": "search_prefixes", "order": "array" }, { "field": "created_at", "order": "desc" }, { "field": "_id", "order": "desc" }] },
+        { "name": "owner_preference", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "deleted_at", "order": "asc" }, { "field": "preference", "order": "asc" }, { "field": "created_at", "order": "desc" }] },
+        { "name": "owner_preference_id", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "deleted_at", "order": "asc" }, { "field": "preference", "order": "asc" }, { "field": "_id", "order": "asc" }] },
+        { "name": "edition_active", "fields": [{ "field": "edition_id", "order": "asc" }, { "field": "deleted_at", "order": "asc" }, { "field": "_id", "order": "asc" }] }
+      ]
+    },
+    {
+      "name": "bookshelves",
+      "indexes": [
+        { "name": "active_id", "fields": [{ "field": "deleted_at", "order": "asc" }, { "field": "_id", "order": "asc" }] },
+        { "name": "owner_order", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "deleted_at", "order": "asc" }, { "field": "sort_order", "order": "asc" }, { "field": "_id", "order": "asc" }] }
+      ]
+    },
+    {
+      "name": "bookshelf_books",
+      "indexes": [
+        { "name": "shelf_id", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "bookshelf_id", "order": "asc" }, { "field": "_id", "order": "asc" }] },
+        { "name": "shelf_order", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "bookshelf_id", "order": "asc" }, { "field": "sort_order", "order": "asc" }, { "field": "_id", "order": "asc" }] },
+        { "name": "book_shelves", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "user_book_id", "order": "asc" }, { "field": "_id", "order": "asc" }] }
+      ]
+    },
+    {
+      "name": "events",
+      "indexes": [
+        { "name": "owner_id", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "_id", "order": "asc" }] },
+        { "name": "name_created", "fields": [{ "field": "event_name", "order": "asc" }, { "field": "created_at", "order": "desc" }] },
+        { "name": "name_result", "fields": [{ "field": "event_name", "order": "asc" }, { "field": "properties.result_code", "order": "asc" }] }
+      ]
+    },
+    {
+      "name": "feedback",
+      "indexes": [
+        { "name": "owner_id", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "_id", "order": "asc" }] },
+        { "name": "status_created", "fields": [{ "field": "status", "order": "asc" }, { "field": "created_at", "order": "desc" }] }
+      ]
+    },
+    {
+      "name": "audit_logs",
+      "indexes": [
+        { "name": "target_created", "fields": [{ "field": "target_type", "order": "asc" }, { "field": "target_id", "order": "asc" }, { "field": "created_at", "order": "desc" }] }
+      ]
+    },
+    {
+      "name": "rate_limits",
+      "indexes": [
+        { "name": "expire", "fields": [{ "field": "expire_at", "order": "asc" }] }
+      ]
+    },
+    {
+      "name": "idempotency_keys",
+      "indexes": [
+        { "name": "owner_expire", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "expire_at", "order": "asc" }] }
+      ]
+    },
+    {
+      "name": "deletion_jobs",
+      "indexes": [
+        { "name": "status_next_attempt", "fields": [{ "field": "status", "order": "asc" }, { "field": "next_attempt_at", "order": "asc" }] },
+        { "name": "status_lease", "fields": [{ "field": "status", "order": "asc" }, { "field": "lease_expires_at", "order": "asc" }] }
+      ]
+    },
+    {
+      "name": "system_config",
+      "indexes": []
+    },
+    {
+      "name": "schema_migrations",
+      "indexes": []
+    }
+  ]
+}

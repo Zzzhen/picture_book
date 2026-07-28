@@ -1,0 +1,56 @@
+.bookplate {
+  box-sizing: border-box;
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  border: 3rpx solid var(--color-accent-terracotta);
+  border-radius: 50%;
+  color: var(--color-accent-terracotta);
+}
+
+.bookplate--small {
+  width: 64rpx;
+  height: 64rpx;
+}
+
+.bookplate--large {
+  width: 112rpx;
+  height: 112rpx;
+  border-width: 4rpx;
+}
+
+.bookplate__book {
+  display: flex;
+  position: absolute;
+  top: 18%;
+  left: 18%;
+  width: 34%;
+  height: 42%;
+  transform: rotate(-6deg);
+}
+
+.bookplate__spine {
+  width: 28%;
+  border-radius: 2rpx 0 0 2rpx;
+  background: currentColor;
+}
+
+.bookplate__page {
+  flex: 1;
+  border: 2rpx solid currentColor;
+  border-left: 0;
+}
+
+.bookplate__word {
+  position: absolute;
+  right: 18%;
+  bottom: 10%;
+  font-family: "Songti SC", "STSong", serif;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.bookplate--large .bookplate__word {
+  font-size: 42rpx;
+}

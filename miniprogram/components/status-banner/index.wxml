@@ -1,0 +1,8 @@
+<view class="banner banner--{{type}}">
+  <view class="banner__mark">{{type === 'success' ? '✓' : type === 'error' ? '!' : type === 'warning' ? '!' : 'i'}}</view>
+  <view class="banner__body">
+    <text wx:if="{{title}}" class="banner__title">{{title}}</text>
+    <text wx:if="{{message}}" class="banner__message">{{message}}</text>
+  </view>
+  <text wx:if="{{actionText}}" class="banner__action" bindtap="onAction">{{actionText}}</text>
+</view>

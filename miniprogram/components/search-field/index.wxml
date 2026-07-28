@@ -1,0 +1,19 @@
+<view class="search-field {{disabled ? 'search-field--disabled' : ''}}">
+  <view class="search-field__icon"></view>
+  <input
+    class="search-field__input"
+    value="{{value}}"
+    placeholder="{{placeholder}}"
+    placeholder-class="search-field__placeholder"
+    disabled="{{disabled}}"
+    confirm-type="search"
+    bindinput="onInput"
+    bindconfirm="onConfirm"
+  />
+  <button
+    wx:if="{{value}}"
+    class="search-field__clear"
+    aria-label="清空搜索"
+    bindtap="onClear"
+  >×</button>
+</view>

@@ -1,0 +1,52 @@
+.book-card {
+  min-width: 0;
+}
+
+.book-card--pressed {
+  opacity: 0.76;
+}
+
+.book-card__cover {
+  position: relative;
+}
+
+.book-card__check {
+  display: flex;
+  position: absolute;
+  top: 12rpx;
+  left: 12rpx;
+  align-items: center;
+  justify-content: center;
+  width: 42rpx;
+  height: 42rpx;
+  border: 3rpx solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(32, 37, 31, 0.42);
+  font-size: 24rpx;
+}
+
+.book-card__check--selected {
+  background: var(--color-forest);
+}
+
+.book-card__title,
+.book-card__meta {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.book-card__title {
+  margin-top: 16rpx;
+  color: var(--color-text-primary);
+  font-size: 27rpx;
+  font-weight: 600;
+}
+
+.book-card__meta {
+  margin-top: 6rpx;
+  color: var(--color-text-secondary);
+  font-size: 23rpx;
+}

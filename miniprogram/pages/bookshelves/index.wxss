@@ -1,0 +1,69 @@
+page {
+  background: var(--color-background-paper);
+}
+
+.shelves {
+  min-height: 100vh;
+  padding-bottom: calc(132rpx + env(safe-area-inset-bottom));
+}
+
+.shelves__action {
+  color: var(--color-brand-forest);
+  font-size: 25rpx;
+  font-weight: 650;
+}
+
+.shelves__intro {
+  padding: 30rpx 36rpx 24rpx;
+}
+
+.shelves__title,
+.shelves__copy {
+  display: block;
+}
+
+.shelves__title {
+  font-family: var(--font-display);
+  font-size: 38rpx;
+  font-weight: 700;
+}
+
+.shelves__copy {
+  max-width: 600rpx;
+  margin-top: 12rpx;
+  color: var(--color-text-secondary);
+  font-size: 24rpx;
+  line-height: 1.65;
+}
+
+.shelves__body {
+  padding: 16rpx 32rpx 40rpx;
+}
+
+.shelves__list {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.shelves__add {
+  z-index: 20;
+  position: fixed;
+  right: 30rpx;
+  bottom: calc(130rpx + env(safe-area-inset-bottom));
+  width: 76rpx;
+  height: 76rpx;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--color-brand-forest);
+  box-shadow: var(--shadow-floating);
+  font-size: 38rpx;
+  line-height: 76rpx;
+}
+
+.shelves__add::after {
+  border: 0;
+}

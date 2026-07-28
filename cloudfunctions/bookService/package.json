@@ -1,0 +1,10 @@
+{
+  "name": "book-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "wx-server-sdk": "4.0.2"
+  }
+}

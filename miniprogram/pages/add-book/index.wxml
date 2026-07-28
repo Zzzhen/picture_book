@@ -1,0 +1,109 @@
+<view class="add-book">
+  <app-header title="{{mode === 'continuous' ? '连续扫码' : '录入绘本'}}" back="{{true}}" />
+  <view wx:if="{{mode === 'choose'}}" class="add-book__content">
+    <view class="add-book__heading">
+      <text class="add-book__title">把绘本放进家庭书库</text>
+      <text class="add-book__description">优先扫码识别 ISBN；连续整理一批绘本时，可开启连续扫码。</text>
+    </view>
+    <button class="add-book__method" data-mode="single" bindtap="chooseMode">
+      <view class="add-book__method-icon add-book__method-icon--scan"><view></view></view>
+      <view class="add-book__method-body">
+        <text class="add-book__method-title">扫描一本</text>
+        <text class="add-book__method-copy">扫描封底条码，确认后加入绘本馆</text>
+      </view>
+      <text class="add-book__arrow">›</text>
+    </button>
+    <button class="add-book__method" data-mode="continuous" bindtap="chooseMode">
+      <view class="add-book__method-icon add-book__method-icon--stack"><view></view></view>
+      <view class="add-book__method-body">
+        <text class="add-book__method-title">连续扫码</text>
+        <text class="add-book__method-copy">适合一次整理多本，失败可跳过，结束后统一汇总</text>
+      </view>
+      <text class="add-book__arrow">›</text>
+    </button>
+    <button class="add-book__method" data-mode="cache-search" bindtap="chooseMode">
+      <view class="add-book__method-icon add-book__method-icon--search"><view></view></view>
+      <view class="add-book__method-body">
+        <text class="add-book__method-title">搜索已查询书库</text>
+        <text class="add-book__method-copy">只查曾经成功查询的绘本，不会触发付费接口</text>
+      </view>
+      <text class="add-book__arrow">›</text>
+    </button>
+    <view class="add-book__manual">
+      <text>条码磨损，或绘本没有 ISBN？</text>
+      <text class="add-book__link" bindtap="goManual">手工录入</text>
+    </view>
+  </view>
+  <view wx:elif="{{mode === 'single' || mode === 'isbn'}}" class="add-book__content">
+    <view class="add-book__scan-card">
+      <view class="add-book__scanner">
+        <view class="add-book__corner add-book__corner--tl"></view>
+        <view class="add-book__corner add-book__corner--tr"></view>
+        <view class="add-book__corner add-book__corner--bl"></view>
+        <view class="add-book__corner add-book__corner--br"></view>
+        <view class="add-book__barcode"></view>
+      </view>
+      <text class="add-book__scan-title">对准绘本封底条码</text>
+      <text class="add-book__scan-copy">仅识别 ISBN 条码，不会保存相机画面</text>
+      <ui-button text="打开相机扫码" bind:tap="scan" />
+    </view>
+    <view class="add-book__divider"><view></view><text>或输入 ISBN</text><view></view></view>
+    <text-field label="ISBN" value="{{isbn}}" placeholder="输入 10 或 13 位 ISBN" error="{{isbnError}}" maxlength="{{20}}" bind:input="onIsbnInput" />
+    <ui-button type="secondary" text="查询绘本" loading="{{querying}}" disabled="{{!isbn}}" bind:tap="lookup" />
+    <status-banner wx:if="{{state === 'provider-unavailable'}}" type="warning" title="图书信息服务暂时不可用" message="没有产生付费查询，请稍后重试，或选择手工录入。" action-text="手工录入" bind:action="goManual" />
+  </view>
+  <view wx:elif="{{mode === 'cache-search'}}" class="add-book__content">
+    <text class="add-book__title">搜索已查询书库</text>
+    <text class="add-book__description">这里只查找曾经成功查询过的绘本，不会触发付费接口。</text>
+    <text-field label="书名、作者或 ISBN" value="{{cacheKeyword}}" placeholder="输入关键词" bind:input="onCacheKeyword" />
+    <ui-button text="搜索" bind:tap="searchCache" />
+    <view wx:if="{{cacheResult}}" class="add-book__result" bindtap="selectCacheResult">
+      <book-cover size="small" src="{{cacheResult.coverUrl}}" title="{{cacheResult.title}}" />
+      <view><text class="add-book__result-title">{{cacheResult.title}}</text><text class="add-book__result-meta">{{cacheResult.author}}</text></view>
+      <text class="add-book__arrow">›</text>
+    </view>
+    <empty-state wx:if="{{state === 'search-empty'}}" type="search" title="已查询书库中没有结果" description="可以返回扫码或输入 ISBN 发起新查询。" primary-text="输入 ISBN 查询" bind:primary="showIsbn" />
+  </view>
+  <view wx:elif="{{mode === 'continuous'}}" class="add-book__continuous">
+    <view class="add-book__counter">
+      <text>本轮已处理</text>
+      <text class="add-book__counter-value">{{session.total || 0}}</text>
+      <text>/ 100 次</text>
+    </view>
+    <view class="add-book__scanner add-book__scanner--continuous">
+      <view class="add-book__corner add-book__corner--tl"></view><view class="add-book__corner add-book__corner--tr"></view>
+      <view class="add-book__corner add-book__corner--bl"></view><view class="add-book__corner add-book__corner--br"></view>
+      <view class="add-book__barcode"></view>
+    </view>
+    <status-banner wx:if="{{scanState === 'success'}}" type="success" title="{{lastBook.title}}" message="已加入绘本馆，继续扫描下一本。" />
+    <status-banner wx:elif="{{scanState === 'duplicate'}}" type="info" title="馆里已经有这本" message="数量已增加 1 册，继续扫描即可。" />
+    <status-banner wx:elif="{{scanState === 'duplicate-choice'}}" type="info" title="{{lastBook.title}}" message="馆里已有 {{lastBook.quantity || 1}} 册。你可以增加 1 册、跳过，或结束本轮。" />
+    <status-banner wx:elif="{{scanState === 'failed'}}" type="error" title="这次没有识别成功" message="{{scanError || '请调整距离重试，也可以跳过这一本。'}}" />
+    <view class="add-book__continuous-actions">
+      <ui-button wx:if="{{scanState === 'duplicate-choice'}}" text="数量增加 1 册" bind:tap="confirmDuplicate" />
+      <ui-button wx:else text="{{scanState === 'scanning' ? '识别中…' : '继续扫描'}}" loading="{{scanState === 'scanning'}}" bind:tap="scanContinuous" />
+      <ui-button wx:if="{{scanState === 'failed' || scanState === 'duplicate-choice'}}" type="tertiary" text="跳过这一本" bind:tap="skip" />
+      <ui-button wx:if="{{scanState === 'failed'}}" type="tertiary" text="手工录入这一本" bind:tap="goManual" />
+      <ui-button type="secondary" text="结束并查看汇总" bind:tap="finishContinuous" />
+    </view>
+  </view>
+  <view wx:elif="{{mode === 'summary'}}" class="add-book__content">
+    <text class="add-book__title">这一轮整理完成</text>
+    <text class="add-book__description">结果已保存到家庭绘本馆。</text>
+    <view class="add-book__summary">
+      <view><text class="add-book__summary-value">{{session.added || 0}}</text><text>新加入</text></view>
+      <view><text class="add-book__summary-value">{{session.duplicates || 0}}</text><text>数量增加</text></view>
+      <view><text class="add-book__summary-value">{{session.skipped || 0}}</text><text>已跳过</text></view>
+      <view><text class="add-book__summary-value">{{session.failures || 0}}</text><text>失败</text></view>
+    </view>
+    <view wx:if="{{failedItems.length}}" class="add-book__failed-list">
+      <text class="add-book__result-title">未完成的条目</text>
+      <view wx:for="{{failedItems}}" wx:key="index" class="add-book__failed-item">
+        <text>{{item.isbn}}</text>
+        <text>{{item.message}}</text>
+      </view>
+    </view>
+    <ui-button text="返回绘本馆" bind:tap="backToLibrary" />
+    <ui-button type="tertiary" text="再扫一轮" bind:tap="restartContinuous" />
+  </view>
+</view>

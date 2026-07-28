@@ -1,0 +1,88 @@
+page {
+  background: var(--color-background-paper);
+}
+
+.profile-edit {
+  min-height: 100vh;
+}
+
+.profile-edit__content {
+  padding: 38rpx 38rpx calc(48rpx + env(safe-area-inset-bottom));
+}
+
+.profile-edit__title,
+.profile-edit__copy,
+.profile-edit__label,
+.profile-edit__error {
+  display: block;
+}
+
+.profile-edit__title {
+  font-family: var(--font-display);
+  font-size: 40rpx;
+  font-weight: 700;
+}
+
+.profile-edit__copy {
+  margin-top: 13rpx;
+  color: var(--color-text-secondary);
+  font-size: 24rpx;
+  line-height: 1.65;
+}
+
+.profile-edit__form {
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+  margin-top: 38rpx;
+}
+
+.profile-edit__label {
+  margin-bottom: 14rpx;
+  font-size: 26rpx;
+  font-weight: 650;
+}
+
+.profile-edit__label text,
+.profile-edit__error {
+  color: var(--color-state-danger);
+}
+
+.profile-edit__error {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+}
+
+.profile-edit__gender {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14rpx;
+}
+
+.profile-edit__gender button {
+  height: 80rpx;
+  margin: 0;
+  padding: 0;
+  border: 1rpx solid var(--color-border-default);
+  border-radius: var(--radius-medium);
+  color: var(--color-text-secondary);
+  background: var(--color-surface-primary);
+  font-size: 24rpx;
+  line-height: 78rpx;
+}
+
+.profile-edit__gender button::after {
+  border: 0;
+}
+
+.profile-edit__gender .profile-edit__gender--active {
+  border-color: var(--color-brand-forest);
+  color: var(--color-brand-forest);
+  background: var(--color-brand-forest-soft);
+  font-weight: 650;
+}
+
+.profile-edit__content > ui-button {
+  display: block;
+  margin-top: 42rpx;
+}

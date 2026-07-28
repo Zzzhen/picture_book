@@ -1,0 +1,15 @@
+{
+  "appid": "touristappid",
+  "projectname": "family-picture-book-library",
+  "description": "家庭数字绘本馆 V1-Core",
+  "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "dist/cloudfunctions/",
+  "compileType": "miniprogram",
+  "setting": {
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "urlCheck": true
+  }
+}

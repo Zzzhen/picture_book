@@ -1,0 +1,58 @@
+.dialog-layer {
+  display: flex;
+  z-index: var(--z-dialog);
+  position: fixed;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+}
+
+.dialog-layer__mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(32, 37, 31, 0.48);
+}
+
+.dialog {
+  box-sizing: border-box;
+  z-index: 1;
+  width: 100%;
+  max-width: 590rpx;
+  padding: 42rpx 36rpx 32rpx;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-float);
+  animation: dialog-in 180ms ease-out;
+}
+
+.dialog__title,
+.dialog__message {
+  display: block;
+  text-align: center;
+}
+
+.dialog__title {
+  font-family: var(--font-display);
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.dialog__message {
+  margin-top: 18rpx;
+  color: var(--color-text-secondary);
+  font-size: 25rpx;
+  line-height: 1.65;
+}
+
+.dialog__actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18rpx;
+  margin-top: 34rpx;
+}
+
+@keyframes dialog-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}

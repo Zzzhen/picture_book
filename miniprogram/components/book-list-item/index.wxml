@@ -1,0 +1,11 @@
+<view class="book-row" bindtap="onTap" hover-class="book-row--pressed">
+  <view wx:if="{{manage}}" class="book-row__check {{selected ? 'book-row__check--selected' : ''}}">{{selected ? '✓' : ''}}</view>
+  <book-cover size="small" src="{{book.coverUrl}}" title="{{book.title}}" status="{{book.reviewStatus}}" />
+  <view class="book-row__body">
+    <text class="book-row__title">{{book.title || '未命名绘本'}}</text>
+    <text class="book-row__meta">{{book.author || '作者待补充'}}</text>
+    <text wx:if="{{book.publisher}}" class="book-row__meta">{{book.publisher}}</text>
+  </view>
+  <text class="book-row__quantity">×{{book.quantity || 1}}</text>
+  <text class="book-row__arrow">›</text>
+</view>

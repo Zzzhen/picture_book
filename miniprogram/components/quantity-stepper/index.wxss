@@ -1,0 +1,40 @@
+.stepper {
+  display: inline-grid;
+  grid-template-columns: 64rpx 80rpx 64rpx;
+  align-items: center;
+  overflow: hidden;
+  height: 64rpx;
+  border: 1rpx solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+}
+
+.stepper__button {
+  width: 64rpx;
+  height: 64rpx;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--color-forest);
+  background: transparent;
+  font-size: 30rpx;
+  line-height: 64rpx;
+}
+
+.stepper__button::after {
+  border: 0;
+}
+
+.stepper__button[disabled] {
+  color: var(--color-text-tertiary);
+}
+
+.stepper__value {
+  text-align: center;
+  font-size: 27rpx;
+  font-variant-numeric: tabular-nums;
+}
+
+.stepper--disabled {
+  opacity: 0.55;
+}

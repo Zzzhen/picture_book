@@ -1,0 +1,78 @@
+page {
+  background: var(--color-background-paper);
+}
+
+.shelf-detail {
+  min-height: 100vh;
+  padding-bottom: calc(60rpx + env(safe-area-inset-bottom));
+}
+
+.shelf-detail__edit {
+  color: var(--color-brand-forest);
+  font-size: 25rpx;
+  font-weight: 650;
+}
+
+.shelf-detail__head {
+  padding: 34rpx 34rpx 28rpx;
+  border-bottom: 1rpx solid var(--color-border-default);
+}
+
+.shelf-detail__name,
+.shelf-detail__description,
+.shelf-detail__count {
+  display: block;
+}
+
+.shelf-detail__name {
+  font-family: var(--font-display);
+  font-size: 42rpx;
+  font-weight: 700;
+}
+
+.shelf-detail__description {
+  margin-top: 12rpx;
+  color: var(--color-text-secondary);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.shelf-detail__count {
+  margin-top: 14rpx;
+  color: var(--color-accent-terracotta);
+  font-size: 23rpx;
+  font-weight: 650;
+}
+
+.shelf-detail__body {
+  padding: 30rpx 32rpx;
+}
+
+.shelf-detail__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 38rpx 22rpx;
+}
+
+.shelf-detail__add {
+  display: block;
+  height: 72rpx;
+  margin: 24rpx auto 0;
+  padding: 0 26rpx;
+  border: 1rpx solid var(--color-brand-forest);
+  border-radius: var(--radius-pill);
+  color: var(--color-brand-forest);
+  background: transparent;
+  font-size: 24rpx;
+  line-height: 70rpx;
+}
+
+.shelf-detail__add::after {
+  border: 0;
+}
+
+@media (max-width: 327px) {
+  .shelf-detail__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,0 +1,139 @@
+page {
+  background: var(--color-background-paper);
+}
+
+.profile {
+  min-height: 100vh;
+  padding: 0 32rpx calc(150rpx + env(safe-area-inset-bottom));
+}
+
+.profile__identity {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  padding: 30rpx 6rpx 36rpx;
+}
+
+.profile__avatar {
+  display: flex;
+  flex: 0 0 98rpx;
+  align-items: center;
+  justify-content: center;
+  width: 98rpx;
+  height: 98rpx;
+  border-radius: 34rpx;
+  font-family: var(--font-display);
+  color: var(--color-brand-forest);
+  background: var(--color-brand-forest-soft);
+  font-size: 42rpx;
+  font-weight: 700;
+}
+
+.profile__identity-copy {
+  flex: 1;
+}
+
+.profile__name,
+.profile__meta,
+.profile__section-title,
+.profile__hint {
+  display: block;
+}
+
+.profile__name {
+  font-family: var(--font-display);
+  font-size: 35rpx;
+  font-weight: 700;
+}
+
+.profile__meta {
+  margin-top: 9rpx;
+  color: var(--color-text-secondary);
+  font-size: 23rpx;
+}
+
+.profile__edit {
+  color: var(--color-brand-forest);
+  font-size: 24rpx;
+  font-weight: 650;
+}
+
+.profile__metrics-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 18rpx;
+}
+
+.profile__section-title {
+  font-family: var(--font-display);
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.profile__hint {
+  color: var(--color-text-muted);
+  font-size: 20rpx;
+}
+
+.profile__metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+}
+
+.profile > status-banner {
+  display: block;
+  margin-top: 22rpx;
+}
+
+.profile__menu {
+  overflow: hidden;
+  margin-top: 28rpx;
+  border: 1rpx solid var(--color-border-default);
+  border-radius: var(--radius-large);
+  background: var(--color-surface-primary);
+}
+
+.profile__menu button {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 94rpx;
+  margin: 0;
+  padding: 0 26rpx;
+  border: 0;
+  border-bottom: 1rpx solid var(--color-border-default);
+  border-radius: 0;
+  color: var(--color-text-primary);
+  background: transparent;
+  font-size: 25rpx;
+  text-align: left;
+}
+
+.profile__menu button::after {
+  border: 0;
+}
+
+.profile__menu button:last-child {
+  border-bottom: 0;
+}
+
+.profile__menu button text:last-child {
+  color: var(--color-text-muted);
+  font-size: 34rpx;
+}
+
+.profile__menu .profile__danger {
+  color: var(--color-state-danger);
+}
+
+.profile__version {
+  display: block;
+  margin-top: 28rpx;
+  color: var(--color-text-muted);
+  font-size: 20rpx;
+  text-align: center;
+}

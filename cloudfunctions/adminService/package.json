@@ -1,0 +1,13 @@
+{
+  "name": "admin-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "family-picture-book-library": "file:../..",
+    "wx-server-sdk": "4.0.2"
+  }
+}

@@ -1,0 +1,80 @@
+page {
+  background: var(--color-background-paper);
+}
+
+.bootstrap {
+  box-sizing: border-box;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: calc(env(safe-area-inset-top) + 64rpx) 56rpx calc(env(safe-area-inset-bottom) + 48rpx);
+}
+
+.bootstrap__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bootstrap__name {
+  margin-top: 36rpx;
+  font-family: var(--font-display);
+  color: var(--color-text-primary);
+  font-size: 46rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+}
+
+.bootstrap__caption {
+  margin-top: 18rpx;
+  color: var(--color-text-secondary);
+  font-size: 25rpx;
+}
+
+.bootstrap__loading {
+  display: flex;
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom) + 92rpx);
+  flex-direction: column;
+  align-items: center;
+  gap: 18rpx;
+  color: var(--color-text-muted);
+  font-size: 23rpx;
+}
+
+.bootstrap__loading-line {
+  overflow: hidden;
+  width: 160rpx;
+  height: 5rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-border-default);
+}
+
+.bootstrap__loading-line::after {
+  display: block;
+  width: 58rpx;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-brand-forest);
+  animation: bootstrap-loading 1.2s ease-in-out infinite;
+  content: "";
+}
+
+.bootstrap__state {
+  position: absolute;
+  right: 48rpx;
+  bottom: calc(env(safe-area-inset-bottom) + 58rpx);
+  left: 48rpx;
+}
+
+.bootstrap__state ui-button {
+  display: block;
+  margin-top: 22rpx;
+}
+
+@keyframes bootstrap-loading {
+  0% { transform: translateX(-58rpx); }
+  100% { transform: translateX(160rpx); }
+}

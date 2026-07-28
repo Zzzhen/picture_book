@@ -1,0 +1,12 @@
+<view wx:if="{{visible}}" class="sheet-layer">
+  <view class="sheet-layer__mask" bindtap="onMask"></view>
+  <view class="sheet" catchtap="noop">
+    <view class="sheet__grab"></view>
+    <view wx:if="{{title || closeable}}" class="sheet__header">
+      <text class="sheet__title">{{title}}</text>
+      <button wx:if="{{closeable}}" class="sheet__close" bindtap="onClose" aria-label="关闭">×</button>
+    </view>
+    <view class="sheet__body"><slot></slot></view>
+    <view class="sheet__footer"><slot name="footer"></slot></view>
+  </view>
+</view>

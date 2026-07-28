@@ -1,0 +1,4 @@
+<view wx:if="{{visible}}" class="toast toast--{{type}}">
+  <text class="toast__icon">{{type === 'success' ? '✓' : type === 'error' ? '!' : 'i'}}</text>
+  <text>{{message}}</text>
+</view>

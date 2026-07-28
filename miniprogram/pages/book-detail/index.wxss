@@ -1,0 +1,136 @@
+page {
+  background: var(--color-background-paper);
+}
+
+.detail {
+  min-height: 100vh;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.detail__edit,
+.detail__link {
+  color: var(--color-brand-forest);
+  font-size: 25rpx;
+  font-weight: 650;
+}
+
+.detail__content {
+  padding: 26rpx 36rpx;
+}
+
+.detail__content > status-banner {
+  display: block;
+  margin-bottom: 22rpx;
+}
+
+.detail__hero {
+  display: flex;
+  align-items: flex-end;
+  gap: 34rpx;
+  margin-bottom: 30rpx;
+}
+
+.detail__hero-copy {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 8rpx;
+}
+
+.detail__title,
+.detail__author,
+.detail__meta,
+.detail__isbn,
+.detail__section-title,
+.detail__section-note,
+.detail__private {
+  display: block;
+}
+
+.detail__title {
+  font-family: var(--font-display);
+  font-size: 38rpx;
+  font-weight: 700;
+  line-height: 1.38;
+}
+
+.detail__author {
+  margin-top: 17rpx;
+  font-size: 25rpx;
+}
+
+.detail__meta,
+.detail__isbn {
+  margin-top: 8rpx;
+  color: var(--color-text-secondary);
+  font-size: 22rpx;
+}
+
+.detail__section {
+  margin-top: 20rpx;
+  padding: 30rpx;
+  border: 1rpx solid var(--color-border-default);
+  border-radius: var(--radius-large);
+  background: var(--color-surface-primary);
+}
+
+.detail__section-title {
+  margin-bottom: 22rpx;
+  font-family: var(--font-display);
+  font-size: 29rpx;
+  font-weight: 700;
+}
+
+.detail__section-note {
+  color: var(--color-text-secondary);
+  font-size: 22rpx;
+}
+
+.detail__row,
+.detail__section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detail__row .detail__section-title,
+.detail__section-head .detail__section-title {
+  margin-bottom: 5rpx;
+}
+
+.detail__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.detail__chip {
+  padding: 10rpx 18rpx;
+  border-radius: var(--radius-pill);
+  color: var(--color-brand-forest);
+  background: var(--color-brand-forest-soft);
+  font-size: 22rpx;
+}
+
+.detail__private {
+  margin-top: 12rpx;
+  color: var(--color-text-muted);
+  font-size: 20rpx;
+}
+
+.detail__facts {
+  margin: 28rpx 0;
+  border-top: 1rpx solid var(--color-border-default);
+}
+
+.detail__facts view {
+  display: flex;
+  justify-content: space-between;
+  padding: 22rpx 2rpx;
+  border-bottom: 1rpx solid var(--color-border-default);
+  color: var(--color-text-secondary);
+  font-size: 23rpx;
+}
+
+.detail__facts view text:last-child {
+  color: var(--color-text-primary);
+}

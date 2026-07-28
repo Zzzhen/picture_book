@@ -1,0 +1,30 @@
+<view class="profile">
+  <app-header title="我的绘本馆" />
+  <view class="profile__identity" bindlongpress="openAdmin">
+    <view class="profile__avatar">{{childInitial || '家'}}</view>
+    <view class="profile__identity-copy">
+      <text class="profile__name">{{child.nickname || '小读者'}}的绘本馆</text>
+      <text class="profile__meta">{{child.ageText || '资料待完善'}} · 建馆 {{createdDays || 0}} 天</text>
+    </view>
+    <text class="profile__edit" bindtap="editProfile">编辑</text>
+  </view>
+  <view class="profile__metrics-head">
+    <text class="profile__section-title">馆藏指标</text>
+    <text class="profile__hint">只展示数据，不设置成功阈值</text>
+  </view>
+  <view class="profile__metrics">
+    <metric-card label="不同绘本" value="{{metrics.uniqueBooks || '0'}}" unit="本" note="按 ISBN / 审核记录去重" />
+    <metric-card label="馆藏册数" value="{{metrics.copies || '0'}}" unit="册" note="包含重复册数" />
+    <metric-card label="自定义书架" value="{{metrics.shelves || '0'}}" unit="个" note="按家庭阅读场景整理" />
+    <metric-card label="标记喜欢" value="{{metrics.favorites || '0'}}" unit="本" note="孩子的阅读偏好" />
+  </view>
+  <status-banner wx:if="{{accountStatus === 'deleting'}}" type="warning" title="注销申请处理中" message="账号已停止业务操作，个人资料会在 24 小时内删除。" action-text="查看说明" bind:action="cancelDeletion" />
+  <view class="profile__menu">
+    <button bindtap="editProfile"><text>孩子与绘本馆资料</text><text>›</text></button>
+    <button bindtap="goFeedback"><text>意见反馈</text><text>›</text></button>
+    <button bindtap="showAbout"><text>关于家庭数字绘本馆</text><text>›</text></button>
+    <button class="profile__danger" bindtap="askDeleteAccount"><text>注销绘本馆</text><text>›</text></button>
+  </view>
+  <text class="profile__version">V1-Core · 核心建馆版</text>
+  <confirm-dialog visible="{{deleteVisible}}" danger="{{true}}" title="申请注销绘本馆？" message="申请后进入保护期。到期将删除孩子资料、馆藏、书架和家庭备注；公共图书元数据与审计记录按合规要求处理。" confirm-text="申请注销" bind:confirm="requestDeletion" bind:cancel="closeDelete" />
+</view>

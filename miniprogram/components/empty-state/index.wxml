@@ -1,0 +1,15 @@
+<view class="empty">
+  <view class="empty__illustration empty__illustration--{{type}}">
+    <view class="empty__book empty__book--one"></view>
+    <view class="empty__book empty__book--two"></view>
+    <view class="empty__book empty__book--three"></view>
+    <view wx:if="{{type === 'search'}}" class="empty__lens"></view>
+    <text wx:if="{{type === 'offline'}}" class="empty__signal">!</text>
+  </view>
+  <text class="empty__title">{{title}}</text>
+  <text wx:if="{{description}}" class="empty__description">{{description}}</text>
+  <view wx:if="{{primaryText || secondaryText}}" class="empty__actions">
+    <ui-button wx:if="{{primaryText}}" text="{{primaryText}}" bind:tap="onPrimary" />
+    <ui-button wx:if="{{secondaryText}}" type="tertiary" text="{{secondaryText}}" bind:tap="onSecondary" />
+  </view>
+</view>

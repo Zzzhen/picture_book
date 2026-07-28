@@ -1,0 +1,7 @@
+<view class="bookplate bookplate--{{size}}" aria-label="家庭藏书票">
+  <view class="bookplate__book">
+    <view class="bookplate__spine"></view>
+    <view class="bookplate__page"></view>
+  </view>
+  <text class="bookplate__word">藏</text>
+</view>

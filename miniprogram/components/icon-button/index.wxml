@@ -1,0 +1,8 @@
+<button
+  class="icon-button icon-button--{{styleType}}"
+  disabled="{{disabled}}"
+  aria-label="{{label}}"
+  bindtap="onTap"
+>
+  <text class="icon-button__glyph">{{icon}}</text>
+</button>

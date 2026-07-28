@@ -1,0 +1,50 @@
+.header {
+  position: relative;
+  z-index: 20;
+  background: var(--color-background-paper);
+}
+
+.header--transparent {
+  background: transparent;
+}
+
+.header__bar {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  min-height: 88rpx;
+  padding-left: 20rpx;
+}
+
+.header__back,
+.header__spacer {
+  width: 88rpx;
+  height: 88rpx;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.header__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-primary);
+}
+
+.header__back-icon {
+  font-size: 64rpx;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.header__title {
+  overflow: hidden;
+  flex: 1;
+  font-size: 34rpx;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

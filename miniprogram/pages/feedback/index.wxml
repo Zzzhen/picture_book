@@ -1,0 +1,24 @@
+<view class="feedback">
+  <app-header title="意见反馈" back="{{true}}" />
+  <view class="feedback__content">
+    <view wx:if="{{state === 'success'}}" class="feedback__success">
+      <view class="feedback__success-mark">✓</view>
+      <text class="feedback__title">谢谢你的反馈</text>
+      <text class="feedback__copy">我们已经收到。若你留下了联系方式，处理人员会在需要补充信息时联系你。</text>
+      <ui-button text="返回我的绘本馆" bind:tap="backProfile" />
+    </view>
+    <block wx:else>
+      <text class="feedback__title">告诉我们哪里可以更好</text>
+      <text class="feedback__copy">使用问题、图书信息错误或改进建议都可以提交。请勿填写孩子的真实姓名、地址等敏感信息。</text>
+      <view class="feedback__types">
+        <button wx:for="{{types}}" wx:key="value" class="{{form.type === item.value ? 'feedback__type--active' : ''}}" data-value="{{item.value}}" bindtap="chooseType">{{item.label}}</button>
+      </view>
+      <view class="feedback__form">
+        <text-field label="详细说明" required="{{true}}" type="textarea" value="{{form.content}}" placeholder="请描述操作步骤、看到的提示或希望改进的地方" maxlength="{{1000}}" error="{{errors.content}}" bind:input="onContent" />
+        <text-field label="联系方式（可选）" value="{{form.contact}}" placeholder="手机号、邮箱或其他方便联系的方式" maxlength="{{100}}" bind:input="onContact" />
+      </view>
+      <status-banner wx:if="{{errorMessage}}" type="error" title="提交失败" message="{{errorMessage}}" />
+      <ui-button text="提交反馈" loading="{{submitting}}" bind:tap="submit" />
+    </block>
+  </view>
+</view>

@@ -1,0 +1,38 @@
+<view class="field {{error ? 'field--error' : ''}}">
+  <view class="field__label-row">
+    <text class="field__label">{{label}}</text>
+    <text wx:if="{{required}}" class="field__required">必填</text>
+  </view>
+  <picker
+    wx:if="{{type === 'month'}}"
+    mode="date"
+    fields="month"
+    value="{{value}}"
+    disabled="{{disabled}}"
+    bindchange="onChange"
+  >
+    <view class="field__control {{value ? '' : 'field__placeholder'}}">
+      {{value || placeholder}}
+    </view>
+  </picker>
+  <textarea
+    wx:elif="{{type === 'textarea'}}"
+    class="field__control field__textarea"
+    value="{{value}}"
+    placeholder="{{placeholder}}"
+    disabled="{{disabled}}"
+    maxlength="{{maxlength}}"
+    bindinput="onInput"
+  />
+  <input
+    wx:else
+    class="field__control"
+    value="{{value}}"
+    placeholder="{{placeholder}}"
+    disabled="{{disabled}}"
+    maxlength="{{maxlength}}"
+    type="{{type}}"
+    bindinput="onInput"
+  />
+  <text wx:if="{{error}}" class="field__error">{{error}}</text>
+</view>

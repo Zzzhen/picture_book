@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "description": "V1-Core 所有数据库访问必须经过云函数，客户端数据库 API 默认拒绝。",
+  "default": {
+    "read": false,
+    "write": false
+  },
+  "collections": {
+    "*": {
+      "read": false,
+      "write": false
+    }
+  }
+}

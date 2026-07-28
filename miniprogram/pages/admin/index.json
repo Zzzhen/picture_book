@@ -1,0 +1,13 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "app-header": "../../components/app-header/index",
+    "status-banner": "../../components/status-banner/index",
+    "book-cover": "../../components/book-cover/index",
+    "empty-state": "../../components/empty-state/index",
+    "skeleton": "../../components/skeleton/index",
+    "ui-button": "../../components/ui-button/index",
+    "bottom-sheet": "../../components/bottom-sheet/index",
+    "confirm-dialog": "../../components/confirm-dialog/index"
+  }
+}

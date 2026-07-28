@@ -1,0 +1,9 @@
+{
+  "desc": "V1-Core 私人家庭绘本馆",
+  "rules": [
+    {
+      "action": "disallow",
+      "page": "*"
+    }
+  ]
+}

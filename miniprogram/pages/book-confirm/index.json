@@ -1,0 +1,10 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "app-header": "../../components/app-header/index",
+    "book-cover": "../../components/book-cover/index",
+    "quantity-stepper": "../../components/quantity-stepper/index",
+    "status-banner": "../../components/status-banner/index",
+    "ui-button": "../../components/ui-button/index"
+  }
+}

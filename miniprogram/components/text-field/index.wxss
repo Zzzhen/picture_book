@@ -1,0 +1,57 @@
+.field {
+  width: 100%;
+}
+
+.field__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.field__label {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.field__required {
+  color: var(--color-text-muted);
+  font-size: 22rpx;
+}
+
+.field__control {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 96rpx;
+  padding: 25rpx 24rpx;
+  border: 2rpx solid var(--color-border-default);
+  border-radius: var(--radius-medium);
+  background: var(--color-surface-primary);
+  color: var(--color-text-primary);
+  font-size: 30rpx;
+  line-height: 44rpx;
+}
+
+.field__control:focus {
+  border-color: var(--color-brand-forest);
+}
+
+.field__textarea {
+  min-height: 224rpx;
+}
+
+.field__placeholder {
+  color: var(--color-text-muted);
+}
+
+.field--error .field__control {
+  border-color: var(--color-state-danger);
+}
+
+.field__error {
+  display: block;
+  margin-top: 10rpx;
+  color: var(--color-state-danger);
+  font-size: 24rpx;
+  line-height: 1.4;
+}

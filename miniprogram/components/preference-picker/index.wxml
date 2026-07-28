@@ -1,0 +1,8 @@
+<view class="preference {{disabled ? 'preference--disabled' : ''}}">
+  <block wx:for="{{options}}" wx:key="value">
+    <button class="preference__item {{value === item.value ? 'preference__item--active' : ''}}" data-value="{{item.value}}" bindtap="onSelect">
+      <text class="preference__symbol">{{item.symbol}}</text>
+      <text>{{item.label}}</text>
+    </button>
+  </block>
+</view>

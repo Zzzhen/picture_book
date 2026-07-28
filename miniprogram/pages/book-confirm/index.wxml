@@ -1,0 +1,31 @@
+<view class="confirm-page">
+  <app-header title="{{continuous ? '确认并继续' : '确认绘本'}}" back="{{true}}" />
+  <view class="confirm-page__content">
+    <status-banner wx:if="{{source === 'cache'}}" type="info" title="已从书库找到" message="这本书曾经查询成功，本次不会调用付费接口。" />
+    <status-banner wx:if="{{duplicate}}" type="warning" title="馆里已经有这本" message="确认后只增加馆藏数量，不会创建重复记录。" />
+    <view class="confirm-page__hero">
+      <book-cover size="large" src="{{book.coverUrl}}" title="{{book.title}}" />
+      <view class="confirm-page__summary">
+        <text class="confirm-page__title">{{book.title || '绘本信息待确认'}}</text>
+        <text class="confirm-page__author">{{book.author || '作者信息待补充'}}</text>
+        <text wx:if="{{book.publisher}}" class="confirm-page__meta">{{book.publisher}}</text>
+        <text class="confirm-page__isbn">ISBN {{book.isbn13 || isbn}}</text>
+      </view>
+    </view>
+    <view class="confirm-page__section">
+      <view class="confirm-page__row">
+        <view><text class="confirm-page__label">加入数量</text><text class="confirm-page__hint">同一本书有多册时可以调整</text></view>
+        <quantity-stepper value="{{quantity}}" bind:change="onQuantity" />
+      </view>
+    </view>
+    <view class="confirm-page__details">
+      <view><text>装帧</text><text>{{book.binding || '未提供'}}</text></view>
+      <view><text>出版时间</text><text>{{book.publishDate || '未提供'}}</text></view>
+      <view><text>数据来源</text><text>{{sourceLabel || 'ISBN 图书信息服务'}}</text></view>
+    </view>
+  </view>
+  <view class="confirm-page__footer">
+    <ui-button text="{{continuous ? '加入并继续扫描' : duplicate ? '增加馆藏数量' : '加入绘本馆'}}" loading="{{submitting}}" bind:tap="confirmAdd" />
+    <ui-button type="tertiary" text="信息不对，手工修改" bind:tap="editManually" />
+  </view>
+</view>

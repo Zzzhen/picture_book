@@ -1,0 +1,12 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "app-header": "../../components/app-header/index",
+    "text-field": "../../components/text-field/index",
+    "search-field": "../../components/search-field/index",
+    "book-list-item": "../../components/book-list-item/index",
+    "empty-state": "../../components/empty-state/index",
+    "ui-button": "../../components/ui-button/index",
+    "confirm-dialog": "../../components/confirm-dialog/index"
+  }
+}

@@ -1,0 +1,65 @@
+page {
+  background: var(--color-background-paper);
+}
+
+.shelf-edit {
+  min-height: 100vh;
+  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
+}
+
+.shelf-edit__save,
+.shelf-edit__select-all {
+  color: var(--color-brand-forest);
+  font-size: 24rpx;
+  font-weight: 650;
+}
+
+.shelf-edit__save--disabled {
+  opacity: 0.48;
+}
+
+.shelf-edit__form {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+  padding: 34rpx 36rpx;
+  border-bottom: 1rpx solid var(--color-border-default);
+}
+
+.shelf-edit__books {
+  padding: 32rpx 34rpx;
+}
+
+.shelf-edit__section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22rpx;
+}
+
+.shelf-edit__title,
+.shelf-edit__count {
+  display: block;
+}
+
+.shelf-edit__title {
+  font-family: var(--font-display);
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.shelf-edit__count {
+  margin-top: 7rpx;
+  color: var(--color-text-secondary);
+  font-size: 22rpx;
+}
+
+.shelf-edit__list {
+  margin-top: 22rpx;
+  border-top: 1rpx solid var(--color-border-default);
+}
+
+.shelf-edit > ui-button {
+  display: block;
+  margin: 10rpx 34rpx 0;
+}

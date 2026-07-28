@@ -1,0 +1,87 @@
+page {
+  background: var(--color-background-paper);
+}
+
+.manual {
+  min-height: 100vh;
+  padding-bottom: calc(38rpx + env(safe-area-inset-bottom));
+}
+
+.manual__content {
+  padding: 28rpx 36rpx 48rpx;
+}
+
+.manual__content > status-banner {
+  display: block;
+  margin-bottom: 18rpx;
+}
+
+.manual__cover {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  margin: 30rpx 0 38rpx;
+}
+
+.manual__cover-placeholder {
+  display: flex;
+  flex: 0 0 170rpx;
+  box-sizing: border-box;
+  width: 170rpx;
+  height: 218rpx;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx dashed var(--color-border-strong);
+  border-radius: var(--radius-medium);
+  color: var(--color-brand-forest);
+  background: var(--color-surface-primary);
+  font-size: 22rpx;
+}
+
+.manual__cover-preview {
+  width: 100%;
+  height: 100%;
+  border-radius: calc(var(--radius-medium) - 2rpx);
+}
+
+.manual__cover-plus {
+  margin-bottom: 10rpx;
+  font-size: 40rpx;
+}
+
+.manual__cover-copy {
+  color: var(--color-text-secondary);
+  font-size: 23rpx;
+  line-height: 1.7;
+}
+
+.manual__cover-copy text {
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.manual__cover-copy .manual__cover-change {
+  color: var(--color-brand-forest);
+  font-weight: 650;
+}
+
+.manual__form {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+}
+
+.manual__content > ui-button {
+  display: block;
+  margin-top: 38rpx;
+}
+
+.manual__notice {
+  display: block;
+  margin-top: 16rpx;
+  color: var(--color-text-muted);
+  font-size: 21rpx;
+  line-height: 1.5;
+  text-align: center;
+}

@@ -1,0 +1,38 @@
+# 依赖目录
+node_modules/
+cloudfunctions/**/node_modules/
+miniprogram/miniprogram_npm/
+
+# 构建产物
+dist/
+
+# 临时文件
+tmp/
+*.tmp
+*.log
+
+# 工具状态目录
+.superpowers/
+
+# 微信开发者工具私有配置
+project.private.config.json
+
+# 环境变量与密钥
+.env
+.env.*
+!.env.example
+
+# 编辑器 / IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# 操作系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 测试覆盖率
+coverage/
+.nyc_output/

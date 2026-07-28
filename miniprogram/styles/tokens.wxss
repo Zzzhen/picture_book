@@ -1,0 +1,69 @@
+page,
+.theme-root {
+  --color-background-paper: #f7f3ea;
+  --color-surface-primary: #fffefb;
+  --color-surface-secondary: #eee7db;
+  --color-surface-cover: #e6e0d5;
+  --color-brand-forest: #315a45;
+  --color-brand-forest-pressed: #244434;
+  --color-brand-forest-soft: #dce8e0;
+  --color-accent-terracotta: #c96e50;
+  --color-accent-terracotta-soft: #f4e0d8;
+  --color-accent-gold: #9a742f;
+  --color-text-primary: #20251f;
+  --color-text-secondary: #59635b;
+  --color-text-muted: #687168;
+  --color-border-default: #d8d0c3;
+  --color-border-strong: #afa596;
+  --color-state-success: #3f7354;
+  --color-state-warning: #8c5a22;
+  --color-state-danger: #a9413f;
+  --color-state-info: #356a8a;
+  --color-overlay: rgba(25, 31, 27, 0.48);
+  --font-display: "Songti SC", "STSong", "SimSun", serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --space-1: 8rpx;
+  --space-2: 16rpx;
+  --space-3: 24rpx;
+  --space-4: 32rpx;
+  --space-5: 40rpx;
+  --space-6: 48rpx;
+  --space-8: 64rpx;
+  --radius-small: 16rpx;
+  --radius-medium: 24rpx;
+  --radius-large: 32rpx;
+  --radius-xlarge: 48rpx;
+  --radius-pill: 999rpx;
+  --shadow-card: 0 12rpx 36rpx rgba(35, 56, 45, 0.08);
+  --shadow-floating: 0 16rpx 48rpx rgba(35, 56, 45, 0.18);
+  --shadow-sheet: 0 -16rpx 64rpx rgba(25, 31, 27, 0.12);
+  --color-paper: var(--color-background-paper);
+  --color-paper-deep: var(--color-surface-secondary);
+  --color-surface: var(--color-surface-primary);
+  --color-forest: var(--color-brand-forest);
+  --color-forest-soft: var(--color-brand-forest-soft);
+  --color-text-tertiary: var(--color-text-muted);
+  --color-border: var(--color-border-default);
+  --color-danger: var(--color-state-danger);
+  --color-warning: var(--color-state-warning);
+  --radius-sm: var(--radius-small);
+  --radius-md: var(--radius-medium);
+  --radius-lg: var(--radius-large);
+  --radius-xl: var(--radius-xlarge);
+  --shadow-cover: 0 10rpx 22rpx rgba(35, 56, 45, 0.12);
+  --shadow-float: var(--shadow-floating);
+  --z-sheet: 900;
+  --z-dialog: 1000;
+  --z-toast: 1100;
+}
+
+.surface-card {
+  box-sizing: border-box;
+  background: var(--color-surface-primary);
+  border: 2rpx solid rgba(216, 208, 195, 0.72);
+  border-radius: var(--radius-large);
+}
+
+.safe-bottom {
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+}

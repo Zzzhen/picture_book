@@ -1,0 +1,122 @@
+page {
+  background: var(--color-background-paper);
+}
+
+.confirm-page {
+  min-height: 100vh;
+  padding-bottom: calc(190rpx + env(safe-area-inset-bottom));
+}
+
+.confirm-page__content {
+  padding: 28rpx 38rpx;
+}
+
+.confirm-page__content > status-banner {
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.confirm-page__hero {
+  display: flex;
+  align-items: flex-end;
+  gap: 32rpx;
+  padding: 34rpx;
+  border: 1rpx solid var(--color-border-default);
+  border-radius: var(--radius-large);
+  background: var(--color-surface-primary);
+}
+
+.confirm-page__summary {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 6rpx;
+}
+
+.confirm-page__title,
+.confirm-page__author,
+.confirm-page__meta,
+.confirm-page__isbn,
+.confirm-page__label,
+.confirm-page__hint {
+  display: block;
+}
+
+.confirm-page__title {
+  font-family: var(--font-display);
+  font-size: 36rpx;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.confirm-page__author {
+  margin-top: 18rpx;
+  color: var(--color-text-primary);
+  font-size: 25rpx;
+}
+
+.confirm-page__meta,
+.confirm-page__isbn {
+  margin-top: 9rpx;
+  color: var(--color-text-secondary);
+  font-size: 22rpx;
+}
+
+.confirm-page__section {
+  margin-top: 26rpx;
+  padding: 30rpx;
+  border: 1rpx solid var(--color-border-default);
+  border-radius: var(--radius-large);
+  background: var(--color-surface-primary);
+}
+
+.confirm-page__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.confirm-page__label {
+  font-size: 27rpx;
+  font-weight: 650;
+}
+
+.confirm-page__hint {
+  margin-top: 7rpx;
+  color: var(--color-text-secondary);
+  font-size: 21rpx;
+}
+
+.confirm-page__details {
+  margin-top: 26rpx;
+  border-top: 1rpx solid var(--color-border-default);
+}
+
+.confirm-page__details view {
+  display: flex;
+  justify-content: space-between;
+  padding: 23rpx 0;
+  border-bottom: 1rpx solid var(--color-border-default);
+  color: var(--color-text-secondary);
+  font-size: 24rpx;
+}
+
+.confirm-page__details view text:last-child {
+  color: var(--color-text-primary);
+}
+
+.confirm-page__footer {
+  box-sizing: border-box;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 22rpx 38rpx calc(20rpx + env(safe-area-inset-bottom));
+  border-top: 1rpx solid var(--color-border-default);
+  background: rgba(255, 254, 251, 0.98);
+}
+
+.confirm-page__footer ui-button + ui-button {
+  display: block;
+  margin-top: 8rpx;
+}

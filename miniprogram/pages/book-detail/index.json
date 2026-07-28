@@ -1,0 +1,13 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "app-header": "../../components/app-header/index",
+    "book-cover": "../../components/book-cover/index",
+    "preference-picker": "../../components/preference-picker/index",
+    "quantity-stepper": "../../components/quantity-stepper/index",
+    "text-field": "../../components/text-field/index",
+    "ui-button": "../../components/ui-button/index",
+    "status-banner": "../../components/status-banner/index",
+    "confirm-dialog": "../../components/confirm-dialog/index"
+  }
+}

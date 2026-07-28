@@ -1,0 +1,11 @@
+<view wx:if="{{visible}}" class="dialog-layer">
+  <view class="dialog-layer__mask" bindtap="onCancel"></view>
+  <view class="dialog" catchtap="noop">
+    <text class="dialog__title">{{title}}</text>
+    <text wx:if="{{message}}" class="dialog__message">{{message}}</text>
+    <view class="dialog__actions">
+      <ui-button type="secondary" text="{{cancelText}}" bind:tap="onCancel" />
+      <ui-button type="{{danger ? 'danger' : 'primary'}}" text="{{confirmText}}" bind:tap="onConfirm" />
+    </view>
+  </view>
+</view>

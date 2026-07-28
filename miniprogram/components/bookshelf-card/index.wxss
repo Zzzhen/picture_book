@@ -1,0 +1,87 @@
+.shelf-card {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 24rpx;
+  border: 1rpx solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.shelf-card--pressed {
+  transform: translateY(1rpx);
+  opacity: 0.78;
+}
+
+.shelf-card__collage {
+  display: grid;
+  overflow: hidden;
+  flex: 0 0 152rpx;
+  grid-template-columns: repeat(2, 1fr);
+  width: 152rpx;
+  height: 116rpx;
+  border-radius: var(--radius-sm);
+  background: var(--color-paper-deep);
+}
+
+.shelf-card__cover {
+  width: 76rpx;
+  height: 116rpx;
+}
+
+.shelf-card__cover--2,
+.shelf-card__cover--3 {
+  display: none;
+}
+
+.shelf-card__empty {
+  display: flex;
+  grid-column: 1 / 3;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 7rpx;
+  padding-bottom: 22rpx;
+}
+
+.shelf-card__spine {
+  width: 22rpx;
+  height: 54rpx;
+  border: 2rpx solid var(--color-forest);
+  border-radius: 3rpx 3rpx 0 0;
+}
+
+.shelf-card__spine--short {
+  height: 40rpx;
+  background: var(--color-forest-soft);
+}
+
+.shelf-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.shelf-card__name,
+.shelf-card__count {
+  display: block;
+}
+
+.shelf-card__name {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 31rpx;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shelf-card__count {
+  margin-top: 10rpx;
+  color: var(--color-text-secondary);
+  font-size: 24rpx;
+}
+
+.shelf-card__arrow {
+  color: var(--color-text-tertiary);
+  font-size: 42rpx;
+}

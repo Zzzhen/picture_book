@@ -1,0 +1,23 @@
+<view class="bootstrap">
+  <view class="bootstrap__brand">
+    <bookplate-mark size="large" />
+    <text class="bootstrap__name">家庭数字绘本馆</text>
+    <text class="bootstrap__caption">把孩子读过的每一本，认真收藏起来</text>
+  </view>
+  <view wx:if="{{state === 'loading'}}" class="bootstrap__loading">
+    <view class="bootstrap__loading-line"></view>
+    <text>正在打开绘本馆</text>
+  </view>
+  <view wx:elif="{{state === 'error' || state === 'offline'}}" class="bootstrap__state">
+    <status-banner type="{{state === 'offline' ? 'warning' : 'error'}}" title="{{state === 'offline' ? '网络暂时不可用' : '绘本馆打开失败'}}" message="{{message || '请检查网络后再试一次'}}" />
+    <ui-button text="重新尝试" bind:tap="retry" />
+  </view>
+  <view wx:elif="{{state === 'disabled'}}" class="bootstrap__state">
+    <status-banner type="error" title="账号已停用" message="{{message || '如需恢复使用，请通过反馈联系我们。'}}" />
+    <ui-button type="secondary" text="提交反馈" bind:tap="goFeedback" />
+  </view>
+  <view wx:elif="{{state === 'deleting'}}" class="bootstrap__state">
+    <status-banner type="warning" title="绘本馆正在注销" message="{{message}}" />
+    <ui-button type="secondary" text="联系管理员" bind:tap="goFeedback" />
+  </view>
+</view>

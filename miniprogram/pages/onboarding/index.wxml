@@ -1,0 +1,32 @@
+<view class="onboarding">
+  <app-header title="建立家庭绘本馆" />
+  <view class="onboarding__progress">
+    <view class="onboarding__progress-fill" style="width: {{step === 1 ? 50 : 100}}%;"></view>
+  </view>
+  <view class="onboarding__content">
+    <view wx:if="{{step === 1}}" class="onboarding__intro">
+      <bookplate-mark size="large" />
+      <text class="onboarding__eyebrow">为孩子建一座小小藏书馆</text>
+      <text class="onboarding__title">先认识一下小读者</text>
+      <text class="onboarding__description">昵称、出生年月和性别用于整理适龄阅读记录，只在家庭绘本馆内使用。</text>
+    </view>
+    <view class="onboarding__form">
+      <text-field label="孩子昵称" required="{{true}}" value="{{form.nickname}}" placeholder="例如：依依" error="{{errors.nickname}}" bind:input="onNickname" />
+      <text-field label="出生年月" required="{{true}}" type="month" value="{{form.birthMonth}}" placeholder="请选择出生年月" error="{{errors.birthMonth}}" bind:change="onBirthMonth" />
+      <view class="onboarding__field">
+        <text class="onboarding__label">性别 <text class="onboarding__required">*</text></text>
+        <view class="onboarding__gender">
+          <button class="onboarding__gender-item {{form.gender === 'female' ? 'onboarding__gender-item--active' : ''}}" data-gender="female" bindtap="onGender">女孩</button>
+          <button class="onboarding__gender-item {{form.gender === 'male' ? 'onboarding__gender-item--active' : ''}}" data-gender="male" bindtap="onGender">男孩</button>
+          <button class="onboarding__gender-item {{form.gender === 'unspecified' ? 'onboarding__gender-item--active' : ''}}" data-gender="unspecified" bindtap="onGender">暂不定义</button>
+        </view>
+        <text wx:if="{{errors.gender}}" class="onboarding__error">{{errors.gender}}</text>
+      </view>
+      <text-field wx:if="{{step === 2}}" label="绘本馆名称" value="{{form.libraryName}}" placeholder="{{form.nickname ? form.nickname + '的绘本馆' : '我的家庭绘本馆'}}" maxlength="{{30}}" bind:input="onLibraryName" />
+    </view>
+  </view>
+  <view class="onboarding__footer">
+    <ui-button text="{{step === 1 ? '下一步' : '完成建馆'}}" loading="{{submitting}}" bind:tap="next" />
+    <text class="onboarding__privacy">继续即表示同意以当前微信身份保存家庭藏书资料</text>
+  </view>
+</view>

@@ -1,0 +1,95 @@
+<view class="admin">
+  <app-header title="内容与系统管理" back="{{true}}" />
+  <status-banner wx:if="{{!isAdmin}}" type="error" title="没有访问权限" message="该入口仅向管理员开放，所有审核操作都会记录审计日志。" />
+  <block wx:if="{{isAdmin}}">
+    <scroll-view class="admin__tabs-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="admin__tabs">
+        <button class="{{tab === 'dashboard' ? 'admin__tab--active' : ''}}" data-tab="dashboard" bindtap="changeTab">指标</button>
+        <button class="{{tab === 'pending' ? 'admin__tab--active' : ''}}" data-tab="pending" bindtap="changeTab">待审核 <text>{{counts.pending || 0}}</text></button>
+        <button class="{{tab === 'conflict' ? 'admin__tab--active' : ''}}" data-tab="conflict" bindtap="changeTab">ISBN 冲突 <text>{{counts.conflict || 0}}</text></button>
+        <button class="{{tab === 'history' ? 'admin__tab--active' : ''}}" data-tab="history" bindtap="changeTab">已驳回</button>
+        <button class="{{tab === 'users' ? 'admin__tab--active' : ''}}" data-tab="users" bindtap="changeTab">用户</button>
+      </view>
+    </scroll-view>
+    <view class="admin__body">
+      <skeleton wx:if="{{state === 'loading'}}" type="list" count="{{5}}" />
+      <view wx:elif="{{tab === 'dashboard' && state === 'content'}}">
+        <view class="admin__metric-hero">
+          <text>核心建馆版运行概览</text>
+          <text>{{dashboard.users.total || 0}}</text>
+          <text>累计用户 · 仅展示指标，不设置成功阈值</text>
+        </view>
+        <view class="admin__metrics">
+          <view><text>{{dashboard.library.total_user_books || 0}}</text><text>馆藏记录</text></view>
+          <view><text>{{dashboard.library.total_shelves || 0}}</text><text>书架</text></view>
+          <view><text>{{dashboard.isbn.provider_call_count || 0}}</text><text>ISBN 回源</text></view>
+          <view><text>{{dashboard.manual_review.pending_count || 0}}</text><text>待审核</text></view>
+          <view><text>{{dashboard.continuous_scan.session_count || 0}}</text><text>连续扫码轮次</text></view>
+          <view><text>{{dashboard.continuous_scan.failure_count || 0}}</text><text>扫码失败</text></view>
+        </view>
+        <view class="admin__activation">
+          <text class="admin__version-label">建馆进度指标</text>
+          <view><text>加入 1 本</text><text>{{dashboardView.book1}}</text></view>
+          <view><text>加入 5 本</text><text>{{dashboardView.book5}}</text></view>
+          <view><text>加入 10 本</text><text>{{dashboardView.book10}}</text></view>
+          <view><text>创建书架</text><text>{{dashboardView.shelf}}</text></view>
+        </view>
+      </view>
+      <view wx:elif="{{tab === 'users' && state === 'content'}}" class="admin__queue">
+        <view wx:for="{{users}}" wx:key="user_id" class="admin__user">
+          <view>
+            <text class="admin__item-title">{{item.library_name || '未命名绘本馆'}}</text>
+            <text class="admin__item-meta">{{item.book_count || 0}} 本 · {{item.status}}</text>
+            <text class="admin__user-id">{{item.user_id}}</text>
+          </view>
+          <button wx:if="{{item.status === 'active' || item.status === 'disabled'}}" data-id="{{item.user_id}}" bindtap="changeUserStatus">{{item.status === 'disabled' ? '恢复' : '停用'}}</button>
+        </view>
+      </view>
+      <empty-state wx:elif="{{state === 'empty'}}" title="{{tab === 'conflict' ? '没有待处理的 ISBN 冲突' : (tab === 'users' ? '暂时没有用户' : '审核队列已经清空')}}" description="新的记录出现时会显示在这里。" />
+      <view wx:elif="{{tab !== 'dashboard' && tab !== 'users'}}" class="admin__queue">
+        <button wx:for="{{items}}" wx:key="_id" class="admin__item" data-id="{{item._id}}" bindtap="openItem">
+          <book-cover size="small" src="{{item.coverUrl}}" title="{{item.title}}" />
+          <view class="admin__item-copy">
+            <text class="admin__item-title">{{item.title || '未命名绘本'}}</text>
+            <text class="admin__item-meta">{{item.author || '作者待补充'}}</text>
+            <text class="admin__item-status">{{tab === 'conflict' ? 'ISBN ' + item.isbn13 + ' · 版本冲突' : '提交于 ' + item.submittedAtText}}</text>
+          </view>
+          <text class="admin__arrow">›</text>
+        </button>
+      </view>
+    </view>
+    <bottom-sheet visible="{{detailVisible}}" title="{{tab === 'conflict' ? '处理 ISBN 冲突' : '审核绘本信息'}}" bind:close="closeItem">
+      <scroll-view class="admin__sheet" scroll-y>
+        <status-banner wx:if="{{tab === 'conflict'}}" type="warning" title="两条记录使用相同 ISBN" message="请选择保留的公共图书版本。系统会迁移家庭馆藏关系，并记录完整审计日志。" />
+        <view class="admin__compare">
+          <view class="admin__version {{selectedVersion === 'candidate' ? 'admin__version--selected' : ''}}" data-version="candidate" bindtap="selectVersion">
+            <text class="admin__version-label">{{tab === 'conflict' ? '新提交版本' : '待审核信息'}}</text>
+            <view class="admin__version-book">
+              <book-cover size="small" src="{{current.coverUrl}}" title="{{current.title}}" />
+              <view><text class="admin__item-title">{{current.title}}</text><text class="admin__item-meta">{{current.author}}</text><text class="admin__item-meta">{{current.publisher}}</text></view>
+            </view>
+          </view>
+          <view wx:if="{{tab === 'conflict'}}" class="admin__version {{selectedVersion === 'existing' ? 'admin__version--selected' : ''}}" data-version="existing" bindtap="selectVersion">
+            <text class="admin__version-label">已有公共版本</text>
+            <view class="admin__version-book">
+              <book-cover size="small" src="{{current.existing.coverUrl}}" title="{{current.existing.title}}" />
+              <view><text class="admin__item-title">{{current.existing.title}}</text><text class="admin__item-meta">{{current.existing.author}}</text><text class="admin__item-meta">{{current.existing.publisher}}</text></view>
+            </view>
+          </view>
+        </view>
+        <view wx:if="{{tab !== 'conflict'}}" class="admin__moderation">
+          <text class="admin__version-label">驳回原因（驳回时必填）</text>
+          <textarea value="{{rejectReason}}" maxlength="{{300}}" placeholder="明确说明需要修改的字段与原因" bindinput="onRejectReason"></textarea>
+        </view>
+        <view class="admin__sheet-actions">
+          <ui-button wx:if="{{tab === 'conflict'}}" text="保留所选版本并迁移关联" disabled="{{!selectedVersion}}" loading="{{processing}}" bind:tap="resolveConflict" />
+          <block wx:else>
+            <ui-button text="审核通过" loading="{{processing}}" bind:tap="approve" />
+            <ui-button type="danger" text="驳回并告知原因" disabled="{{!rejectReason}}" loading="{{processing}}" bind:tap="reject" />
+          </block>
+        </view>
+      </scroll-view>
+    </bottom-sheet>
+    <confirm-dialog visible="{{confirmVisible}}" title="确认处理结果？" message="处理后会立即影响公共图书信息与关联馆藏，并写入不可变审计记录。" confirm-text="确认执行" bind:confirm="commitDecision" bind:cancel="cancelDecision" />
+  </block>
+</view>

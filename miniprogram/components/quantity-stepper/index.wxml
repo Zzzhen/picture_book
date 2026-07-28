@@ -1,0 +1,5 @@
+<view class="stepper {{disabled ? 'stepper--disabled' : ''}}">
+  <button class="stepper__button" disabled="{{disabled || value <= min}}" bindtap="decrease" aria-label="减少数量">−</button>
+  <text class="stepper__value">{{value}}</text>
+  <button class="stepper__button" disabled="{{disabled || value >= max}}" bindtap="increase" aria-label="增加数量">＋</button>
+</view>
