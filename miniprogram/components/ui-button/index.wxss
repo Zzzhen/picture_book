@@ -52,7 +52,7 @@
   color: #fff;
 }
 
-.button[disabled] {
+.button--disabled {
   border-color: var(--color-border-default);
   background: var(--color-surface-secondary);
   color: var(--color-text-muted);

@@ -27,6 +27,10 @@ Page({
     if (query.mode === "continuous") this.restoreSession();
   },
 
+  onShow() {
+    this._confirmationOpening = false;
+  },
+
   onUnload() {
     if (this.data.mode === "continuous") this.persistSession();
   },
@@ -123,8 +127,11 @@ Page({
   },
 
   navigateToConfirmation(data) {
+    if (this._confirmationOpening) return;
+    this._confirmationOpening = true;
     wx.navigateTo({
-      url: `/pages/book-confirm/index?editionId=${data.edition.edition_id}&isbn=${data.edition.isbn13}&source=${data.cache_hit ? "cache" : "provider"}`
+      url: `/pages/book-confirm/index?editionId=${data.edition.edition_id}&isbn=${data.edition.isbn13}&source=${data.cache_hit ? "cache" : "provider"}`,
+      fail: () => { this._confirmationOpening = false; }
     });
   },
 
@@ -153,6 +160,7 @@ Page({
   },
 
   async lookup() {
+    if (this.data.querying || this._confirmationOpening) return;
     if (!isValidIsbn(this.data.isbn)) {
       this.setData({ isbnError: "请输入正确的 10 或 13 位 ISBN" });
       return;

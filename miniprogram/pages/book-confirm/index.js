@@ -41,7 +41,9 @@ Page({
           coverUrl: edition.cover_file_id || "",
           isbn13: edition.isbn13,
           binding: edition.binding_type,
-          publishDate: edition.publish_date_text
+          publishDate: edition.publish_date_text,
+          priceText: edition.price_text,
+          pageCount: edition.page_count_text
         }
       });
     } catch (error) {

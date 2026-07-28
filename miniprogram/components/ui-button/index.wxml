@@ -1,5 +1,5 @@
 <button
-  class="button button--{{type}} button--{{size}} {{block ? 'button--block' : ''}}"
+  class="button button--{{type}} button--{{size}} {{block ? 'button--block' : ''}} {{disabled || loading ? 'button--disabled' : ''}}"
   disabled="{{disabled || loading}}"
   loading="{{loading}}"
   bindtap="onTap"

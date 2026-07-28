@@ -163,6 +163,14 @@ async function addBook(ctx, payload) {
   if (payload.quantity_delta !== undefined && payload.quantity_delta !== 1) throw new AppError("INVALID_ARGUMENT", "quantity_delta 当前只允许为 1");
   if (payload.scan_session_id !== undefined) text(payload.scan_session_id, "scan_session_id", { min: 1, max: 100 });
   const edition = await getById(ctx.db.collection("book_editions"), editionId);
+  if (edition && (edition._id !== editionId || (editionId.startsWith("isbn_") && edition.isbn13 && edition.isbn13 !== editionId.slice(5)))) {
+    console.error("edition identity mismatch", {
+      requested_edition_id: editionId,
+      resolved_edition_id: edition._id,
+      resolved_isbn13: edition.isbn13
+    });
+    throw new AppError("DATA_INCONSISTENT", "绘本版本标识与 ISBN 不一致，请联系管理员");
+  }
   if (!edition || edition.deleted_at || edition.audit_status === "merged") throw new AppError("BOOK_NOT_FOUND", "绘本信息不存在");
   if (edition.audit_status !== "approved" && edition.created_by !== ctx.userId) throw new AppError("FORBIDDEN", "该绘本尚未公开");
   const id = deterministicId("user_book", [ctx.userId, editionId]);

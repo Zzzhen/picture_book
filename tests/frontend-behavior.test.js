@@ -70,6 +70,29 @@ test("API client always sends a UUID requestId and unwraps successful data", asy
   assert.match(input.data.requestId, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
 });
 
+test("add-book opens only one confirmation page for the same completed lookup", () => {
+  let definition;
+  let navigationCount = 0;
+  global.Page = (value) => { definition = value; };
+  global.wx = { navigateTo() { navigationCount += 1; } };
+  delete require.cache[require.resolve(path.join(root, "miniprogram/pages/add-book/index.js"))];
+  require(path.join(root, "miniprogram/pages/add-book/index.js"));
+  const page = { _confirmationOpening: false };
+  const result = { edition: { edition_id: "isbn_1", isbn13: "9787551171489" }, cache_hit: false };
+  definition.navigateToConfirmation.call(page, result);
+  definition.navigateToConfirmation.call(page, result);
+  assert.equal(navigationCount, 1);
+});
+
+test("confirmation and detail pages map normalized price and page count", () => {
+  const confirmation = fs.readFileSync(path.join(root, "miniprogram/pages/book-confirm/index.js"), "utf8");
+  const detail = fs.readFileSync(path.join(root, "miniprogram/pages/book-detail/index.js"), "utf8");
+  assert.match(confirmation, /priceText:\s*edition\.price_text/);
+  assert.match(confirmation, /pageCount:\s*edition\.page_count_text/);
+  assert.match(detail, /priceText:\s*edition\.price_text/);
+  assert.match(detail, /pageCount:\s*edition\.page_count_text/);
+});
+
 test("all route scripts register substantive page controllers", () => {
   const routes = {
     bootstrap: ["bootstrap", "retry"],

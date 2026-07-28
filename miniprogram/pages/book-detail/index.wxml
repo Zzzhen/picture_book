@@ -6,7 +6,7 @@
     <status-banner wx:if="{{book.reviewStatus === 'pending'}}" type="info" title="手工信息正在审核" message="通常会在 1–3 天内完成，审核期间仍可在自己的绘本馆查看。" />
     <status-banner wx:if="{{book.reviewStatus === 'rejected'}}" type="error" title="手工信息需要修改" message="{{book.rejectReason || '管理员已退回，请补充或修正后重新提交。'}}" action-text="修改重提" bind:action="editManual" />
     <view class="detail__hero">
-      <book-cover size="large" src="{{book.coverUrl}}" title="{{book.title}}" status="{{book.reviewStatus}}" />
+      <book-cover size="large" src="{{book.coverUrl || ''}}" title="{{book.title || ''}}" status="{{book.reviewStatus || ''}}" />
       <view class="detail__hero-copy">
         <text class="detail__title">{{book.title || '未命名绘本'}}</text>
         <text class="detail__author">{{book.author || '作者待补充'}}</text>
@@ -16,7 +16,7 @@
     </view>
     <view class="detail__section">
       <text class="detail__section-title">孩子的喜好</text>
-      <preference-picker value="{{book.preference}}" disabled="{{!editing}}" bind:change="onPreference" />
+      <preference-picker value="{{book.preference || ''}}" disabled="{{!editing}}" bind:change="onPreference" />
     </view>
     <view class="detail__section detail__row">
       <view><text class="detail__section-title">馆藏数量</text><text class="detail__section-note">家里实际拥有的册数</text></view>
@@ -30,13 +30,15 @@
       <text wx:else class="detail__section-note">还没有加入书架</text>
     </view>
     <view class="detail__section">
-      <text-field label="家庭备注" type="textarea" value="{{book.note}}" placeholder="记录孩子喜欢的段落、共读感受或借阅去向" maxlength="{{500}}" disabled="{{!editing}}" bind:input="onNote" />
+      <text-field label="家庭备注" type="textarea" value="{{book.note || ''}}" placeholder="记录孩子喜欢的段落、共读感受或借阅去向" maxlength="{{500}}" disabled="{{!editing}}" bind:input="onNote" />
       <text class="detail__private">仅家庭绘本馆内可见</text>
     </view>
     <view class="detail__facts">
       <view><text>加入时间</text><text>{{book.createdAtText || '—'}}</text></view>
       <view><text>装帧</text><text>{{book.binding || '—'}}</text></view>
       <view><text>出版时间</text><text>{{book.publishDate || '—'}}</text></view>
+      <view><text>价格</text><text>{{book.priceText || '—'}}</text></view>
+      <view><text>页数</text><text>{{book.pageCount || '—'}}</text></view>
     </view>
     <ui-button wx:if="{{editing}}" type="danger" text="从绘本馆删除" bind:tap="askDelete" />
   </view>

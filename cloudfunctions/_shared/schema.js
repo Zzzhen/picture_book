@@ -12,9 +12,12 @@ function rejectUnknownFields(value, allowed, path = "payload") {
   if (unknown.length) throw new AppError("INVALID_ARGUMENT", `${path} 包含未声明字段：${unknown.join(", ")}`);
 }
 
-function validateEnvelope(event, specs) {
+function validateEnvelope(event, specs, options = {}) {
   if (!isPlainObject(event)) throw new AppError("INVALID_ARGUMENT", "请求格式不正确");
-  rejectUnknownFields(event, ["action", "payload", "requestId"], "request");
+  // CloudBase may append platform-owned fields to the event before the
+  // handler runs. They are not part of the application request envelope.
+  const platformFields = Array.isArray(options.platformFields) ? options.platformFields : [];
+  rejectUnknownFields(event, ["action", "payload", "requestId", ...platformFields], "request");
   if (!UUID_V4.test(event.requestId || "")) throw new AppError("INVALID_ARGUMENT", "requestId 必须是 UUID v4");
   const spec = specs[event.action];
   if (!spec) throw new AppError("ACTION_NOT_FOUND", "不支持的操作");

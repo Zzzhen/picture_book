@@ -16,7 +16,9 @@ function editionSummary(edition) {
     source: edition.source || "",
     audit_status: edition.audit_status || "pending",
     publish_date_text: edition.publish_date_text || "",
-    binding_type: edition.binding_type || ""
+    binding_type: edition.binding_type || "",
+    price_text: edition.price_text || "",
+    page_count_text: edition.page_count_text || ""
   };
 }
 

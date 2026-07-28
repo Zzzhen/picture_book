@@ -1,5 +1,8 @@
 const crypto = require("node:crypto");
+const https = require("node:https");
 const { AppError } = require("./errors");
+
+const MAX_PROVIDER_RESPONSE_BYTES = 2 * 1024 * 1024;
 
 function firstValue(source, keys, fallback = "") {
   for (const key of keys) {
@@ -76,9 +79,21 @@ function buildProviderRequest(endpoint, isbn13, appCode) {
       },
       body: new URLSearchParams({ isbn: isbn13 }).toString(),
       redirect: "manual",
-      signal: AbortSignal.timeout(timeout)
+      signal: createTimeoutSignal(timeout),
+      timeoutMs: timeout
     }
   };
+}
+
+function createTimeoutSignal(timeout) {
+  if (typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function") {
+    return AbortSignal.timeout(timeout);
+  }
+  if (typeof AbortController === "undefined") return undefined;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+  if (typeof timer.unref === "function") timer.unref();
+  return controller.signal;
 }
 
 function interpretProviderBody(isbn13, body) {
@@ -91,11 +106,58 @@ function interpretProviderBody(isbn13, body) {
   throw new AppError("PROVIDER_INVALID_RESPONSE", "图书信息服务返回异常");
 }
 
+function requestWithHttps(url, options) {
+  return new Promise((resolve, reject) => {
+    const request = https.request(url, {
+      method: options.method,
+      headers: options.headers
+    }, (response) => {
+      const chunks = [];
+      let size = 0;
+      response.on("data", (chunk) => {
+        size += chunk.length;
+        if (size > MAX_PROVIDER_RESPONSE_BYTES) {
+          const error = new Error("ISBN provider response exceeded size limit");
+          error.code = "ERR_RESPONSE_TOO_LARGE";
+          response.destroy(error);
+          return;
+        }
+        chunks.push(chunk);
+      });
+      response.on("end", () => {
+        const status = response.statusCode || 0;
+        const body = Buffer.concat(chunks).toString("utf8");
+        resolve({
+          status,
+          ok: status >= 200 && status < 300,
+          text: async () => body
+        });
+      });
+      response.on("error", reject);
+    });
+    request.setTimeout(options.timeoutMs || 5000, () => {
+      const error = new Error("ISBN provider request timed out");
+      error.code = "ETIMEDOUT";
+      request.destroy(error);
+    });
+    request.on("error", reject);
+    if (options.body) request.write(options.body);
+    request.end();
+  });
+}
+
 async function requestProvider(url, options) {
   let response;
   try {
-    response = await fetch(url, options);
-  } catch (_) {
+    response = typeof fetch === "function"
+      ? await fetch(url, options)
+      : await requestWithHttps(url, options);
+  } catch (error) {
+    console.error("isbn provider transport failed", {
+      name: error && error.name,
+      code: error && error.code,
+      message: error && error.message
+    });
     throw new AppError("ISBN_PROVIDER_UNAVAILABLE", "图书信息服务暂时不可用", null, true);
   }
   if (response.status >= 300 && response.status < 400) {
@@ -105,6 +167,7 @@ async function requestProvider(url, options) {
     throw new AppError("ISBN_PROVIDER_AUTH_ERROR", "图书信息服务鉴权失败");
   }
   if (response.status === 429 || response.status >= 500) {
+    console.error("isbn provider returned unavailable status", { status: response.status });
     throw new AppError("ISBN_PROVIDER_UNAVAILABLE", "图书信息服务暂时不可用", null, true);
   }
   if (!response.ok) throw new AppError("PROVIDER_INVALID_RESPONSE", "图书信息服务返回异常");
@@ -139,6 +202,8 @@ module.exports = {
   normalizeProviderResponse,
   validateProviderEndpoint,
   buildProviderRequest,
+  createTimeoutSignal,
+  requestWithHttps,
   interpretProviderBody,
   queryAliyunIsbn
 };

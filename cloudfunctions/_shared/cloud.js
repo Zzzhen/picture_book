@@ -197,7 +197,9 @@ async function runIdempotent(ctx, action, requestId, callback) {
 
 function createMain(serviceName, handlers, options = {}) {
   return async (event) => handle(event, async () => {
-    const envelope = validateEnvelope(event, contracts[serviceName]);
+    const envelope = validateEnvelope(event, contracts[serviceName], {
+      platformFields: ["tcbContext", "userInfo"]
+    });
     const ctx = await createContext(serviceName);
     ctx.requestId = envelope.requestId;
     let user = await loadCurrentUser(ctx, {
