@@ -25,7 +25,7 @@
   border: 0;
 }
 
-.stepper__button[disabled] {
+.stepper__button--disabled {
   color: var(--color-text-tertiary);
 }
 

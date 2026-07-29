@@ -97,3 +97,13 @@ test("brand tokens and responsive book grid are declared", () => {
   assert.match(library, /grid-template-columns:\s*repeat\(3,\s*1fr\)/);
   assert.match(library, /@media\s*\(max-width:\s*327px\)/);
 });
+
+test("component styles avoid unsupported attribute selectors", () => {
+  for (const component of components) {
+    const stylesheet = fs.readFileSync(
+      path.join(root, `miniprogram/components/${component}/index.wxss`),
+      "utf8"
+    );
+    assert.doesNotMatch(stylesheet, /\[[^\]]+\]/, component);
+  }
+});

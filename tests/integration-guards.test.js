@@ -74,6 +74,19 @@ test("Aliyun provider maps documented business codes before normalization", () =
   );
 });
 
+test("edition summaries expose normalized price and page count", () => {
+  const { editionSummary } = require(path.join(root, "cloudfunctions/_shared/serializers"));
+  const summary = editionSummary({
+    _id: "isbn_9787551171489",
+    isbn13: "9787551171489",
+    title: "小自然",
+    price_text: "88.00",
+    page_count_text: "251"
+  });
+  assert.equal(summary.price_text, "88.00");
+  assert.equal(summary.page_count_text, "251");
+});
+
 test("non-retryable idempotency failures cannot be executed again", () => {
   const {
     idempotencyDisposition,

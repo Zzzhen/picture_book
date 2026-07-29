@@ -22,7 +22,14 @@ async function handle(event, callback) {
   try {
     return success(await callback(), requestId);
   } catch (error) {
-    if (!(error instanceof AppError)) console.error("cloud function error", { requestId, name: error.name });
+    if (!(error instanceof AppError)) {
+      console.error("cloud function error", {
+        requestId,
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      });
+    }
     return failure(error, requestId);
   }
 }

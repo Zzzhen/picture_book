@@ -22,8 +22,6 @@
     "disableUseStrict": false,
     "useCompilerPlugins": false,
     "condition": false,
-    "swc": false,
-    "disableSWC": true,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
@@ -35,6 +33,5 @@
     "ignore": [],
     "include": []
   },
-  "editorSetting": {},
-  "cloudfunctionTemplateRoot": "cloudfunctionTemplate/"
+  "editorSetting": {}
 }

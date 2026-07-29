@@ -20,11 +20,6 @@
     "backgroundColor": "#F7F3EA",
     "backgroundTextStyle": "dark"
   },
-  "permission": {
-    "scope.camera": {
-      "desc": "用于扫描绘本封底的 ISBN 条码"
-    }
-  },
   "tabBar": {
     "custom": true,
     "color": "#687168",
@@ -46,6 +41,5 @@
       }
     ]
   },
-  "sitemapLocation": "sitemap.json",
-  "lazyCodeLoading": "requiredComponents"
+  "sitemapLocation": "sitemap.json"
 }

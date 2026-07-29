@@ -35,6 +35,26 @@ test("strict request validation rejects bad UUIDs, unknown actions and undeclare
   );
 });
 
+test("cloud platform context fields are allowed only when explicitly marked as platform fields", () => {
+  const { validateEnvelope } = shared("schema");
+  const requestId = crypto.randomUUID();
+  assert.equal(
+    validateEnvelope(
+      { action: "read", payload: {}, requestId, tcbContext: {}, userInfo: {} },
+      { read: { fields: [], write: false } },
+      { platformFields: ["tcbContext", "userInfo"] }
+    ).requestId,
+    requestId
+  );
+  assert.throws(
+    () => validateEnvelope(
+      { action: "read", payload: {}, requestId, tcbContext: {} },
+      { read: { fields: [], write: false } }
+    ),
+    (error) => error.code === "INVALID_ARGUMENT"
+  );
+});
+
 test("signed cursors round-trip and cannot be reused with changed filters", () => {
   const { encodeCursor, decodeCursor } = shared("cursor");
   const secret = "cursor-test-secret";

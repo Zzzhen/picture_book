@@ -6,18 +6,20 @@ function mapDetail(data) {
   const edition = item.edition || {};
   return {
     userBookId: item.user_book_id,
-    editionId: edition.edition_id,
-    title: edition.title,
-    author: edition.contributors_text,
-    publisher: edition.publisher,
+    editionId: edition.edition_id || "",
+    title: edition.title || "",
+    author: edition.contributors_text || "",
+    publisher: edition.publisher || "",
     coverUrl: edition.cover_file_id || "",
-    isbn13: edition.isbn13,
-    binding: edition.binding_type,
-    publishDate: edition.publish_date_text,
-    reviewStatus: edition.audit_status,
-    rejectReason: data.manual_submission && data.manual_submission.rejection_reason,
-    submissionId: data.manual_submission && data.manual_submission.submission_id,
-    preference: item.preference,
+    isbn13: edition.isbn13 || "",
+    binding: edition.binding_type || "",
+    publishDate: edition.publish_date_text || "",
+    priceText: edition.price_text || "",
+    pageCount: edition.page_count_text || "",
+    reviewStatus: edition.audit_status || "",
+    rejectReason: data.manual_submission && data.manual_submission.rejection_reason || "",
+    submissionId: data.manual_submission && data.manual_submission.submission_id || "",
+    preference: item.preference || "unmarked",
     quantity: item.quantity,
     note: data.private_note || "",
     shelves: data.bookshelves || [],
@@ -26,7 +28,19 @@ function mapDetail(data) {
 }
 
 Page({
-  data: { id: "", book: {}, editing: false, deleteVisible: false, saving: false },
+  data: {
+    id: "",
+    book: {
+      title: "",
+      coverUrl: "",
+      reviewStatus: "",
+      preference: "unmarked",
+      note: ""
+    },
+    editing: false,
+    deleteVisible: false,
+    saving: false
+  },
 
   onLoad(query) {
     this.setData({ id: query.id || "" });
