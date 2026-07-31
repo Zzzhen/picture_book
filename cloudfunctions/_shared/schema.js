@@ -1,6 +1,7 @@
 const { AppError } = require("./errors");
 
 const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const NIL_UUID = /^0{8}-0{4}-4000-8000-0{12}$/i;
 
 function isPlainObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -18,7 +19,9 @@ function validateEnvelope(event, specs, options = {}) {
   // handler runs. They are not part of the application request envelope.
   const platformFields = Array.isArray(options.platformFields) ? options.platformFields : [];
   rejectUnknownFields(event, ["action", "payload", "requestId", ...platformFields], "request");
-  if (!UUID_V4.test(event.requestId || "")) throw new AppError("INVALID_ARGUMENT", "requestId 必须是 UUID v4");
+  if (!UUID_V4.test(event.requestId || "") || NIL_UUID.test(event.requestId)) {
+    throw new AppError("INVALID_ARGUMENT", "requestId 必须是非空的 UUID v4");
+  }
   const spec = specs[event.action];
   if (!spec) throw new AppError("ACTION_NOT_FOUND", "不支持的操作");
   const payload = event.payload === undefined ? {} : event.payload;

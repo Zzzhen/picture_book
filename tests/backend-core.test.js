@@ -33,6 +33,10 @@ test("strict request validation rejects bad UUIDs, unknown actions and undeclare
     () => validateEnvelope({ action: "read", payload: {}, requestId: "not-a-uuid" }, specs),
     (error) => error.code === "INVALID_ARGUMENT"
   );
+  assert.throws(
+    () => validateEnvelope({ action: "read", payload: {}, requestId: "00000000-0000-4000-8000-000000000000" }, specs),
+    (error) => error.code === "INVALID_ARGUMENT"
+  );
 });
 
 test("cloud platform context fields are allowed only when explicitly marked as platform fields", () => {

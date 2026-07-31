@@ -70,6 +70,19 @@ test("API client always sends a UUID requestId and unwraps successful data", asy
   assert.match(input.data.requestId, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
 });
 
+test("API client consumes the WeChat getRandomValues result instead of replaying an all-zero requestId", () => {
+  global.wx = {
+    getRandomValues({ length }) {
+      return { randomValues: Uint8Array.from({ length }, (_, index) => index + 1) };
+    }
+  };
+  delete require.cache[require.resolve(path.join(root, "miniprogram/services/api"))];
+  const { createRequestId } = require(path.join(root, "miniprogram/services/api"));
+  const requestId = createRequestId();
+  assert.match(requestId, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+  assert.notEqual(requestId, "00000000-0000-4000-8000-000000000000");
+});
+
 test("add-book opens only one confirmation page for the same completed lookup", () => {
   let definition;
   let navigationCount = 0;
