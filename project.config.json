@@ -1,7 +1,7 @@
 {
   "appid": "wx1fcff5e113f7cc1a",
   "projectname": "family-picture-book-library",
-"description": "书芽芽｜家庭数字绘本馆 V1-Core",
+"description": "书芽芽｜轻松整理与分享 V1-Core",
   "miniprogramRoot": "miniprogram/",
   "cloudfunctionRoot": "dist/cloudfunctions/",
   "compileType": "miniprogram",
