@@ -1,0 +1,72 @@
+page { background: var(--color-background-paper); }
+
+.book-picker {
+  min-height: 100vh;
+  padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
+}
+
+.book-picker__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 34rpx 22rpx;
+}
+
+.book-picker__copy { min-width: 0; }
+.book-picker__eyebrow,
+.book-picker__count { display: block; }
+
+.book-picker__eyebrow {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 32rpx;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.book-picker__count {
+  margin-top: 8rpx;
+  color: var(--color-accent-terracotta);
+  font-size: 23rpx;
+  font-weight: 650;
+}
+
+.book-picker__select-all {
+  flex: 0 0 auto;
+  margin-left: 24rpx;
+  color: var(--color-brand-forest);
+  font-size: 25rpx;
+  font-weight: 650;
+}
+
+.book-picker__search { padding: 0 32rpx 12rpx; }
+.book-picker__body { padding: 24rpx 32rpx 36rpx; }
+
+.book-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 38rpx 22rpx;
+}
+
+.book-picker__grid book-card {
+  display: block;
+  min-width: 0;
+}
+
+.book-picker__actions {
+  box-sizing: border-box;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 40;
+  padding: 20rpx 32rpx calc(24rpx + env(safe-area-inset-bottom));
+  border-top: 1rpx solid var(--color-border-default);
+  background: var(--color-surface-primary);
+  box-shadow: 0 -8rpx 24rpx rgba(44, 50, 42, 0.08);
+}
+
+@media (max-width: 327px) {
+  .book-picker__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

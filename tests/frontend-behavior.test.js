@@ -153,6 +153,17 @@ test("bookshelf editor actions stay visible as a floating bottom bar", () => {
   assert.match(styles, /\.shelf-edit\s*\{[\s\S]*?padding-bottom:\s*calc\(\d+rpx\s*\+\s*env\(safe-area-inset-bottom\)\)/);
 });
 
+test("bookshelf editor changes metadata only and never edits book relations", () => {
+  const script = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelf-edit/index.js"), "utf8");
+  const template = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelf-edit/index.wxml"), "utf8");
+  assert.doesNotMatch(script, /listBooks|listShelfBooks|addBooks|removeBooks|toggleBook|toggleAll/);
+  assert.doesNotMatch(template, /search-field|book-list-item|选择绘本|全选/);
+  assert.match(template, /书架名称/);
+  assert.match(template, /说明（可选）/);
+  assert.match(template, /bind:tap="save"/);
+  assert.match(template, /bind:tap="askDelete"/);
+});
+
 test("bookshelf detail keeps edit action below the header", () => {
   const source = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelf-detail/index.wxml"), "utf8");
   assert.doesNotMatch(source, /slot="action"/);
@@ -168,6 +179,43 @@ test("bookshelf detail constrains its book grid and card hosts", () => {
   const styles = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelf-detail/index.wxss"), "utf8");
   assert.match(styles, /\.shelf-detail__grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\);/);
   assert.match(styles, /\.shelf-detail__grid\s+book-card\s*\{[\s\S]*?display:\s*block;[\s\S]*?min-width:\s*0;/);
+});
+
+test("bookshelf detail supports full-shelf selection, removal and shelf-only pinning", () => {
+  const script = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelf-detail/index.js"), "utf8");
+  const template = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelf-detail/index.wxml"), "utf8");
+  const cardStyles = fs.readFileSync(path.join(root, "miniprogram/components/book-card/index.wxss"), "utf8");
+  assert.match(script, /loadAllShelfBooks/);
+  assert.match(script, /items\.length < 500/);
+  assert.match(script, /processInChunks/);
+  assert.match(script, /"removeBooks"/);
+  assert.match(script, /"pinBooks"/);
+  assert.match(template, /选择书籍/);
+  assert.match(template, /已选择.*本书籍/);
+  assert.match(template, /全选/);
+  assert.match(template, /取消/);
+  assert.match(template, /移出书架/);
+  assert.match(template, /置顶/);
+  assert.match(cardStyles, /\.book-card--selected[\s\S]*?box-shadow/);
+});
+
+test("bookshelf book picker filters existing relations and adds selections in chunks", () => {
+  const detailScript = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelf-detail/index.js"), "utf8");
+  const script = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelf-book-picker/index.js"), "utf8");
+  const template = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelf-book-picker/index.wxml"), "utf8");
+  assert.match(detailScript, /pages\/bookshelf-book-picker\/index\?id=/);
+  assert.match(script, /listBooks/);
+  assert.match(script, /listShelfBooks/);
+  assert.match(script, /processInChunks/);
+  assert.match(script, /"addBooks"/);
+  assert.match(script, /toggleAll/);
+  assert.match(script, /if \(!shelf\) throw new Error/);
+  assert.match(script, /this\.setData\(\{ presetIds: selectedIds \}\);[\s\S]*await this\.loadPicker\(\)/);
+  assert.match(template, /添加绘本/);
+  assert.match(template, /search-field/);
+  assert.match(template, /全选/);
+  assert.match(template, /加入书架/);
+  assert.match(template, /都已加入这个书架/);
 });
 
 test("continuous scanning cannot overlap and canceling the camera keeps the session open", () => {
@@ -187,8 +235,9 @@ test("all route scripts register substantive page controllers", () => {
     "book-confirm": ["confirmAdd", "onQuantity"],
     "book-detail": ["loadBook", "onPreference", "deleteBook"],
     bookshelves: ["loadShelves", "createShelf"],
-    "bookshelf-detail": ["loadShelf", "editShelf"],
-    "bookshelf-edit": ["loadEditor", "save", "toggleBook"],
+    "bookshelf-detail": ["loadShelf", "editShelf", "startSelecting", "toggleAll", "removeSelected", "pinSelected"],
+    "bookshelf-edit": ["loadEditor", "save"],
+    "bookshelf-book-picker": ["loadPicker", "onSearch", "toggleBook", "toggleAll", "save"],
     "manual-book-edit": ["loadSubmission", "submit", "chooseCover"],
     profile: ["loadProfile", "editProfile", "requestDeletion"],
     "profile-edit": ["loadProfile", "save", "onGender"],

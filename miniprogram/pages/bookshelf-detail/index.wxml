@@ -1,21 +1,43 @@
-<view class="shelf-detail">
+<view class="shelf-detail {{mode === 'selecting' ? 'shelf-detail--selecting' : ''}}">
   <app-header title="{{shelf.name || '书架'}}" back="{{true}}"></app-header>
- 
-  <view class="shelf-detail__head">
+
+  <view wx:if="{{mode === 'normal'}}" class="shelf-detail__head">
     <text class="shelf-detail__name">{{shelf.name || '未命名书架'}}</text>
     <text wx:if="{{shelf.description}}" class="shelf-detail__description">{{shelf.description}}</text>
     <text class="shelf-detail__count">{{books.length || 0}} 本绘本</text>
     <view class="shelf-detail__toolbar">
-      <text class="shelf-detail__edit" bindtap="editShelf">编辑</text>
+      <text class="shelf-detail__action" bindtap="editShelf">编辑</text>
+      <view wx:if="{{books.length}}" class="shelf-detail__action-divider"></view>
+      <text wx:if="{{books.length}}" class="shelf-detail__action" bindtap="startSelecting">选择</text>
     </view>
   </view>
+
+  <view wx:else class="shelf-detail__selection-head">
+    <text class="shelf-detail__selection-action" bindtap="toggleAll">{{allSelected ? '取消全选' : '全选'}}</text>
+    <view class="shelf-detail__selection-copy">
+      <text class="shelf-detail__selection-title">选择书籍</text>
+      <text class="shelf-detail__selection-count">已选择 {{selectedCount}} 本书籍</text>
+    </view>
+    <text class="shelf-detail__selection-action shelf-detail__selection-action--right" bindtap="cancelSelecting">取消</text>
+  </view>
+
   <view class="shelf-detail__body">
-    <empty-state wx:if="{{state === 'empty'}}" title="这个书架还空着" description="从绘本馆选择绘本放进来；一本书可以同时属于多个书架。" primary-text="选择绘本" bind:primary="editShelf" />
+    <skeleton wx:if="{{state === 'loading'}}" type="grid" count="{{6}}" />
+    <empty-state wx:elif="{{state === 'error'}}" type="offline" title="书架加载失败" description="{{errorMessage || '请稍后重新加载'}}" primary-text="重新加载" bind:primary="reload" />
+    <empty-state wx:elif="{{state === 'empty'}}" title="这个书架还空着" description="从绘本馆选择绘本放进来；一本书可以同时属于多个书架。" primary-text="选择绘本" bind:primary="addBooks" />
     <view wx:else class="shelf-detail__grid">
       <block wx:for="{{books}}" wx:key="_id">
-        <book-card book="{{item}}" bind:open="openBook" />
+        <book-card book="{{item}}" manage="{{mode === 'selecting'}}" selected="{{item.selected}}" bind:open="openBook" bind:select="toggleBook" />
       </block>
     </view>
   </view>
-  <button wx:if="{{state !== 'empty'}}" class="shelf-detail__add" bindtap="editShelf">＋ 添加绘本</button>
+
+  <button wx:if="{{state === 'content' && mode === 'normal'}}" class="shelf-detail__add" bindtap="addBooks">＋ 添加绘本</button>
+
+  <view wx:if="{{mode === 'selecting'}}" class="shelf-detail__batch-actions">
+    <ui-button type="danger" text="移出书架" loading="{{operating === 'removing'}}" disabled="{{!selectedCount || operating}}" bind:tap="askRemove" />
+    <ui-button text="置顶" loading="{{operating === 'pinning'}}" disabled="{{!selectedCount || operating}}" bind:tap="pinSelected" />
+  </view>
+
+  <confirm-dialog visible="{{removeVisible}}" danger="{{true}}" title="移出所选书籍？" message="只会从当前书架移除，不会删除绘本馆里的藏书。" confirm-text="确认移出" bind:cancel="closeRemove" bind:confirm="removeSelected" />
 </view>

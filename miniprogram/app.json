@@ -9,6 +9,7 @@
     "pages/bookshelves/index",
     "pages/bookshelf-detail/index",
     "pages/bookshelf-edit/index",
+    "pages/bookshelf-book-picker/index",
     "pages/manual-book-edit/index",
     "pages/profile/index",
     "pages/profile-edit/index",

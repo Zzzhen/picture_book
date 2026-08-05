@@ -36,7 +36,8 @@ module.exports = {
     listShelfBooks: read(["bookshelf_id", "cursor", "limit"]),
     addBooks: write(["bookshelf_id", "user_book_ids"]),
     removeBooks: write(["bookshelf_id", "user_book_ids"]),
-    reorderBooks: write(["bookshelf_id", "items"])
+    reorderBooks: write(["bookshelf_id", "items"]),
+    pinBooks: write(["bookshelf_id", "user_book_ids"])
   },
   eventService: {
     trackBatch: write(["events"])

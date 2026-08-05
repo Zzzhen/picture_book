@@ -184,6 +184,17 @@ test("bookshelf limits and relation counts are enforced by cloud code", () => {
   assert.match(librarySource, /bookshelf_books/);
 });
 
+test("bookshelf pinning is shelf-scoped, ownership checked and supports 500 unique IDs", () => {
+  const source = fs.readFileSync(path.join(root, "cloudfunctions/bookshelfService/index.js"), "utf8");
+  assert.match(source, /async function pinBooks/);
+  assert.match(source, /ownedShelf\(ctx, shelfId\)/);
+  assert.match(source, /stringArray\((?:payload\.user_book_ids|inputIds),[^\n]*1, 500\)/);
+  assert.match(source, /user_book_ids 不能重复/);
+  assert.match(source, /buildPinPlan/);
+  assert.match(source, /collection\("bookshelf_books"\)/);
+  assert.doesNotMatch(source.match(/async function pinBooks[\s\S]*?\n}/)?.[0] || "", /custom_sort/);
+});
+
 test("administrator cover retry performs a real secured transfer", () => {
   const source = fs.readFileSync(path.join(root, "cloudfunctions/adminService/index.js"), "utf8");
   assert.match(source, /transferCover/);

@@ -1,10 +1,11 @@
-const { createMain, getById, queryAll, documentData } = require("../_shared/cloud");
+const { createMain, getById, queryAll, queryAllById, documentData } = require("../_shared/cloud");
 const { AppError } = require("../_shared/errors");
 const { text, integer, stringArray, rejectUnknownFields } = require("../_shared/schema");
 const { randomId, deterministicId } = require("../_shared/identity");
 const { shelfSummary, userBookSummary } = require("../_shared/serializers");
 const { encodeCursor, decodeCursor } = require("../_shared/cursor");
 const { drainBatches } = require("../_shared/deletion");
+const { buildPinPlan } = require("../_shared/bookshelf-order");
 
 async function ownedShelf(ctx, id) {
   const shelf = await getById(ctx.db.collection("bookshelves"), id);
@@ -207,6 +208,32 @@ async function reorderBooks(ctx, payload) {
   return { updated_count: items.length };
 }
 
+async function pinBooks(ctx, payload) {
+  const shelfId = text(payload.bookshelf_id, "bookshelf_id", { min: 1, max: 100 });
+  await ownedShelf(ctx, shelfId);
+  const inputIds = payload.user_book_ids;
+  const ids = stringArray(inputIds, "user_book_ids", 1, 500);
+  if (ids.length !== inputIds.length) throw new AppError("INVALID_ARGUMENT", "user_book_ids 不能重复");
+
+  const relations = await queryAllById(ctx, "bookshelf_books", {
+    owner_id: ctx.userId,
+    bookshelf_id: shelfId
+  }, 500);
+  const plan = buildPinPlan(relations, ids);
+
+  for (let index = 0; index < plan.updates.length; index += 50) {
+    const batch = plan.updates.slice(index, index + 50);
+    await ctx.db.runTransaction(async (transaction) => {
+      for (const item of batch) {
+        await transaction.collection("bookshelf_books").doc(item.relation_id).update({
+          data: { sort_order: item.sort_order }
+        });
+      }
+    });
+  }
+  return { updated_count: plan.updates.length };
+}
+
 exports.main = createMain("bookshelfService", {
   listShelves,
   createShelf,
@@ -216,5 +243,6 @@ exports.main = createMain("bookshelfService", {
   listShelfBooks,
   addBooks,
   removeBooks,
-  reorderBooks
+  reorderBooks,
+  pinBooks
 });

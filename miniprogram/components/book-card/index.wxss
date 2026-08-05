@@ -10,6 +10,8 @@
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
+  border-radius: var(--radius-medium);
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
 .book-card__cover book-cover {
@@ -20,8 +22,9 @@
 .book-card__check {
   display: flex;
   position: absolute;
-  top: 12rpx;
-  left: 12rpx;
+  right: 12rpx;
+  bottom: 12rpx;
+  z-index: 2;
   align-items: center;
   justify-content: center;
   width: 42rpx;
@@ -34,7 +37,21 @@
 }
 
 .book-card__check--selected {
-  background: var(--color-forest);
+  background: var(--color-brand-forest);
+}
+
+.book-card--selected .book-card__cover {
+  transform: translateY(-2rpx);
+  box-shadow: 0 0 0 5rpx var(--color-brand-forest), 0 12rpx 24rpx rgba(35, 78, 58, 0.18);
+}
+
+.book-card--selected .book-card__cover::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: var(--radius-medium);
+  background: rgba(35, 78, 58, 0.12);
+  content: "";
 }
 
 .book-card__title,

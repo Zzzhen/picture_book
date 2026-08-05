@@ -9,7 +9,7 @@ const expected = {
   userService: ["bootstrap", "getProfile", "completeOnboarding", "updateProfile", "cancelAccount", "restartDeletedAccount"],
   bookService: ["lookupByIsbn", "getLookupStatus", "searchCachedBooks", "getEditionDetail", "createManualBook", "updateManualSubmission", "resubmitManualBook"],
   libraryService: ["listBooks", "addBook", "getUserBook", "updateBook", "removeBook", "batchUpdate"],
-  bookshelfService: ["listShelves", "createShelf", "updateShelf", "deleteShelf", "reorderShelves", "listShelfBooks", "addBooks", "removeBooks", "reorderBooks"],
+  bookshelfService: ["listShelves", "createShelf", "updateShelf", "deleteShelf", "reorderShelves", "listShelfBooks", "addBooks", "removeBooks", "reorderBooks", "pinBooks"],
   eventService: ["trackBatch"],
   adminService: ["dashboard", "listUsers", "setUserStatus", "listPendingBooks", "reviewManualBook", "updateEdition", "retryCoverTransfer"]
 };

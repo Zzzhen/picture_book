@@ -1,0 +1,31 @@
+<view class="book-picker">
+  <app-header title="添加绘本" back="{{true}}"></app-header>
+
+  <view class="book-picker__head">
+    <view class="book-picker__copy">
+      <text class="book-picker__eyebrow">加入“{{shelf.name || '这个书架'}}”</text>
+      <text class="book-picker__count">已选择 {{selectedCount}} 本绘本</text>
+    </view>
+    <text wx:if="{{displayBooks.length}}" class="book-picker__select-all" bindtap="toggleAll">{{allSelected ? '取消全选' : '全选'}}</text>
+  </view>
+
+  <view class="book-picker__search">
+    <search-field value="{{keyword}}" placeholder="按书名、作者或 ISBN 搜索" disabled="{{saving}}" bind:input="onSearch" bind:confirm="onSearch" bind:clear="clearSearch" />
+  </view>
+
+  <view class="book-picker__body">
+    <skeleton wx:if="{{state === 'loading'}}" type="grid" count="{{6}}" />
+    <empty-state wx:elif="{{state === 'error'}}" type="offline" title="馆藏加载失败" description="{{errorMessage || '请稍后重新加载'}}" primary-text="重新加载" bind:primary="reload" />
+    <empty-state wx:elif="{{state === 'empty'}}" title="都已加入这个书架" description="绘本馆里的藏书都已加入这个书架，可以先去录入新绘本。" />
+    <empty-state wx:elif="{{state === 'search-empty'}}" type="search" title="没有找到可添加的绘本" description="换个书名、作者或 ISBN 试试。" />
+    <view wx:else class="book-picker__grid">
+      <block wx:for="{{displayBooks}}" wx:key="_id">
+        <book-card book="{{item}}" manage="{{true}}" selected="{{item.selected}}" bind:select="toggleBook" />
+      </block>
+    </view>
+  </view>
+
+  <view class="book-picker__actions">
+    <ui-button text="加入书架（{{selectedCount}}）" loading="{{saving}}" disabled="{{!selectedCount || saving}}" bind:tap="save" />
+  </view>
+</view>

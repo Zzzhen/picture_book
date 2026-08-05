@@ -161,3 +161,37 @@ test("ISBN conflict migration preserves preference, notes and earliest creation 
   assert.match(merged.private_note, /常在睡前读[\s\S]*来自手工录入[\s\S]*孩子会跟读/);
   assert.equal(merged.created_at.toISOString(), "2024-01-02T00:00:00.000Z");
 });
+
+test("bookshelf pin plan keeps server order and normalizes near the lower bound", () => {
+  const { buildPinPlan } = shared("bookshelf-order");
+  const relations = [
+    { _id: "rel_a", user_book_id: "book_a", sort_order: 0 },
+    { _id: "rel_b", user_book_id: "book_b", sort_order: 1 },
+    { _id: "rel_c", user_book_id: "book_c", sort_order: 2 }
+  ];
+
+  assert.deepEqual(buildPinPlan(relations, ["book_c", "book_b"]), {
+    renormalized: false,
+    updates: [
+      { relation_id: "rel_b", sort_order: -2 },
+      { relation_id: "rel_c", sort_order: -1 }
+    ]
+  });
+  assert.deepEqual(buildPinPlan(relations, ["book_c"]), {
+    renormalized: false,
+    updates: [{ relation_id: "rel_c", sort_order: -1 }]
+  });
+
+  const nearLowerBound = relations.map((relation, index) => ({ ...relation, sort_order: -999999 + index }));
+  assert.deepEqual(buildPinPlan(nearLowerBound, ["book_c"]), {
+    renormalized: true,
+    updates: [
+      { relation_id: "rel_c", sort_order: 0 },
+      { relation_id: "rel_a", sort_order: 1 },
+      { relation_id: "rel_b", sort_order: 2 }
+    ]
+  });
+
+  assert.throws(() => buildPinPlan(relations, ["book_b", "book_b"]), (error) => error.code === "INVALID_ARGUMENT");
+  assert.throws(() => buildPinPlan(relations, ["book_missing"]), (error) => error.code === "RELATION_NOT_FOUND");
+});
