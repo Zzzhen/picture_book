@@ -94,7 +94,7 @@ test("brand tokens and responsive book grid are declared", () => {
   const library = fs.readFileSync(libraryPath, "utf8");
   assert.match(tokens, /--color-brand-forest:\s*#315a45/i);
   assert.match(tokens, /--color-accent-terracotta:\s*#c96e50/i);
-  assert.match(library, /grid-template-columns:\s*repeat\(3,\s*1fr\)/);
+  assert.match(library, /grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/);
   assert.match(library, /@media\s*\(max-width:\s*327px\)/);
 });
 

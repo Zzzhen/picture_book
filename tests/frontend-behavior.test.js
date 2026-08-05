@@ -147,10 +147,35 @@ test("bookshelf editor keeps save action below the form instead of in the header
   assert.match(source, /class="shelf-edit__actions"[\s\S]*bind:tap="save"/);
 });
 
+test("bookshelf editor actions stay visible as a floating bottom bar", () => {
+  const styles = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelf-edit/index.wxss"), "utf8");
+  assert.match(styles, /\.shelf-edit__actions\s*\{[\s\S]*?position:\s*fixed;[\s\S]*?bottom:\s*0;[\s\S]*?z-index:/);
+  assert.match(styles, /\.shelf-edit\s*\{[\s\S]*?padding-bottom:\s*calc\(\d+rpx\s*\+\s*env\(safe-area-inset-bottom\)\)/);
+});
+
 test("bookshelf detail keeps edit action below the header", () => {
   const source = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelf-detail/index.wxml"), "utf8");
   assert.doesNotMatch(source, /slot="action"/);
   assert.match(source, /class="shelf-detail__toolbar"[\s\S]*bindtap="editShelf"/);
+});
+
+test("library uses a three-column book grid at normal phone widths", () => {
+  const styles = fs.readFileSync(path.join(root, "miniprogram/pages/library/index.wxss"), "utf8");
+  assert.match(styles, /\.library__grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\);/);
+});
+
+test("bookshelf detail constrains its book grid and card hosts", () => {
+  const styles = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelf-detail/index.wxss"), "utf8");
+  assert.match(styles, /\.shelf-detail__grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\);/);
+  assert.match(styles, /\.shelf-detail__grid\s+book-card\s*\{[\s\S]*?display:\s*block;[\s\S]*?min-width:\s*0;/);
+});
+
+test("continuous scanning cannot overlap and canceling the camera keeps the session open", () => {
+  const source = fs.readFileSync(path.join(root, "miniprogram/pages/add-book/index.js"), "utf8");
+  assert.match(source, /async scanContinuous\(\)\s*\{\s*if \(this\.data\.scanState === "scanning"\) return;/);
+  assert.match(source, /if \(String\(error\.errMsg \|\| ""\)\.includes\("cancel"\)\) \{\s*this\.setData\(\{ scanState: "idle", scanError: "" \}\);/);
+  assert.doesNotMatch(source, /includes\("cancel"\)\) \{\s*this\.finishContinuous\(\);/);
+  assert.match(source, /scanState: saved\.scanState === "scanning" \? "idle" : saved\.scanState \|\| "idle"/);
 });
 
 test("all route scripts register substantive page controllers", () => {

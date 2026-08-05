@@ -70,7 +70,7 @@ Page({
       this.setData({
         scanSessionId: saved.scanSessionId,
         session: saved.session,
-        scanState: saved.scanState || "idle",
+        scanState: saved.scanState === "scanning" ? "idle" : saved.scanState || "idle",
         lastBook: saved.lastBook || {},
         pendingLookup: saved.pendingLookup || null,
         failedItems: saved.failedItems || []
@@ -212,6 +212,7 @@ Page({
   },
 
   async scanContinuous() {
+    if (this.data.scanState === "scanning") return;
     if (this.data.session.total >= 100) {
       wx.showToast({ title: "本轮已达到 100 次上限", icon: "none" });
       this.finishContinuous();
@@ -267,7 +268,8 @@ Page({
       },
       fail: (error) => {
         if (String(error.errMsg || "").includes("cancel")) {
-          this.finishContinuous();
+          this.setData({ scanState: "idle", scanError: "" });
+          this.persistSession();
           return;
         }
         const session = { ...this.data.session, total: this.data.session.total + 1 };

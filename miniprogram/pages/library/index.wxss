@@ -86,7 +86,7 @@ page {
 
 .library__grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 38rpx 22rpx;
 }
 
@@ -149,7 +149,7 @@ page {
 
 @media (max-width: 327px) {
   .library__grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 34rpx 26rpx;
   }
 
