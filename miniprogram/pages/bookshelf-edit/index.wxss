@@ -7,15 +7,10 @@ page {
   padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
 }
 
-.shelf-edit__save,
 .shelf-edit__select-all {
   color: var(--color-brand-forest);
   font-size: 24rpx;
   font-weight: 650;
-}
-
-.shelf-edit__save--disabled {
-  opacity: 0.48;
 }
 
 .shelf-edit__form {
@@ -59,7 +54,11 @@ page {
   border-top: 1rpx solid var(--color-border-default);
 }
 
-.shelf-edit > ui-button {
+.shelf-edit__actions {
+  padding: 10rpx 34rpx calc(34rpx + env(safe-area-inset-bottom));
+}
+
+.shelf-edit__actions ui-button {
   display: block;
-  margin: 10rpx 34rpx 0;
+  margin: 10rpx 0 0;
 }

@@ -106,6 +106,53 @@ test("confirmation and detail pages map normalized price and page count", () => 
   assert.match(detail, /pageCount:\s*edition\.page_count_text/);
 });
 
+test("library cover mapping resolves cloud file IDs into temporary image URLs", async () => {
+  global.wx = {
+    cloud: {
+      getTempFileURL({ fileList, success }) {
+        success({ fileList: [{ fileID: fileList[0], tempFileURL: "https://tmp.example/cover.jpg" }] });
+      }
+    }
+  };
+  delete require.cache[require.resolve(path.join(root, "miniprogram/utils/cloud-file"))];
+  const { getTempFileUrl } = require(path.join(root, "miniprogram/utils/cloud-file"));
+  assert.equal(await getTempFileUrl("cloud://library/edition-cover.jpg"), "https://tmp.example/cover.jpg");
+  assert.equal(await getTempFileUrl("https://cdn.example/cover.jpg"), "https://cdn.example/cover.jpg");
+});
+
+test("book detail stays editable and saves without a header edit mode", () => {
+  const source = fs.readFileSync(path.join(root, "miniprogram/pages/book-detail/index.wxml"), "utf8");
+  assert.doesNotMatch(source, /slot="action"/);
+  assert.doesNotMatch(source, /disabled="\{\{!editing\}\}"/);
+  assert.match(source, /bind:tap="saveBook"/);
+  const controller = fs.readFileSync(path.join(root, "miniprogram/pages/book-detail/index.js"), "utf8");
+  assert.match(controller, /saveBook\s*\(/);
+  assert.doesNotMatch(controller, /toggleEdit\s*\(/);
+});
+
+test("library book cards constrain every cover to the same grid ratio", () => {
+  const cardStyles = fs.readFileSync(path.join(root, "miniprogram/components/book-card/index.wxss"), "utf8");
+  assert.match(cardStyles, /\.book-card__cover\s*\{[\s\S]*?width:\s*100%;[\s\S]*?aspect-ratio:\s*3\s*\/\s*4;/);
+  assert.match(cardStyles, /\.book-card__cover\s+book-cover\s*\{[\s\S]*?display:\s*block;[\s\S]*?width:\s*100%;/);
+});
+
+test("book confirmation guards against duplicate add submissions", () => {
+  const source = fs.readFileSync(path.join(root, "miniprogram/pages/book-confirm/index.js"), "utf8");
+  assert.match(source, /async confirmAdd\(\)\s*\{\s*if \(this\.data\.submitting\) return;/);
+});
+
+test("bookshelf editor keeps save action below the form instead of in the header", () => {
+  const source = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelf-edit/index.wxml"), "utf8");
+  assert.doesNotMatch(source, /slot="action"/);
+  assert.match(source, /class="shelf-edit__actions"[\s\S]*bind:tap="save"/);
+});
+
+test("bookshelf detail keeps edit action below the header", () => {
+  const source = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelf-detail/index.wxml"), "utf8");
+  assert.doesNotMatch(source, /slot="action"/);
+  assert.match(source, /class="shelf-detail__toolbar"[\s\S]*bindtap="editShelf"/);
+});
+
 test("all route scripts register substantive page controllers", () => {
   const routes = {
     bootstrap: ["bootstrap", "retry"],

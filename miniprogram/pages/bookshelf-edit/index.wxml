@@ -1,7 +1,5 @@
 <view class="shelf-edit">
-  <app-header title="{{isNew ? '新建书架' : '编辑书架'}}" back="{{true}}">
-    <text slot="action" class="shelf-edit__save {{saving ? 'shelf-edit__save--disabled' : ''}}" bindtap="save">保存</text>
-  </app-header>
+  <app-header title="{{isNew ? '新建书架' : '编辑书架'}}" back="{{true}}"></app-header>
   <view class="shelf-edit__form">
     <text-field label="书架名称" required="{{true}}" value="{{form.name}}" placeholder="例如：睡前共读" maxlength="{{20}}" error="{{errors.name}}" bind:input="onName" />
     <text-field label="说明（可选）" type="textarea" value="{{form.description}}" placeholder="记录这个书架的用途" maxlength="{{100}}" bind:input="onDescription" />
@@ -19,6 +17,9 @@
       </block>
     </view>
   </view>
-  <ui-button wx:if="{{!isNew}}" type="danger" text="删除这个书架" bind:tap="askDelete" />
+  <view class="shelf-edit__actions">
+    <ui-button text="保存" loading="{{saving}}" disabled="{{saving}}" bind:tap="save" />
+    <ui-button wx:if="{{!isNew}}" type="danger" text="删除这个书架" bind:tap="askDelete" />
+  </view>
   <confirm-dialog visible="{{deleteVisible}}" danger="{{true}}" title="删除这个书架？" message="绘本不会从家庭绘本馆删除，只会移除这个分组。" confirm-text="确认删除" bind:confirm="deleteShelf" bind:cancel="closeDelete" />
 </view>

@@ -8,6 +8,13 @@
 
 .book-card__cover {
   position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+}
+
+.book-card__cover book-cover {
+  display: block;
+  width: 100%;
 }
 
 .book-card__check {

@@ -48,3 +48,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.header__action {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 112rpx;
+  min-height: 88rpx;
+}

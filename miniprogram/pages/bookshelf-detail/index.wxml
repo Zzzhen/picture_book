@@ -1,11 +1,13 @@
 <view class="shelf-detail">
-  <app-header title="{{shelf.name || '书架'}}" back="{{true}}">
-    <text slot="action" class="shelf-detail__edit" bindtap="editShelf">编辑</text>
-  </app-header>
+  <app-header title="{{shelf.name || '书架'}}" back="{{true}}"></app-header>
+ 
   <view class="shelf-detail__head">
     <text class="shelf-detail__name">{{shelf.name || '未命名书架'}}</text>
     <text wx:if="{{shelf.description}}" class="shelf-detail__description">{{shelf.description}}</text>
     <text class="shelf-detail__count">{{books.length || 0}} 本绘本</text>
+    <view class="shelf-detail__toolbar">
+      <text class="shelf-detail__edit" bindtap="editShelf">编辑</text>
+    </view>
   </view>
   <view class="shelf-detail__body">
     <empty-state wx:if="{{state === 'empty'}}" title="这个书架还空着" description="从绘本馆选择绘本放进来；一本书可以同时属于多个书架。" primary-text="选择绘本" bind:primary="editShelf" />

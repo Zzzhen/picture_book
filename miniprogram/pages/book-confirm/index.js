@@ -56,6 +56,7 @@ Page({
   },
 
   async confirmAdd() {
+    if (this.data.submitting) return;
     this.setData({ submitting: true });
     try {
       let data;

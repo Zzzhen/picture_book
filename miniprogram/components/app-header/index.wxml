@@ -2,7 +2,7 @@
   class="header {{transparent ? 'header--transparent' : ''}}"
   style="padding-top: {{statusHeight}}px;"
 >
-  <view class="header__bar" style="height: {{navigationHeight}}px; padding-right: {{rightInset}}px;">
+  <view class="header__bar" style="height: {{navigationHeight}}px;">
     <button
       wx:if="{{back}}"
       class="header__back"
@@ -13,6 +13,6 @@
     </button>
     <view wx:else class="header__spacer"></view>
     <text class="header__title">{{title}}</text>
-    <slot name="action"></slot>
+    <view class="header__action"><slot name="action"></slot></view>
   </view>
 </view>

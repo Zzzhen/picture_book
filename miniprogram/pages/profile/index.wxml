@@ -22,7 +22,7 @@
   <view class="profile__menu">
     <button bindtap="editProfile"><text>孩子与绘本馆资料</text><text>›</text></button>
     <button bindtap="goFeedback"><text>意见反馈</text><text>›</text></button>
-    <button bindtap="showAbout"><text>关于家庭数字绘本馆</text><text>›</text></button>
+    <button bindtap="showAbout"><text>关于书芽芽</text><text>›</text></button>
     <button class="profile__danger" bindtap="askDeleteAccount"><text>注销绘本馆</text><text>›</text></button>
   </view>
   <text class="profile__version">V1-Core · 核心建馆版</text>

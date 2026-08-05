@@ -8,7 +8,6 @@ Component({
   data: {
     statusHeight: 20,
     navigationHeight: 44,
-    rightInset: 88,
   },
 
   lifetimes: {
@@ -21,9 +20,7 @@ Component({
       const navigationHeight = menu
         ? (menu.top - statusHeight) * 2 + menu.height
         : 44;
-      const screenWidth = windowInfo.screenWidth || 375;
-      const rightInset = menu ? screenWidth - menu.left + 8 : 88;
-      this.setData({ statusHeight, navigationHeight, rightInset });
+      this.setData({ statusHeight, navigationHeight });
     },
   },
 

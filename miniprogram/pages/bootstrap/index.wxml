@@ -1,8 +1,8 @@
 <view class="bootstrap">
   <view class="bootstrap__brand">
     <bookplate-mark size="large" />
-    <text class="bootstrap__name">家庭数字绘本馆</text>
-    <text class="bootstrap__caption">把孩子读过的每一本，认真收藏起来</text>
+    <text class="bootstrap__name">书芽芽</text>
+    <text class="bootstrap__caption">家庭绘本，轻松整理与分享</text>
   </view>
   <view wx:if="{{state === 'loading'}}" class="bootstrap__loading">
     <view class="bootstrap__loading-line"></view>

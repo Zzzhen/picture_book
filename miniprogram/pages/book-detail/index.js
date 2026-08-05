@@ -37,7 +37,6 @@ Page({
       preference: "unmarked",
       note: ""
     },
-    editing: false,
     deleteVisible: false,
     saving: false
   },
@@ -56,28 +55,25 @@ Page({
     }
   },
 
-  async toggleEdit() {
-    if (this.data.editing) {
-      this.setData({ saving: true });
-      try {
-        await services.library("updateBook", {
-          user_book_id: this.data.id,
-          patch: {
-            quantity: this.data.book.quantity,
-            preference: this.data.book.preference || "unmarked",
-            private_note: this.data.book.note || ""
-          }
-        });
-        if (this.data.book.preference && this.data.book.preference !== "unmarked") track("preference_updated", { source: "book_detail" });
-        wx.showToast({ title: "已保存", icon: "success" });
-      } catch (error) {
-        wx.showToast({ title: error.message, icon: "none" });
-        return;
-      } finally {
-        this.setData({ saving: false });
-      }
+  async saveBook() {
+    if (this.data.saving) return;
+    this.setData({ saving: true });
+    try {
+      await services.library("updateBook", {
+        user_book_id: this.data.id,
+        patch: {
+          quantity: this.data.book.quantity,
+          preference: this.data.book.preference || "unmarked",
+          private_note: this.data.book.note || ""
+        }
+      });
+      if (this.data.book.preference && this.data.book.preference !== "unmarked") track("preference_updated", { source: "book_detail" });
+      wx.showToast({ title: "已保存", icon: "success" });
+    } catch (error) {
+      wx.showToast({ title: error.message, icon: "none" });
+    } finally {
+      this.setData({ saving: false });
     }
-    this.setData({ editing: !this.data.editing });
   },
 
   onPreference(event) {

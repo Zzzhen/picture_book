@@ -2,7 +2,7 @@
   "name": "family-picture-book-library",
   "version": "1.0.0",
   "private": true,
-  "description": "家庭数字绘本馆 V1-Core 微信小程序",
+  "description": "书芽芽｜家庭数字绘本馆 V1-Core 微信小程序",
   "scripts": {
     "test": "node scripts/run-tests.js",
     "check": "node scripts/check-project.js",

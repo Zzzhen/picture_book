@@ -56,7 +56,7 @@ Page({
 
   editProfile() { wx.navigateTo({ url: "/pages/profile-edit/index" }); },
   goFeedback() { wx.navigateTo({ url: "/pages/feedback/index" }); },
-  showAbout() { wx.showModal({ title: "家庭数字绘本馆", content: "V1-Core 核心建馆版：为家庭记录、整理和检索实体绘本。", showCancel: false }); },
+  showAbout() { wx.showModal({ title: "书芽芽", content: "书芽芽｜家庭数字绘本馆\nV1-Core 核心建馆版：为家庭记录、整理和检索实体绘本。", showCancel: false }); },
 
   openAdmin() {
     const presses = this.data.adminPresses + 1;

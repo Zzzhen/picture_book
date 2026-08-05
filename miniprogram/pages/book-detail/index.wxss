@@ -14,6 +14,15 @@ page {
   font-weight: 650;
 }
 
+.detail__edit-hit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 96rpx;
+  min-height: 88rpx;
+  margin: -18rpx 0 -18rpx 12rpx;
+}
+
 .detail__content {
   padding: 26rpx 36rpx;
 }

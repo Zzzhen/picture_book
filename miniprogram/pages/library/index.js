@@ -1,7 +1,8 @@
 const { services } = require("../../services/api");
 const { track } = require("../../services/analytics");
+const { getTempFileUrl } = require("../../utils/cloud-file");
 
-function mapBook(item) {
+async function mapBook(item) {
   const edition = item.edition || {};
   return {
     _id: item.user_book_id,
@@ -9,7 +10,7 @@ function mapBook(item) {
     title: edition.title,
     author: edition.contributors_text,
     publisher: edition.publisher,
-    coverUrl: edition.cover_file_id || "",
+    coverUrl: await getTempFileUrl(edition.cover_file_id || ""),
     reviewStatus: edition.audit_status,
     quantity: item.quantity,
     preference: item.preference,
@@ -71,7 +72,7 @@ Page({
         cursor: reset ? undefined : this.data.cursor,
         limit: 24
       });
-      const incoming = page.items.map(mapBook);
+      const incoming = await Promise.all(page.items.map(mapBook));
       const books = reset ? incoming : this.data.books.concat(incoming);
       const copies = books.reduce((sum, book) => sum + (book.quantity || 1), 0);
       this.setData({
