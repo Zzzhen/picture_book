@@ -17,7 +17,7 @@
       <view class="add-book__method-icon add-book__method-icon--stack"><view></view></view>
       <view class="add-book__method-body">
         <text class="add-book__method-title">连续扫码</text>
-        <text class="add-book__method-copy">适合一次整理多本，失败可跳过，结束后统一汇总</text>
+        <text class="add-book__method-copy">扫码成功后自动继续，结束后统一确认入馆</text>
       </view>
       <text class="add-book__arrow">›</text>
     </button>
@@ -65,45 +65,83 @@
     <empty-state wx:if="{{state === 'search-empty'}}" type="search" title="已查询书库中没有结果" description="可以返回扫码或输入 ISBN 发起新查询。" primary-text="输入 ISBN 查询" bind:primary="showIsbn" />
   </view>
   <view wx:elif="{{mode === 'continuous'}}" class="add-book__continuous">
-    <view class="add-book__counter">
-      <text>本轮已处理</text>
-      <text class="add-book__counter-value">{{session.total || 0}}</text>
-      <text>/ 100 次</text>
-    </view>
-    <view class="add-book__scanner add-book__scanner--continuous">
-      <view class="add-book__corner add-book__corner--tl"></view><view class="add-book__corner add-book__corner--tr"></view>
-      <view class="add-book__corner add-book__corner--bl"></view><view class="add-book__corner add-book__corner--br"></view>
-      <view class="add-book__barcode"></view>
-    </view>
-    <status-banner wx:if="{{scanState === 'success'}}" type="success" title="{{lastBook.title}}" message="已加入绘本馆，继续扫描下一本。" />
-    <status-banner wx:elif="{{scanState === 'duplicate'}}" type="info" title="馆里已经有这本" message="数量已增加 1 册，继续扫描即可。" />
-    <status-banner wx:elif="{{scanState === 'duplicate-choice'}}" type="info" title="{{lastBook.title}}" message="馆里已有 {{lastBook.quantity || 1}} 册。你可以增加 1 册、跳过，或结束本轮。" />
-    <status-banner wx:elif="{{scanState === 'failed'}}" type="error" title="这次没有识别成功" message="{{scanError || '请调整距离重试，也可以跳过这一本。'}}" />
-    <view class="add-book__continuous-actions">
-      <ui-button wx:if="{{scanState === 'duplicate-choice'}}" text="数量增加 1 册" bind:tap="confirmDuplicate" />
-      <ui-button wx:else text="{{scanState === 'scanning' ? '识别中…' : '继续扫描'}}" loading="{{scanState === 'scanning'}}" bind:tap="scanContinuous" />
-      <ui-button wx:if="{{scanState === 'failed' || scanState === 'duplicate-choice'}}" type="tertiary" text="跳过这一本" bind:tap="skip" />
-      <ui-button wx:if="{{scanState === 'failed'}}" type="tertiary" text="手工录入这一本" bind:tap="goManual" />
-      <ui-button type="secondary" text="结束并查看汇总" bind:tap="finishContinuous" />
-    </view>
-  </view>
-  <view wx:elif="{{mode === 'summary'}}" class="add-book__content">
-    <text class="add-book__title">这一轮整理完成</text>
-    <text class="add-book__description">结果已保存到家庭绘本馆。</text>
-    <view class="add-book__summary">
-      <view><text class="add-book__summary-value">{{session.added || 0}}</text><text>新加入</text></view>
-      <view><text class="add-book__summary-value">{{session.duplicates || 0}}</text><text>数量增加</text></view>
-      <view><text class="add-book__summary-value">{{session.skipped || 0}}</text><text>已跳过</text></view>
-      <view><text class="add-book__summary-value">{{session.failures || 0}}</text><text>失败</text></view>
-    </view>
-    <view wx:if="{{failedItems.length}}" class="add-book__failed-list">
-      <text class="add-book__result-title">未完成的条目</text>
-      <view wx:for="{{failedItems}}" wx:key="index" class="add-book__failed-item">
-        <text>{{item.isbn}}</text>
-        <text>{{item.message}}</text>
+    <view class="add-book__scan-ticket">
+      <view>
+        <text class="add-book__ticket-label">本轮待确认</text>
+        <text class="add-book__ticket-count">{{uniqueCount || 0}} 种 · {{copyCount || 0}} 册</text>
+      </view>
+      <view class="add-book__ticket-progress">
+        <text>{{session.total || 0}}</text>
+        <text>/ 100 次</text>
       </view>
     </view>
-    <ui-button text="返回绘本馆" bind:tap="backToLibrary" />
-    <ui-button type="tertiary" text="再扫一轮" bind:tap="restartContinuous" />
+
+    <view wx:if="{{scanState === 'opening' || scanState === 'looking_up'}}" class="add-book__scan-pulse">
+      <view class="add-book__barcode"></view>
+      <text>{{scanState === 'opening' ? '正在打开相机…' : '正在查询绘本信息…'}}</text>
+    </view>
+    <status-banner wx:if="{{scanState === 'success'}}" type="success" title="扫码成功" message="《{{lastBook.title}}》已加入本轮列表，即将继续扫描。" />
+    <status-banner wx:elif="{{scanState === 'paused'}}" type="error" title="这次没有识别成功" message="{{scanError || '请调整距离后重试，也可以跳过这一本。'}}" />
+    <status-banner wx:if="{{submitError}}" type="warning" title="还有内容未完成" message="{{submitError}}" />
+
+    <view wx:if="{{scanState === 'paused'}}" class="add-book__paused-actions">
+      <ui-button text="重试扫码" bind:tap="retryScan" />
+      <view class="add-book__paused-row">
+        <button bindtap="goManual">手工录入</button>
+        <button bindtap="skip">跳过并继续</button>
+        <button bindtap="finishContinuous">结束扫码</button>
+      </view>
+    </view>
+
+    <view wx:if="{{scanItems.length}}" class="add-book__review">
+      <view class="add-book__review-heading">
+        <view>
+          <text class="add-book__review-title">选择入馆的绘本</text>
+          <text class="add-book__review-copy">相同 ISBN 已合并，可在确认前移除。</text>
+        </view>
+        <text wx:if="{{committedCount}}" class="add-book__commit-progress">已入馆 {{committedCount}} / {{copyCount}}</text>
+      </view>
+      <view wx:for="{{scanItems}}" wx:key="edition_id" class="add-book__scan-item add-book__scan-item--{{item.status}}">
+        <view class="add-book__scan-cover">
+          <book-cover size="medium" src="{{item.cover_file_id}}" title="{{item.title}}" />
+        </view>
+        <view class="add-book__scan-info">
+          <text class="add-book__scan-title">{{item.title}}</text>
+          <text class="add-book__scan-meta">{{item.contributors_text || '作者待补充'}}</text>
+          <text class="add-book__scan-isbn">ISBN {{item.isbn13}}</text>
+          <view class="add-book__scan-status">
+            <text class="add-book__copy-badge">本轮 {{item.scan_count}} 册</text>
+            <text wx:if="{{item.status === 'submitting'}}">入馆中</text>
+            <text wx:elif="{{item.status === 'added'}}" class="add-book__status-success">已入馆</text>
+            <text wx:elif="{{item.status === 'failed'}}" class="add-book__status-error">{{item.error_message || '入馆失败'}}</text>
+          </view>
+        </view>
+        <button wx:if="{{!submissionStarted && !submitting}}" class="add-book__remove" data-id="{{item.edition_id}}" bindtap="removeScanItem" aria-label="从本轮移除 {{item.title}}">×</button>
+      </view>
+    </view>
+
+    <view wx:else class="add-book__continuous-empty">
+      <text class="add-book__continuous-empty-title">还没有待入馆的绘本</text>
+      <text>点击开始扫码，识别成功后会自动继续下一本。</text>
+    </view>
+
+    <view wx:if="{{scanState === 'ready' && !submissionStarted}}" class="add-book__start-action">
+      <ui-button text="开始扫码" bind:tap="startContinuousScan" />
+    </view>
+    <view wx:if="{{scanState === 'success' || scanState === 'looking_up'}}" class="add-book__stop-action">
+      <button bindtap="finishContinuous">结束扫码</button>
+    </view>
+
+    <button wx:if="{{scanItems.length}}" class="add-book__shelf-choice" bindtap="chooseShelf" disabled="{{submitting}}">
+      <view>
+        <text class="add-book__shelf-label">选择书架（可选）</text>
+        <text class="add-book__shelf-value">{{selectedShelf ? selectedShelf.name : '不选择则只加入绘本馆'}}</text>
+      </view>
+      <text class="add-book__shelf-change">{{selectedShelf ? '更换' : '选择'}} ›</text>
+    </button>
+
+    <view wx:if="{{scanItems.length && (scanState === 'ready' || submissionStarted)}}" class="add-book__commit-bar">
+      <ui-button text="{{submitting ? '正在入馆…' : submitError ? '重试失败项' : '确认入馆（' + copyCount + ' 册）'}}" loading="{{submitting}}" disabled="{{!copyCount}}" bind:tap="confirmBatch" />
+    </view>
   </view>
 </view>

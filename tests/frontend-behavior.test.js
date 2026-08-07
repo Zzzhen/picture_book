@@ -359,6 +359,25 @@ test("ambiguous batch retry reuses the same per-copy request ID and does not tou
   }
 });
 
+test("continuous scan review stays on one page with a safe-area confirmation bar", () => {
+  const template = fs.readFileSync(path.join(root, "miniprogram/pages/add-book/index.wxml"), "utf8");
+  const styles = fs.readFileSync(path.join(root, "miniprogram/pages/add-book/index.wxss"), "utf8");
+  assert.match(template, /开始扫码/);
+  assert.match(template, /选择书架（可选）/);
+  assert.match(template, /确认入馆/);
+  assert.match(template, /bindtap="removeScanItem"/);
+  assert.match(template, /重试扫码/);
+  assert.match(template, /跳过并继续/);
+  assert.match(template, /结束扫码/);
+  assert.doesNotMatch(template, /mode === 'summary'/);
+  assert.doesNotMatch(template, /text="继续扫描"/);
+  assert.doesNotMatch(template, /继续扫码/);
+  assert.doesNotMatch(template, /结束并查看汇总/);
+  assert.doesNotMatch(template, /再扫一轮/);
+  assert.match(styles, /\.add-book__commit-bar\s*\{[\s\S]*?position:\s*fixed;[\s\S]*?bottom:\s*0;[\s\S]*?env\(safe-area-inset-bottom\)/);
+  assert.match(styles, /\.add-book__scan-cover\s*\{[\s\S]*?width:\s*96rpx;[\s\S]*?height:\s*128rpx;/);
+});
+
 test("all route scripts register substantive page controllers", () => {
   const routes = {
     bootstrap: ["bootstrap", "retry"],
