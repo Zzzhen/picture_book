@@ -575,6 +575,116 @@ page {
   font-size: 22rpx;
 }
 
+.add-book__shelf-mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  background: var(--color-overlay);
+}
+
+.add-book__shelf-sheet {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 30rpx 30rpx calc(26rpx + env(safe-area-inset-bottom));
+  border-radius: 34rpx 34rpx 0 0;
+  background: var(--color-surface-primary);
+  box-shadow: var(--shadow-sheet);
+}
+
+.add-book__sheet-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.add-book__sheet-title,
+.add-book__sheet-copy {
+  display: block;
+}
+
+.add-book__sheet-title {
+  font-family: var(--font-display);
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.add-book__sheet-copy {
+  margin-top: 6rpx;
+  color: var(--color-text-muted);
+  font-size: 21rpx;
+}
+
+.add-book__sheet-heading button {
+  margin: 0;
+  padding: 0 8rpx;
+  color: var(--color-brand-forest);
+  background: transparent;
+  font-size: 24rpx;
+  line-height: 54rpx;
+}
+
+.add-book__sheet-heading button::after,
+.add-book__shelf-option::after {
+  border: 0;
+}
+
+.add-book__shelf-options {
+  height: 55vh;
+}
+
+.add-book__shelf-option {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 104rpx;
+  margin: 0 0 12rpx;
+  padding: 18rpx 22rpx;
+  border: 1rpx solid var(--color-border-default);
+  border-radius: var(--radius-medium);
+  color: var(--color-text-primary);
+  background: var(--color-surface-primary);
+  text-align: left;
+}
+
+.add-book__shelf-option--selected {
+  border-color: var(--color-brand-forest);
+  background: var(--color-brand-forest-soft);
+}
+
+.add-book__shelf-option view text {
+  display: block;
+  font-size: 25rpx;
+  font-weight: 650;
+}
+
+.add-book__shelf-option view text + text {
+  margin-top: 4rpx;
+  color: var(--color-text-muted);
+  font-size: 20rpx;
+  font-weight: 400;
+}
+
+.add-book__shelf-option > text {
+  color: var(--color-brand-forest);
+  font-size: 28rpx;
+}
+
+.add-book__shelf-empty {
+  display: block;
+  padding: 22rpx 0 10rpx;
+  color: var(--color-text-muted);
+  font-size: 22rpx;
+  text-align: center;
+}
+
 .add-book__commit-bar {
   position: fixed;
   right: 0;

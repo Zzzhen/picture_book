@@ -116,7 +116,7 @@
             <text wx:elif="{{item.status === 'failed'}}" class="add-book__status-error">{{item.error_message || '入馆失败'}}</text>
           </view>
         </view>
-        <button wx:if="{{!submissionStarted && !submitting}}" class="add-book__remove" data-id="{{item.edition_id}}" bindtap="removeScanItem" aria-label="从本轮移除 {{item.title}}">×</button>
+        <button wx:if="{{scanState === 'ready' && !submissionStarted && !submitting}}" class="add-book__remove" data-id="{{item.edition_id}}" bindtap="removeScanItem" aria-label="从本轮移除 {{item.title}}">×</button>
       </view>
     </view>
 
@@ -132,13 +132,36 @@
       <button bindtap="finishContinuous">结束扫码</button>
     </view>
 
-    <button wx:if="{{scanItems.length}}" class="add-book__shelf-choice" bindtap="chooseShelf" disabled="{{submitting}}">
+    <button wx:if="{{scanItems.length && (scanState === 'ready' || submissionStarted)}}" class="add-book__shelf-choice" bindtap="chooseShelf" disabled="{{submitting || shelvesLoading}}">
       <view>
         <text class="add-book__shelf-label">选择书架（可选）</text>
         <text class="add-book__shelf-value">{{selectedShelf ? selectedShelf.name : '不选择则只加入绘本馆'}}</text>
       </view>
-      <text class="add-book__shelf-change">{{selectedShelf ? '更换' : '选择'}} ›</text>
+      <text class="add-book__shelf-change">{{shelvesLoading ? '加载中…' : selectedShelf ? '更换 ›' : '选择 ›'}}</text>
     </button>
+
+    <view wx:if="{{shelfPickerOpen}}" class="add-book__shelf-mask" bindtap="closeShelfPicker">
+      <view class="add-book__shelf-sheet" catchtap="noop">
+        <view class="add-book__sheet-heading">
+          <view>
+            <text class="add-book__sheet-title">选择书架</text>
+            <text class="add-book__sheet-copy">可选一个书架，也可以只加入绘本馆。</text>
+          </view>
+          <button bindtap="closeShelfPicker">完成</button>
+        </view>
+        <scroll-view scroll-y="{{true}}" class="add-book__shelf-options">
+          <button class="add-book__shelf-option {{!selectedShelf ? 'add-book__shelf-option--selected' : ''}}" data-id="" bindtap="selectShelf">
+            <view><text>不加入书架</text><text>只加入绘本馆</text></view>
+            <text wx:if="{{!selectedShelf}}">✓</text>
+          </button>
+          <button wx:for="{{shelves}}" wx:key="bookshelf_id" class="add-book__shelf-option {{selectedShelf && selectedShelf.bookshelf_id === item.bookshelf_id ? 'add-book__shelf-option--selected' : ''}}" data-id="{{item.bookshelf_id}}" bindtap="selectShelf">
+            <view><text>{{item.name}}</text><text>{{item.book_count || 0}} 本绘本</text></view>
+            <text wx:if="{{selectedShelf && selectedShelf.bookshelf_id === item.bookshelf_id}}">✓</text>
+          </button>
+          <text wx:if="{{!shelves.length}}" class="add-book__shelf-empty">还没有书架，可以先只加入绘本馆。</text>
+        </scroll-view>
+      </view>
+    </view>
 
     <view wx:if="{{scanItems.length && (scanState === 'ready' || submissionStarted)}}" class="add-book__commit-bar">
       <ui-button text="{{submitting ? '正在入馆…' : submitError ? '重试失败项' : '确认入馆（' + copyCount + ' 册）'}}" loading="{{submitting}}" disabled="{{!copyCount}}" bind:tap="confirmBatch" />

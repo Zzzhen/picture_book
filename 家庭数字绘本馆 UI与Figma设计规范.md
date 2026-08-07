@@ -356,8 +356,8 @@ Figma 字体：
 | `P06-AddBook` | `pages/add-book` | default |
 | `P07-IsbnLoading` | ISBN 查询中 | lookup、provider、cover |
 | `P08-BookConfirm` | `pages/book-confirm` | new、duplicate |
-| `P09-ContinuousConfirm` | 连续扫码 | new、duplicate、failure |
-| `P10-ContinuousSummary` | 连续扫码汇总 | mixed、all-success |
+| `P09-ContinuousScanning` | `pages/add-book` 连续扫码中 | opening、looking-up、success、failure |
+| `P10-ContinuousReview` | `pages/add-book` 同页核对 | empty、pending、submitting、partial-failure、shelf-selected |
 | `P11-CachedSearch` | 已收录搜索 | results、typing |
 | `P12-CachedSearchEmpty` | 已收录搜索 | empty |
 | `P13-ManualBookForm` | 手工录入 | empty、validation、submitting |
@@ -474,39 +474,47 @@ Button/tertiary：不是这本
 
 重复版本将按钮改为“数量加一”，并显示“绘本馆中已有 1 本”。
 
-#### `P09-ContinuousConfirm`
+#### `P09-ContinuousScanning`
 
-连续模式顶部始终显示 `连续扫描 · 已处理 4 本`。
+连续模式顶部始终使用扫描票据显示 `本轮待确认 N 种 · M 册` 和 `已扫描 / 100 次`。系统扫码画面仍由微信提供，Figma 只设计返回小程序后的状态。
 
-新书状态：
+成功状态：
 
-- 主操作：“加入并继续扫”。
-- 次操作：“加入并结束”。
-
-重复状态：
-
-- Banner：“绘本馆中已有 1 本”。
-- 主操作：“数量加一并继续”。
-- 次操作：“跳过并继续”。
-- 文字操作：“结束扫描”。
+- Banner 主标题：“扫码成功”。
+- 副标题：“《书名》已加入本轮列表，即将继续扫描。”
+- 约 800 毫秒后自动打开下一次系统扫码；反馈窗口提供轻量“结束扫码”。
+- 查询成功只加入本轮列表，不显示“已加入绘本馆”。
 
 失败状态：
 
-- 明确说明失败原因。
-- 操作：“重试”“手动录入”“跳过继续”“结束扫描”。
+- 明确说明失败原因，不使用笼统“操作失败”。
+- 主操作：“重试扫码”。
+- 次操作：“手工录入”“跳过并继续”“结束扫码”。
+- 失败项不混入待确认书籍列表。
 
-#### `P10-ContinuousSummary`
+#### `P10-ContinuousReview`
+
+该状态与 `P09` 使用同一路由和同一页面，不创建独立汇总页：
 
 ```text
-TopBar/back disabled：本次扫描完成
-Success icon / BookplateMark
-Title：这次收进了 8 本绘本
-Metric row：新增 6、数量增加 2、跳过 1、失败 1
-Failed section（存在失败时）
-  每项显示 ISBN、原因、重新处理入口
-Button/primary：回到绘本馆
-Button/secondary：继续扫描
+TopBar/back：连续扫码
+Scan ticket：本轮待确认 4 种 · 6 册；已扫描 7 / 100 次
+Section title：选择入馆的绘本
+Book rows
+  固定 3:4 封面
+  书名、作者、ISBN
+  Badge：本轮 N 册
+  提交前删除按钮
+Button/primary：开始扫码（继续当前会话）
+Shelf choice：选择书架（可选）/ 当前书架 / 更换
+Fixed safe-area action：确认入馆（6 册）
 ```
+
+- 相同 ISBN 合并为一行；删除整行需要轻量确认。
+- 书架为单选，“不加入书架”表示只入馆，不触发书架写请求。
+- 提交后每行展示“入馆中 / 已入馆 / 失败”，已开始提交时隐藏删除和扫码入口。
+- 部分失败显示已完成册数和“重试失败项”，不得把已成功册数再次提交。
+- 视觉上取消四宫格汇总卡；朱砂色只用于删除和失败，森林绿保留给主操作和成功状态。
 
 #### `P12-CachedSearchEmpty`
 
@@ -650,12 +658,14 @@ P03-Library-Grid
 → P06-AddBook
 → 开始连续扫描
 → 微信系统扫码
-→ P09-ContinuousConfirm
-→ 加入并继续扫
+→ P09-ContinuousScanning/success
+→ 自动继续扫描
 → 微信系统扫码
-→ P09-ContinuousConfirm/duplicate|failure
-→ 结束
-→ P10-ContinuousSummary
+→ P09-ContinuousScanning/success|failure
+→ 取消系统扫码或结束扫码
+→ P10-ContinuousReview
+→ 可选选择一个书架
+→ 确认入馆 / 部分失败重试
 → P03-Library-Grid
 ```
 

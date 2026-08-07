@@ -283,6 +283,173 @@ test("successful continuous scan queues a book and schedules the next scan witho
   }
 });
 
+test("a successful camera scan with a failed ISBN lookup counts as one attempt", async () => {
+  let definition;
+  global.Page = (value) => { definition = value; };
+  global.wx = {
+    scanCode({ success }) { success({ result: "9787020024759" }); },
+    setStorageSync() {}
+  };
+  const apiPath = path.join(root, "miniprogram/services/api");
+  const pagePath = path.join(root, "miniprogram/pages/add-book/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  const { services } = require(apiPath);
+  const originals = { book: services.book, event: services.event };
+  services.book = async () => { throw new Error("图书信息服务暂时不可用"); };
+  services.event = async () => ({ accepted_count: 1 });
+  const page = {
+    ...definition,
+    data: JSON.parse(JSON.stringify(definition.data)),
+    _autoScanning: true,
+    _pageAlive: true,
+    setData(next) { this.data = { ...this.data, ...next }; },
+    persistSession() {},
+    clearScanTimer() {}
+  };
+  page.data.scanSessionId = "scan_failure";
+  try {
+    await page.scanContinuous();
+    assert.equal(page.data.session.total, 1);
+    assert.equal(page.data.session.failures, 1);
+    assert.equal(page.data.scanState, "paused");
+  } finally {
+    services.book = originals.book;
+    services.event = originals.event;
+  }
+});
+
+test("a lookup result arriving after page hide cannot mutate or restart the scan page", async () => {
+  let definition;
+  let resolveLookup;
+  global.Page = (value) => { definition = value; };
+  global.wx = {
+    scanCode({ success }) { success({ result: "9787020024759" }); },
+    setStorageSync() {}
+  };
+  const apiPath = path.join(root, "miniprogram/services/api");
+  const pagePath = path.join(root, "miniprogram/pages/add-book/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  const { services } = require(apiPath);
+  const originals = { book: services.book, event: services.event };
+  services.book = () => new Promise((resolve) => { resolveLookup = resolve; });
+  services.event = async () => ({ accepted_count: 1 });
+  const page = {
+    ...definition,
+    data: JSON.parse(JSON.stringify(definition.data)),
+    _autoScanning: true,
+    _pageAlive: true,
+    setData(next) { this.data = { ...this.data, ...next }; },
+    persistSession() { return true; },
+    clearScanTimer() {},
+    scheduleNextScan() { this.scheduled = true; }
+  };
+  page.data.scanSessionId = "scan_hidden";
+  try {
+    const scanning = page.scanContinuous();
+    await new Promise((resolve) => setImmediate(resolve));
+    page.onHide();
+    resolveLookup({
+      edition: { edition_id: "isbn_9787020024759", isbn13: "9787020024759", title: "围城" },
+      cache_hit: true,
+      provider_called: false
+    });
+    await scanning;
+    assert.equal(page.data.scanItems.length, 0);
+    assert.equal(page.scheduled, undefined);
+  } finally {
+    services.book = originals.book;
+    services.event = originals.event;
+  }
+});
+
+test("ending during ISBN lookup still queues the result but remains in review mode", async () => {
+  let definition;
+  let resolveLookup;
+  global.Page = (value) => { definition = value; };
+  global.wx = {
+    scanCode({ success }) { success({ result: "9787020024759" }); },
+    setStorageSync() {}
+  };
+  const apiPath = path.join(root, "miniprogram/services/api");
+  const pagePath = path.join(root, "miniprogram/pages/add-book/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  const { services } = require(apiPath);
+  const originals = { book: services.book, event: services.event };
+  services.book = () => new Promise((resolve) => { resolveLookup = resolve; });
+  services.event = async () => ({ accepted_count: 1 });
+  const page = {
+    ...definition,
+    data: JSON.parse(JSON.stringify(definition.data)),
+    _autoScanning: true,
+    _pageAlive: true,
+    setData(next) { this.data = { ...this.data, ...next }; },
+    persistSession() { return true; },
+    clearScanTimer() {},
+    scheduleNextScan() { this.scheduled = true; }
+  };
+  page.data.scanSessionId = "scan_stopped_lookup";
+  try {
+    const scanning = page.scanContinuous();
+    await new Promise((resolve) => setImmediate(resolve));
+    page.stopContinuousScan();
+    resolveLookup({
+      edition: { edition_id: "isbn_9787020024759", isbn13: "9787020024759", title: "围城" },
+      cache_hit: true,
+      provider_called: false
+    });
+    await scanning;
+    assert.equal(page.data.scanItems.length, 1);
+    assert.equal(page.data.scanState, "ready");
+    assert.equal(page.scheduled, undefined);
+  } finally {
+    services.book = originals.book;
+    services.event = originals.event;
+  }
+});
+
+test("ending during ISBN lookup remains in review mode when the lookup later fails", async () => {
+  let definition;
+  let rejectLookup;
+  global.Page = (value) => { definition = value; };
+  global.wx = {
+    scanCode({ success }) { success({ result: "9787020024759" }); },
+    setStorageSync() {}
+  };
+  const apiPath = path.join(root, "miniprogram/services/api");
+  const pagePath = path.join(root, "miniprogram/pages/add-book/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  const { services } = require(apiPath);
+  const originals = { book: services.book, event: services.event };
+  services.book = () => new Promise((resolve, reject) => { rejectLookup = reject; });
+  services.event = async () => ({ accepted_count: 1 });
+  const page = {
+    ...definition,
+    data: JSON.parse(JSON.stringify(definition.data)),
+    _autoScanning: true,
+    _pageAlive: true,
+    setData(next) { this.data = { ...this.data, ...next }; },
+    persistSession() { return true; },
+    clearScanTimer() {}
+  };
+  page.data.scanSessionId = "scan_stopped_failure";
+  try {
+    const scanning = page.scanContinuous();
+    await new Promise((resolve) => setImmediate(resolve));
+    page.stopContinuousScan();
+    rejectLookup(new Error("查询失败"));
+    await scanning;
+    assert.equal(page.data.scanState, "ready");
+    assert.equal(page.data.session.failures, 1);
+  } finally {
+    services.book = originals.book;
+    services.event = originals.event;
+  }
+});
+
 test("continuous scan batch commit uses stable request IDs and makes shelf assignment optional", () => {
   const source = fs.readFileSync(path.join(root, "miniprogram/pages/add-book/index.js"), "utf8");
   assert.match(source, /createRequestId/);
@@ -293,6 +460,41 @@ test("continuous scan batch commit uses stable request IDs and makes shelf assig
   assert.match(source, /services\.library\("addBook",\s*\{[\s\S]*?operation\.request_id\)/);
   assert.match(source, /if \(!this\.data\.selectedShelf\) return/);
   assert.match(source, /services\.bookshelf\("addBooks"/);
+});
+
+test("continuous scan uses a scrollable in-page shelf picker instead of the limited native action sheet", async () => {
+  let definition;
+  let actionSheetCalls = 0;
+  global.Page = (value) => { definition = value; };
+  global.wx = {
+    showActionSheet() { actionSheetCalls += 1; },
+    showToast() {}
+  };
+  const apiPath = path.join(root, "miniprogram/services/api");
+  const pagePath = path.join(root, "miniprogram/pages/add-book/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  const { services } = require(apiPath);
+  const originalBookshelf = services.bookshelf;
+  services.bookshelf = async () => ({
+    items: Array.from({ length: 7 }, (_, index) => ({ bookshelf_id: `shelf_${index}`, name: `书架 ${index}` }))
+  });
+  const page = {
+    ...definition,
+    data: JSON.parse(JSON.stringify(definition.data)),
+    setData(next) { this.data = { ...this.data, ...next }; }
+  };
+  try {
+    await page.chooseShelf();
+    assert.equal(actionSheetCalls, 0);
+    assert.equal(page.data.shelfPickerOpen, true);
+    assert.equal(page.data.shelves.length, 7);
+  } finally {
+    services.bookshelf = originalBookshelf;
+  }
+  const template = fs.readFileSync(path.join(root, "miniprogram/pages/add-book/index.wxml"), "utf8");
+  assert.match(template, /scroll-view/);
+  assert.match(template, /bindtap="selectShelf"/);
 });
 
 test("ambiguous batch retry reuses the same per-copy request ID and does not touch shelves", async () => {
@@ -359,6 +561,115 @@ test("ambiguous batch retry reuses the same per-copy request ID and does not tou
   }
 });
 
+test("batch submission aborts before cloud writes when stable request IDs cannot be stored", async () => {
+  let definition;
+  let libraryCalls = 0;
+  global.Page = (value) => { definition = value; };
+  global.wx = {
+    setStorageSync() { throw new Error("storage full"); },
+    showToast() {}
+  };
+  const apiPath = path.join(root, "miniprogram/services/api");
+  const pagePath = path.join(root, "miniprogram/pages/add-book/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  const { services } = require(apiPath);
+  const originalLibrary = services.library;
+  services.library = async () => { libraryCalls += 1; return {}; };
+  const page = {
+    ...definition,
+    data: {
+      ...JSON.parse(JSON.stringify(definition.data)),
+      scanSessionId: "scan_storage_failure",
+      scanItems: [{
+        edition_id: "isbn_9787020024759",
+        isbn13: "9787020024759",
+        title: "围城",
+        scan_count: 1,
+        committed_count: 0,
+        commit_operations: [],
+        status: "pending"
+      }],
+      copyCount: 1
+    },
+    setData(next) { this.data = { ...this.data, ...next }; },
+    clearScanTimer() {}
+  };
+  try {
+    await page.confirmBatch();
+    assert.equal(libraryCalls, 0);
+    assert.equal(page.data.submissionStarted, false);
+    assert.match(page.data.submitError, /保存本轮进度失败/);
+  } finally {
+    services.library = originalLibrary;
+  }
+});
+
+test("completed continuous sessions are not recreated by the unload lifecycle", () => {
+  let definition;
+  let storageWrites = 0;
+  global.Page = (value) => { definition = value; };
+  global.wx = {
+    setStorageSync() { storageWrites += 1; },
+    removeStorageSync() {},
+    showToast() {},
+    reLaunch() {}
+  };
+  const pagePath = path.join(root, "miniprogram/pages/add-book/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  const page = {
+    ...definition,
+    data: {
+      ...JSON.parse(JSON.stringify(definition.data)),
+      mode: "continuous",
+      scanSessionId: "scan_complete",
+      copyCount: 1,
+      scanItems: [{ edition_id: "isbn_1", scan_count: 1, committed_count: 1 }]
+    },
+    setData(next) { this.data = { ...this.data, ...next }; },
+    clearScanTimer() {}
+  };
+  page.completeContinuousSession(0);
+  page.onUnload();
+  assert.equal(storageWrites, 0);
+});
+
+test("restored partial submissions keep their retry message", () => {
+  let definition;
+  const saved = {
+    version: 2,
+    scanSessionId: "scan_partial",
+    session: { total: 1, successful: 1, skipped: 0, failures: 0 },
+    scanState: "ready",
+    scanItems: [{
+      edition_id: "isbn_1",
+      scan_count: 1,
+      committed_count: 0,
+      commit_operations: [{ request_id: "stable-id", status: "processing" }],
+      status: "failed"
+    }],
+    submissionStarted: true,
+    submitError: "部分绘本尚未入馆，请检查后重试失败项。",
+    expiresAt: Date.now() + 60_000
+  };
+  global.Page = (value) => { definition = value; };
+  global.wx = {
+    getStorageSync(key) { return key === "v1_core_continuous_scan" ? "scan_partial" : saved; },
+    removeStorageSync() {}
+  };
+  const pagePath = path.join(root, "miniprogram/pages/add-book/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  const page = {
+    ...definition,
+    data: JSON.parse(JSON.stringify(definition.data)),
+    setData(next) { this.data = { ...this.data, ...next }; }
+  };
+  assert.equal(page.restoreSession(), true);
+  assert.equal(page.data.submitError, saved.submitError);
+});
+
 test("continuous scan review stays on one page with a safe-area confirmation bar", () => {
   const template = fs.readFileSync(path.join(root, "miniprogram/pages/add-book/index.wxml"), "utf8");
   const styles = fs.readFileSync(path.join(root, "miniprogram/pages/add-book/index.wxss"), "utf8");
@@ -366,6 +677,7 @@ test("continuous scan review stays on one page with a safe-area confirmation bar
   assert.match(template, /选择书架（可选）/);
   assert.match(template, /确认入馆/);
   assert.match(template, /bindtap="removeScanItem"/);
+  assert.match(template, /wx:if="\{\{scanState === 'ready' && !submissionStarted && !submitting\}\}"[^>]*bindtap="removeScanItem"/);
   assert.match(template, /重试扫码/);
   assert.match(template, /跳过并继续/);
   assert.match(template, /结束扫码/);
@@ -374,6 +686,7 @@ test("continuous scan review stays on one page with a safe-area confirmation bar
   assert.doesNotMatch(template, /继续扫码/);
   assert.doesNotMatch(template, /结束并查看汇总/);
   assert.doesNotMatch(template, /再扫一轮/);
+  assert.match(template, /wx:if="\{\{scanItems\.length && \(scanState === 'ready' \|\| submissionStarted\)\}\}"[^>]*class="add-book__shelf-choice"/);
   assert.match(styles, /\.add-book__commit-bar\s*\{[\s\S]*?position:\s*fixed;[\s\S]*?bottom:\s*0;[\s\S]*?env\(safe-area-inset-bottom\)/);
   assert.match(styles, /\.add-book__scan-cover\s*\{[\s\S]*?width:\s*96rpx;[\s\S]*?height:\s*128rpx;/);
 });

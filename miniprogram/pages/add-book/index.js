@@ -41,8 +41,12 @@ Page({
     copyCount: 0,
     committedCount: 0,
     selectedShelf: null,
+    shelves: [],
+    shelfPickerOpen: false,
+    shelvesLoading: false,
     submissionStarted: false,
     submitting: false,
+    submitError: "",
     lastBook: {},
     failedItems: []
   },
@@ -55,10 +59,18 @@ Page({
   onShow() {
     this._pageAlive = true;
     this._confirmationOpening = false;
+    if (this.data.mode === "continuous"
+      && !this._autoScanning
+      && !this.data.submitting
+      && ["opening", "looking_up", "success"].includes(this.data.scanState)) {
+      this.setData({ scanState: "ready" });
+    }
   },
 
   onHide() {
     this._pageAlive = false;
+    this._autoScanning = false;
+    this._scanGeneration = (this._scanGeneration || 0) + 1;
     this.clearScanTimer();
     if (this.data.mode === "continuous") this.persistSession();
   },
@@ -66,6 +78,7 @@ Page({
   onUnload() {
     this._pageAlive = false;
     this._autoScanning = false;
+    this._scanGeneration = (this._scanGeneration || 0) + 1;
     this.clearScanTimer();
     if (this.data.mode === "continuous") this.persistSession();
   },
@@ -84,6 +97,7 @@ Page({
   },
 
   startSession() {
+    this._sessionCompleted = false;
     const sessionId = `scan_${Date.now()}_${Math.random().toString(16).slice(2)}`;
     const draft = createContinuousSession(sessionId);
     this.setData({
@@ -96,6 +110,7 @@ Page({
       selectedShelf: draft.selectedShelf,
       submissionStarted: draft.submissionStarted,
       submitting: false,
+      submitError: "",
       uniqueCount: 0,
       copyCount: 0,
       committedCount: 0
@@ -114,7 +129,10 @@ Page({
         return false;
       }
       const scanItems = Array.isArray(saved.scanItems) ? saved.scanItems : [];
+      this._sessionCompleted = false;
       const totals = sessionTotals(scanItems);
+      const hasIncompleteItems = Boolean(saved.submissionStarted)
+        && scanItems.some((item) => item.committed_count !== item.scan_count);
       this.setData({
         scanSessionId: saved.scanSessionId,
         session: saved.session || { total: 0, successful: 0, skipped: 0, failures: 0 },
@@ -125,6 +143,9 @@ Page({
         selectedShelf: saved.selectedShelf || null,
         submissionStarted: Boolean(saved.submissionStarted),
         submitting: false,
+        submitError: saved.submitError || (hasIncompleteItems
+          ? "部分绘本尚未入馆，请检查后重试失败项。"
+          : ""),
         ...totals
       });
       return true;
@@ -134,9 +155,8 @@ Page({
   },
 
   persistSession() {
-    if (!this.data.scanSessionId) return;
+    if (!this.data.scanSessionId || this._sessionCompleted) return;
     try {
-      wx.setStorageSync(CONTINUOUS_SCAN_STORAGE_KEY, this.data.scanSessionId);
       wx.setStorageSync(sessionStorageKey(this.data.scanSessionId), {
         version: SESSION_VERSION,
         scanSessionId: this.data.scanSessionId,
@@ -147,9 +167,14 @@ Page({
         failedItems: this.data.failedItems,
         selectedShelf: this.data.selectedShelf,
         submissionStarted: this.data.submissionStarted,
+        submitError: this.data.submitError,
         expiresAt: Date.now() + CONTINUOUS_SCAN_TTL_MS
       });
-    } catch (_) {}
+      wx.setStorageSync(CONTINUOUS_SCAN_STORAGE_KEY, this.data.scanSessionId);
+      return true;
+    } catch (_) {
+      return false;
+    }
   },
 
   markScanFailure(message) {
@@ -308,15 +333,18 @@ Page({
       return;
     }
     const sessionId = this.data.scanSessionId;
+    const scanGeneration = this._scanGeneration || 0;
+    let attemptCounted = false;
     this._scanOpening = true;
     this.setData({ scanState: "opening", scanError: "" });
     try {
       const result = await new Promise((resolve, reject) => {
         wx.scanCode({ scanType: ["barCode"], success: resolve, fail: reject });
       });
-      if (sessionId !== this.data.scanSessionId) return;
+      if (sessionId !== this.data.scanSessionId || scanGeneration !== (this._scanGeneration || 0) || !this._pageAlive) return;
       const isbn = normalizeIsbn(result.result);
       const session = { ...this.data.session, total: this.data.session.total + 1 };
+      attemptCounted = true;
       this.setData({ session, currentScanIsbn: isbn, isbn, scanState: "looking_up" });
       this.persistSession();
       if (!isValidIsbn(isbn)) {
@@ -330,7 +358,7 @@ Page({
         if (lookupError.code !== "BOOK_LOOKUP_IN_PROGRESS") throw lookupError;
         lookup = await this.waitForLookup(isbn);
       }
-      if (sessionId !== this.data.scanSessionId) return;
+      if (sessionId !== this.data.scanSessionId || scanGeneration !== (this._scanGeneration || 0) || !this._pageAlive) return;
       const edition = lookup.edition;
       const scanItems = mergePendingScanItem(this.data.scanItems, {
         edition_id: edition.edition_id,
@@ -347,20 +375,28 @@ Page({
         session: nextSession,
         scanItems,
         lastBook: { title: edition.title },
-        scanState: "success",
+        scanState: this._autoScanning ? "success" : "ready",
         scanError: "",
         ...sessionTotals(scanItems)
       });
       this.persistSession();
-      this.scheduleNextScan();
+      if (this._autoScanning) this.scheduleNextScan();
     } catch (error) {
+      if (sessionId !== this.data.scanSessionId || scanGeneration !== (this._scanGeneration || 0) || !this._pageAlive) return;
       if (String(error.errMsg || "").includes("cancel")) {
         this.stopContinuousScan();
         return;
       }
-      const session = { ...this.data.session, total: this.data.session.total + 1 };
-      this.setData({ session });
+      const shouldPause = this._autoScanning;
+      if (!attemptCounted) {
+        const session = { ...this.data.session, total: this.data.session.total + 1 };
+        this.setData({ session });
+      }
       this.markScanFailure(error.message || "相机未识别到条码。");
+      if (!shouldPause) {
+        this.setData({ scanState: "ready" });
+        this.persistSession();
+      }
     } finally {
       this._scanOpening = false;
     }
@@ -387,7 +423,7 @@ Page({
   },
 
   removeScanItem(event) {
-    if (this.data.submissionStarted || this.data.submitting) return;
+    if (this.data.scanState !== "ready" || this.data.submissionStarted || this.data.submitting) return;
     const editionId = event.currentTarget.dataset.id;
     wx.showModal({
       title: "从本轮列表移除？",
@@ -404,24 +440,30 @@ Page({
   },
 
   async chooseShelf() {
-    if (this.data.submitting) return;
+    if (this.data.submitting || (!this.data.submissionStarted && this.data.scanState !== "ready")) return;
+    this.setData({ shelvesLoading: true });
     try {
       const data = await services.bookshelf("listShelves", {});
-      const shelves = data.items || [];
-      wx.showActionSheet({
-        itemList: ["不加入书架", ...shelves.map((shelf) => shelf.name)],
-        success: ({ tapIndex }) => {
-          const selectedShelf = tapIndex === 0 ? null : {
-            bookshelf_id: shelves[tapIndex - 1].bookshelf_id,
-            name: shelves[tapIndex - 1].name
-          };
-          this.setData({ selectedShelf, submitError: "" });
-          this.persistSession();
-        }
-      });
+      this.setData({ shelves: data.items || [], shelfPickerOpen: true });
     } catch (error) {
       wx.showToast({ title: error.message || "书架加载失败", icon: "none" });
+    } finally {
+      this.setData({ shelvesLoading: false });
     }
+  },
+
+  closeShelfPicker() {
+    if (!this.data.shelvesLoading) this.setData({ shelfPickerOpen: false });
+  },
+
+  noop() {},
+
+  selectShelf(event) {
+    const shelfId = event.currentTarget.dataset.id || "";
+    const shelf = this.data.shelves.find((item) => item.bookshelf_id === shelfId);
+    const selectedShelf = shelf ? { bookshelf_id: shelf.bookshelf_id, name: shelf.name } : null;
+    this.setData({ selectedShelf, shelfPickerOpen: false, submitError: "" });
+    this.persistSession();
   },
 
   updateCommitItem(itemIndex, updater) {
@@ -533,13 +575,13 @@ Page({
   },
 
   completeContinuousSession(shelfAddedCount) {
+    this._sessionCompleted = true;
     track("continuous_scan_finished", { scan_mode: "continuous", scan_session_id: this.data.scanSessionId });
     try {
       wx.removeStorageSync(sessionStorageKey(this.data.scanSessionId));
       wx.removeStorageSync(CONTINUOUS_SCAN_STORAGE_KEY);
     } catch (_) {}
-    const suffix = this.data.selectedShelf ? `，${shelfAddedCount} 本已加入书架` : "";
-    wx.showToast({ title: `已入馆 ${this.data.copyCount} 册${suffix}`, icon: "success" });
+    wx.showToast({ title: "入馆完成", icon: "success" });
     wx.reLaunch({ url: "/pages/library/index" });
   },
 
@@ -560,7 +602,14 @@ Page({
       scanState: "ready",
       ...sessionTotals(scanItems)
     });
-    this.persistSession();
+    if (this.persistSession() === false) {
+      this.setData({
+        submissionStarted: false,
+        submitting: false,
+        submitError: "保存本轮进度失败，请检查小程序存储空间后重试。"
+      });
+      return;
+    }
     try {
       const allCommitted = await this.commitPendingItems();
       if (!allCommitted) {

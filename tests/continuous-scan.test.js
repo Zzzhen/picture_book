@@ -46,6 +46,14 @@ test("duplicate ISBN scans merge into one pending row and increase copies", () =
   assert.deepEqual(sessionTotals(second), { uniqueCount: 1, copyCount: 2, committedCount: 0 });
 });
 
+test("the same ISBN merges even when inconsistent edition IDs are returned", () => {
+  const first = mergeScanItem([], lookup("edition_a", "9780000000001"));
+  const second = mergeScanItem(first, lookup("edition_b", "9780000000001"));
+
+  assert.equal(second.length, 1);
+  assert.equal(second[0].scan_count, 2);
+});
+
 test("a pending row can be removed without mutating the original list", () => {
   const original = [mergeScanItem([], lookup())[0], mergeScanItem([], lookup("isbn_2", "9780000000002"))[0]];
   const next = removeScanItem(original, "isbn_9780000000001");

@@ -12,8 +12,10 @@ function createContinuousSession(scanSessionId) {
 }
 
 function mergeScanItem(items, lookup) {
-  const key = lookup.edition_id || lookup.isbn13;
-  const index = items.findIndex((item) => (item.edition_id || item.isbn13) === key);
+  const index = items.findIndex((item) => (
+    Boolean(item.edition_id && lookup.edition_id && item.edition_id === lookup.edition_id)
+    || Boolean(item.isbn13 && lookup.isbn13 && item.isbn13 === lookup.isbn13)
+  ));
   if (index < 0) {
     return items.concat({
       ...lookup,
