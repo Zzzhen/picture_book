@@ -138,6 +138,48 @@ test("book detail stays editable and saves without a header edit mode", () => {
   assert.doesNotMatch(controller, /toggleEdit\s*\(/);
 });
 
+test("book detail deletion is single-flight and returns to the previous page", async () => {
+  let definition;
+  let deleteCalls = 0;
+  let resolveDelete;
+  let backCalls = 0;
+  let relaunchCalls = 0;
+  global.Page = (value) => { definition = value; };
+  global.wx = {
+    navigateBack() { backCalls += 1; },
+    reLaunch() { relaunchCalls += 1; },
+    showToast() {}
+  };
+  const apiPath = path.join(root, "miniprogram/services/api");
+  const pagePath = path.join(root, "miniprogram/pages/book-detail/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  const { services } = require(apiPath);
+  const originalLibrary = services.library;
+  services.library = async () => {
+    deleteCalls += 1;
+    await new Promise((resolve) => { resolveDelete = resolve; });
+    return {};
+  };
+  const page = {
+    ...definition,
+    data: { ...JSON.parse(JSON.stringify(definition.data)), id: "book_1" },
+    setData(next) { this.data = { ...this.data, ...next }; }
+  };
+  try {
+    const first = page.deleteBook();
+    const second = page.deleteBook();
+    await Promise.resolve();
+    assert.equal(deleteCalls, 1);
+    resolveDelete();
+    await Promise.all([first, second]);
+    assert.equal(backCalls, 1);
+    assert.equal(relaunchCalls, 0);
+  } finally {
+    services.library = originalLibrary;
+  }
+});
+
 test("library book cards constrain every cover to the same grid ratio", () => {
   const cardStyles = fs.readFileSync(path.join(root, "miniprogram/components/book-card/index.wxss"), "utf8");
   assert.match(cardStyles, /\.book-card__cover\s*\{[\s\S]*?width:\s*100%;[\s\S]*?aspect-ratio:\s*3\s*\/\s*4;/);

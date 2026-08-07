@@ -5,7 +5,7 @@
     <text wx:if="{{message}}" class="dialog__message">{{message}}</text>
     <view class="dialog__actions">
       <ui-button type="secondary" text="{{cancelText}}" bind:tap="onCancel" />
-      <ui-button type="{{danger ? 'danger' : 'primary'}}" text="{{confirmText}}" bind:tap="onConfirm" />
+      <ui-button type="{{danger ? 'danger' : 'primary'}}" text="{{confirmText}}" loading="{{loading}}" bind:tap="onConfirm" />
     </view>
   </view>
 </view>

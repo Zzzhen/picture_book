@@ -38,6 +38,7 @@ Page({
       note: ""
     },
     deleteVisible: false,
+    deleting: false,
     saving: false
   },
 
@@ -124,14 +125,18 @@ Page({
   },
 
   closeDelete() {
-    this.setData({ deleteVisible: false });
+    if (!this.data.deleting) this.setData({ deleteVisible: false });
   },
 
   async deleteBook() {
+    if (this.data.deleting) return;
+    this.setData({ deleting: true });
     try {
       await services.library("removeBook", { user_book_id: this.data.id, confirm: true });
-      wx.reLaunch({ url: "/pages/library/index" });
+      this.setData({ deleteVisible: false, deleting: false });
+      wx.navigateBack({ delta: 1 });
     } catch (error) {
+      this.setData({ deleting: false });
       wx.showToast({ title: error.message, icon: "none" });
     }
   }

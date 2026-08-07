@@ -5,6 +5,7 @@ Component({
     message: { type: String, value: "" },
     confirmText: { type: String, value: "确认" },
     cancelText: { type: String, value: "取消" },
+    loading: { type: Boolean, value: false },
     danger: { type: Boolean, value: false }
   },
   methods: {

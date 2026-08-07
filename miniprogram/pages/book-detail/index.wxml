@@ -41,5 +41,5 @@
     <ui-button text="保存修改" loading="{{saving}}" disabled="{{saving}}" bind:tap="saveBook" />
     <ui-button type="danger" text="从绘本馆删除" bind:tap="askDelete" />
   </view>
-  <confirm-dialog visible="{{deleteVisible}}" danger="{{true}}" title="删除这本绘本？" message="会同时从所有书架移除，家庭备注也会删除。此操作无法撤销。" confirm-text="确认删除" bind:confirm="deleteBook" bind:cancel="closeDelete" />
+  <confirm-dialog visible="{{deleteVisible}}" loading="{{deleting}}" danger="{{true}}" title="删除这本绘本？" message="会同时从所有书架移除，家庭备注也会删除。此操作无法撤销。" confirm-text="确认删除" bind:confirm="deleteBook" bind:cancel="closeDelete" />
 </view>
