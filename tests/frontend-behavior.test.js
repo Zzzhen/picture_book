@@ -144,8 +144,10 @@ test("book detail deletion is single-flight and returns to the previous page", a
   let resolveDelete;
   let backCalls = 0;
   let relaunchCalls = 0;
+  let refreshMarker;
   global.Page = (value) => { definition = value; };
   global.wx = {
+    setStorageSync(key, value) { if (key === "v1_core_library_needs_refresh") refreshMarker = value; },
     navigateBack() { backCalls += 1; },
     reLaunch() { relaunchCalls += 1; },
     showToast() {}
@@ -175,9 +177,37 @@ test("book detail deletion is single-flight and returns to the previous page", a
     await Promise.all([first, second]);
     assert.equal(backCalls, 1);
     assert.equal(relaunchCalls, 0);
+    assert.ok(refreshMarker);
   } finally {
     services.library = originalLibrary;
   }
+});
+
+test("library refreshes once when returning from a completed deletion", () => {
+  let definition;
+  let removed = 0;
+  let refreshCalls = 0;
+  let marker = Date.now();
+  global.Page = (value) => { definition = value; };
+  global.wx = {
+    getStorageSync(key) { return key === "v1_core_library_needs_refresh" ? marker : null; },
+    removeStorageSync(key) { if (key === "v1_core_library_needs_refresh") { removed += 1; marker = null; } },
+    stopPullDownRefresh() {},
+    getTabBar() { return null; }
+  };
+  const pagePath = path.join(root, "miniprogram/pages/library/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  const page = {
+    ...definition,
+    data: JSON.parse(JSON.stringify(definition.data)),
+    loadBooks(reset) { if (reset) refreshCalls += 1; },
+    setData(next) { this.data = { ...this.data, ...next }; }
+  };
+  page.onShow();
+  page.onShow();
+  assert.equal(removed, 1);
+  assert.equal(refreshCalls, 1);
 });
 
 test("library book cards constrain every cover to the same grid ratio", () => {

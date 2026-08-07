@@ -1,6 +1,8 @@
 const { services } = require("../../services/api");
 const { track } = require("../../services/analytics");
 
+const LIBRARY_REFRESH_KEY = "v1_core_library_needs_refresh";
+
 function mapDetail(data) {
   const item = data.user_book;
   const edition = item.edition || {};
@@ -133,6 +135,9 @@ Page({
     this.setData({ deleting: true });
     try {
       await services.library("removeBook", { user_book_id: this.data.id, confirm: true });
+      try {
+        wx.setStorageSync(LIBRARY_REFRESH_KEY, Date.now());
+      } catch (_) {}
       this.setData({ deleteVisible: false, deleting: false });
       wx.navigateBack({ delta: 1 });
     } catch (error) {

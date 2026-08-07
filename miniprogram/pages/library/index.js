@@ -1,6 +1,9 @@
 const { services } = require("../../services/api");
 const { track } = require("../../services/analytics");
 
+const LIBRARY_REFRESH_KEY = "v1_core_library_needs_refresh";
+const LIBRARY_REFRESH_TTL_MS = 60 * 1000;
+
 function mapBook(item) {
   const edition = item.edition || {};
   return {
@@ -44,6 +47,18 @@ Page({
   onShow() {
     const tab = this.getTabBar && this.getTabBar();
     if (tab) tab.setData({ selected: 0 });
+    const marker = Number(wx.getStorageSync(LIBRARY_REFRESH_KEY));
+    if (!Number.isFinite(marker) || marker <= 0) return;
+    wx.removeStorageSync(LIBRARY_REFRESH_KEY);
+    if (Date.now() - marker <= LIBRARY_REFRESH_TTL_MS) this.refreshAfterReturn();
+  },
+
+  refreshAfterReturn() {
+    if (this.data.paginationState === "loading") {
+      this._refreshAfterLoad = true;
+      return;
+    }
+    this.loadBooks(true);
   },
 
   async loadIdentity() {
@@ -86,6 +101,10 @@ Page({
       this.setData({ state: "error", errorMessage: error.message, paginationState: "idle" });
     } finally {
       wx.stopPullDownRefresh();
+      if (this._refreshAfterLoad) {
+        this._refreshAfterLoad = false;
+        this.loadBooks(true);
+      }
     }
   },
 
