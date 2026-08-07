@@ -108,6 +108,11 @@ test("confirmation and detail pages map normalized price and page count", () => 
   assert.match(detail, /pageCount:\s*edition\.page_count_text/);
 });
 
+test("book confirmation hides the cache-hit informational banner", () => {
+  const template = fs.readFileSync(path.join(root, "miniprogram/pages/book-confirm/index.wxml"), "utf8");
+  assert.doesNotMatch(template, /已从书库找到/);
+});
+
 test("library cover mapping resolves cloud file IDs into temporary image URLs", async () => {
   global.wx = {
     cloud: {

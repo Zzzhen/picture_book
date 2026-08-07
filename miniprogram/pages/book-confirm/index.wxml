@@ -1,7 +1,6 @@
 <view class="confirm-page">
   <app-header title="{{continuous ? '确认并继续' : '确认绘本'}}" back="{{true}}" />
   <view class="confirm-page__content">
-    <status-banner wx:if="{{source === 'cache'}}" type="info" title="已从书库找到" message="这本书曾经查询成功，本次不会调用付费接口。" />
     <status-banner wx:if="{{duplicate}}" type="warning" title="馆里已经有这本" message="确认后只增加馆藏数量，不会创建重复记录。" />
     <view class="confirm-page__hero">
       <book-cover size="large" src="{{book.coverUrl}}" title="{{book.title}}" />
