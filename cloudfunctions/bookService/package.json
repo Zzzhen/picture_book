@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "private": true,
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
+    "qiniu": "^7.15.2",
     "wx-server-sdk": "4.0.2"
   }
 }

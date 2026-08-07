@@ -30,7 +30,7 @@ async function listShelves(ctx) {
     const relations = await queryAll(ctx.db.collection("bookshelf_books").where({ owner_id: ctx.userId, bookshelf_id: shelf._id }).orderBy("sort_order", "asc"), 4);
     const books = (await Promise.all(relations.map((row) => getById(ctx.db.collection("user_books"), row.user_book_id)))).filter(Boolean);
     const editions = (await Promise.all(books.map((book) => getById(ctx.db.collection("book_editions"), book.edition_id)))).filter(Boolean);
-    return { ...shelfSummary(shelf), cover_file_ids: editions.map((edition) => edition.cover_file_id).filter(Boolean).slice(0, 4) };
+    return { ...shelfSummary(shelf), cover_urls: editions.map((edition) => edition.cover_url).filter(Boolean).slice(0, 4) };
   }));
   return { items };
 }

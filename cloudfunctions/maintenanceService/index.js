@@ -2,6 +2,7 @@ const { loadSdk, getById, queryAll, queryAllById, documentData } = require("../_
 const { AppError } = require("../_shared/errors");
 const { success, failure } = require("../_shared/response");
 const { drainBatches, deletionRetryState } = require("../_shared/deletion");
+const { deleteCoverKey } = require("../_shared/qiniu-cover");
 
 async function cleanupLookupCache(ctx) {
   const expired = await queryAll(ctx.db.collection("isbn_lookup_cache").where({
@@ -50,6 +51,7 @@ async function processDeletionJobs(ctx) {
             await ctx.db.collection("book_editions").doc(edition._id).update({ data: { created_by: "", updated_at: ctx.now() } });
           } else {
             if (edition.cover_file_id) await ctx.cloud.deleteFile({ fileList: [edition.cover_file_id] }).catch(() => {});
+            if (edition.cover_key) await deleteCoverKey(edition.cover_key).catch(() => {});
             await ctx.db.collection("book_editions").doc(edition._id).remove();
           }
         }

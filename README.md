@@ -41,6 +41,12 @@ npm run check:cloud-build
 | `ISBN_PROVIDER_TIMEOUT_MS` | `bookService` | 单次供应商请求超时，默认 `5000` |
 | `COVER_SOURCE_HOST_ALLOWLIST` | `bookService`、`adminService` | 允许转存封面的来源域名，逗号分隔；必须根据真实响应配置 |
 | `COVER_MAX_BYTES` | `bookService`、`adminService` | 封面字节上限，默认且最高 `5242880` |
+| `QINIU_ACCESS_KEY` | `bookService`、`adminService`、`maintenanceService` | 七牛服务端 AccessKey；不得写入前端、仓库或日志 |
+| `QINIU_SECRET_KEY` | `bookService`、`adminService`、`maintenanceService` | 七牛服务端 SecretKey；不得写入前端、仓库或日志 |
+| `QINIU_BUCKET` | `bookService`、`adminService`、`maintenanceService` | 七牛封面存储空间名称 |
+| `QINIU_REGION` | `bookService`、`adminService`、`maintenanceService` | 七牛区域 ID，如 `z0`、`z1`；留空时 SDK 自动查询 |
+| `QINIU_PUBLIC_DOMAIN` | `bookService`、`adminService`、`maintenanceService` | 封面 HTTPS CDN 域名，例如 `https://static.irenduan.cn` |
+| `QINIU_KEY_PREFIX` | `bookService`、`adminService`、`maintenanceService` | 封面对象前缀，默认 `edition-covers/` |
 | `ISBN_USER_DAILY_LIMIT` | `bookService` | 用户日回源上限；系统配置默认 `100` |
 | `ISBN_GLOBAL_DAILY_LIMIT` | `bookService` | 系统日回源上限；系统配置默认 `3000` |
 | `ISBN_GLOBAL_MONTHLY_LIMIT` | `bookService` | 系统月回源上限；系统配置默认 `50000` |
@@ -55,7 +61,7 @@ npm run check:cloud-build
 
 1. 执行 `npm run build:cloud`。
 2. 在微信开发者工具将云函数根目录指向 `dist/cloudfunctions/`。
-3. 依次上传并部署 `userService`、`bookService`、`libraryService`、`bookshelfService`、`eventService`、`adminService`、`maintenanceService`，选择“云端安装依赖”。
+3. 依次上传并部署 `userService`、`bookService`、`libraryService`、`bookshelfService`、`eventService`、`adminService`、`maintenanceService`，选择“云端安装依赖”。其中三个涉及七牛的函数必须配置完整的七牛环境变量。
 4. 按开发文档配置超时与内存：普通服务 10–20 秒、256–512 MB；`maintenanceService` 60 秒、512 MB。
 5. 检查七个函数的 `USER_ID_SECRET` 一致，production 与 development 不得共用。
 
@@ -81,6 +87,7 @@ npm run check:cloud-build
 - 20 个相同 ISBN 并发请求最多一次供应商调用。
 - 连续扫码的新书、重复、失败、跳过、结束汇总完整。
 - 缓存书库搜索无结果时只展示空状态，不回源。
+- 封面请求使用 `https://static.irenduan.cn`，并已加入小程序「downloadFile 合法域名」；新 ISBN 查询后 `book_editions.cover_url` 可直接访问。
 - 手工录入展示 1–3 天时限，驳回原因可见且可修改重提。
 - 管理员可处理 ISBN 冲突，馆藏与书架关系迁移后数量正确。
 - 320、375、430px 下按 `docs/ui-skill-visual-review.md` 截图复查。

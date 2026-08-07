@@ -53,6 +53,18 @@ function cursorValue(book, sortField) {
   return book[sortField] === undefined ? (sortField === "custom_sort" ? 0 : "") : book[sortField];
 }
 
+async function loadRelationCounts(ctx, items) {
+  const ids = Array.from(new Set(items.map((item) => item._id)));
+  if (!ids.length) return new Map();
+  const relations = await queryAllById(ctx, "bookshelf_books", {
+    owner_id: ctx.userId,
+    user_book_id: ctx.command.in(ids)
+  }, Math.min(5000, ids.length * 50));
+  const counts = new Map();
+  relations.forEach((relation) => counts.set(relation.user_book_id, (counts.get(relation.user_book_id) || 0) + 1));
+  return counts;
+}
+
 async function listBooks(ctx, payload) {
   const limit = payload.limit === undefined ? 24 : integer(payload.limit, "limit", 1, 50);
   const sort = enumValue(payload.sort || "newest", "sort", ["newest", "oldest", "title", "custom"]);
@@ -94,7 +106,7 @@ async function listBooks(ctx, payload) {
     }
     if (cover) {
       books = books.filter((book) => {
-        const hasCover = Boolean(editions.get(book.edition_id) && editions.get(book.edition_id).cover_file_id);
+        const hasCover = Boolean(editions.get(book.edition_id) && editions.get(book.edition_id).cover_url);
         return cover === "with" ? hasCover : !hasCover;
       });
     }
@@ -109,12 +121,10 @@ async function listBooks(ctx, payload) {
     const page = books.slice(0, limit + 1);
     const hasMore = page.length > limit;
     const items = page.slice(0, limit);
-    const relationCounts = await Promise.all(items.map((item) =>
-      ctx.db.collection("bookshelf_books").where({ owner_id: ctx.userId, user_book_id: item._id }).count()
-    ));
+    const relationCountByBook = await loadRelationCounts(ctx, items);
     const last = items[items.length - 1];
     return {
-      items: items.map((item, index) => userBookSummary(item, editions.get(item.edition_id), relationCounts[index].total)),
+      items: items.map((item) => userBookSummary(item, editions.get(item.edition_id), relationCountByBook.get(item._id) || 0)),
       next_cursor: hasMore && last ? encodeCursor({ value: cursorValue(last, sortField), id: last._id }, binding) : null,
       has_more: hasMore
     };
@@ -138,21 +148,21 @@ async function listBooks(ctx, payload) {
   const editions = await loadEditions(ctx, books);
   if (cover) {
     books = books.filter((book) => {
-      const hasCover = Boolean(editions.get(book.edition_id) && editions.get(book.edition_id).cover_file_id);
+      const hasCover = Boolean(editions.get(book.edition_id) && editions.get(book.edition_id).cover_url);
       return cover === "with" ? hasCover : !hasCover;
     });
   }
   const page = books.slice(0, limit + 1);
   const hasMore = page.length > limit;
   const items = page.slice(0, limit);
-  const relationCounts = await Promise.all(items.map((item) => ctx.db.collection("bookshelf_books").where({ owner_id: ctx.userId, user_book_id: item._id }).count()));
+  const relationCountByBook = await loadRelationCounts(ctx, items);
   const last = items[items.length - 1];
   let nextCursor = null;
   if (hasMore && last) {
     nextCursor = encodeCursor({ value: cursorValue(last, sortField), id: last._id }, binding);
   }
   return {
-    items: items.map((item, index) => userBookSummary(item, editions.get(item.edition_id), relationCounts[index].total)),
+    items: items.map((item) => userBookSummary(item, editions.get(item.edition_id), relationCountByBook.get(item._id) || 0)),
     next_cursor: nextCursor,
     has_more: hasMore
   };

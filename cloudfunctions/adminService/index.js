@@ -402,13 +402,13 @@ async function retryCoverTransfer(ctx, payload) {
   const id = text(payload.edition_id, "edition_id", { min: 1, max: 100 });
   const edition = await getById(ctx.db.collection("book_editions"), id);
   if (!edition) throw new AppError("BOOK_NOT_FOUND", "绘本版本不存在");
-  if (edition.cover_file_id) return { edition_id: id, cover_status: "ready", cover_file_id: edition.cover_file_id };
+  if (edition.cover_url) return { edition_id: id, cover_status: "ready", cover_url: edition.cover_url };
   if (!edition.cover_origin_url) throw new AppError("COVER_SOURCE_EXPIRED", "没有可重试的原始封面地址");
   await ctx.db.collection("book_editions").doc(id).update({ data: { cover_status: "pending", updated_at: ctx.now() } });
   const cover = await transferCover(ctx.cloud, id, edition.cover_origin_url);
   await ctx.db.collection("book_editions").doc(id).update({ data: { ...cover, updated_at: ctx.now() } });
   await writeAudit(ctx, "retry_cover_transfer", "book_edition", id, { from: edition.cover_status, to: cover.cover_status });
-  return { edition_id: id, cover_status: cover.cover_status, cover_file_id: cover.cover_file_id || undefined };
+  return { edition_id: id, cover_status: cover.cover_status, cover_url: cover.cover_url || undefined };
 }
 
 exports.main = createMain("adminService", {

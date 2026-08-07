@@ -13,7 +13,14 @@ fs.mkdirSync(outputRoot, { recursive: true });
 for (const service of services) {
   const source = path.join(sourceRoot, service);
   const destination = path.join(outputRoot, service);
-  fs.cpSync(source, destination, { recursive: true });
+  fs.mkdirSync(destination, { recursive: true });
+  // Copy only deployable source and manifests. Dependencies are installed by
+  // the cloud runtime from package-lock.json, so local node_modules never
+  // enter the deploy artifact.
+  for (const file of ["index.js", "package.json", "package-lock.json"]) {
+    const entry = path.join(source, file);
+    if (fs.existsSync(entry)) fs.copyFileSync(entry, path.join(destination, file));
+  }
   fs.cpSync(sharedRoot, path.join(destination, "_shared"), { recursive: true });
   const entry = path.join(destination, "index.js");
   const rewritten = fs.readFileSync(entry, "utf8").replaceAll("../_shared/", "./_shared/");

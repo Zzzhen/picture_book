@@ -23,7 +23,7 @@ Page({
         name: item.name,
         description: item.description,
         bookCount: item.book_count,
-        covers: item.cover_file_ids || []
+        covers: item.cover_urls || []
       }));
       this.setData({ shelves, state: shelves.length ? "content" : "empty" });
     } catch (error) {

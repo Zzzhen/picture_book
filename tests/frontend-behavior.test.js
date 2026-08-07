@@ -122,6 +122,12 @@ test("library cover mapping resolves cloud file IDs into temporary image URLs", 
   assert.equal(await getTempFileUrl("https://cdn.example/cover.jpg"), "https://cdn.example/cover.jpg");
 });
 
+test("library page uses the persisted Qiniu cover URL without per-book temp URL calls", () => {
+  const script = fs.readFileSync(path.join(root, "miniprogram/pages/library/index.js"), "utf8");
+  assert.match(script, /cover_url/);
+  assert.doesNotMatch(script, /getTempFileUrl/);
+});
+
 test("book detail stays editable and saves without a header edit mode", () => {
   const source = fs.readFileSync(path.join(root, "miniprogram/pages/book-detail/index.wxml"), "utf8");
   assert.doesNotMatch(source, /slot="action"/);

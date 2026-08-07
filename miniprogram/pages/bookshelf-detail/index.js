@@ -23,7 +23,7 @@ function mapBook(item, selected = false) {
     userBookId: item.user_book_id,
     title: item.edition.title,
     author: item.edition.contributors_text,
-    coverUrl: item.edition.cover_file_id || "",
+    coverUrl: item.edition.cover_url || "",
     quantity: item.quantity,
     selected
   };

@@ -24,7 +24,7 @@ function mapBook(item, selectedIds) {
     userBookId: item.user_book_id,
     title: edition.title || "未命名绘本",
     author: edition.contributors_text || "作者待补充",
-    coverUrl: edition.cover_file_id || "",
+    coverUrl: edition.cover_url || "",
     quantity: item.quantity,
     selected: selectedIds.has(item.user_book_id),
     searchText: [edition.title, edition.contributors_text, edition.publisher, edition.isbn13]

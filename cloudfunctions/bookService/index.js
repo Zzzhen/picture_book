@@ -208,6 +208,8 @@ async function lookupByIsbn(ctx, payload) {
     ...providerEdition,
     ...search,
     cover_file_id: "",
+    cover_key: "",
+    cover_url: "",
     cover_status: providerEdition.cover_source_url ? "pending" : "missing",
     cover_origin_url: providerEdition.cover_source_url || "",
     title_normalized: normalizeSearchText(providerEdition.title),

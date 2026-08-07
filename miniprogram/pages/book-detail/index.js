@@ -10,7 +10,7 @@ function mapDetail(data) {
     title: edition.title || "",
     author: edition.contributors_text || "",
     publisher: edition.publisher || "",
-    coverUrl: edition.cover_file_id || "",
+    coverUrl: edition.cover_url || "",
     isbn13: edition.isbn13 || "",
     binding: edition.binding_type || "",
     publishDate: edition.publish_date_text || "",

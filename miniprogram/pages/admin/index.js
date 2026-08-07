@@ -116,7 +116,7 @@ Page({
             title: item.existing_edition.title,
             author: item.existing_edition.contributors_text,
             publisher: item.existing_edition.publisher,
-            coverUrl: item.existing_edition.cover_file_id || ""
+            coverUrl: item.existing_edition.cover_url || ""
           } : {}
         };
       });

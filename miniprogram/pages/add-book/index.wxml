@@ -103,7 +103,7 @@
       </view>
       <view wx:for="{{scanItems}}" wx:key="edition_id" class="add-book__scan-item add-book__scan-item--{{item.status}}">
         <view class="add-book__scan-cover">
-          <book-cover size="medium" src="{{item.cover_file_id}}" title="{{item.title}}" />
+          <book-cover size="medium" src="{{item.cover_url}}" title="{{item.title}}" />
         </view>
         <view class="add-book__scan-info">
           <text class="add-book__scan-title">{{item.title}}</text>

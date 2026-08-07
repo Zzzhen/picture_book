@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "family-picture-book-library": "file:../..",
+    "qiniu": "^7.15.2",
     "wx-server-sdk": "4.0.2"
   }
 }

@@ -283,7 +283,7 @@ Page({
     const cacheResult = edition ? {
       ...edition,
       author: edition.contributors_text,
-      coverUrl: edition.cover_file_id || ""
+      coverUrl: edition.cover_url || ""
     } : null;
     this.setData({ cacheResult, state: cacheResult ? "content" : "search-empty" });
   },
@@ -366,7 +366,7 @@ Page({
         title: edition.title,
         contributors_text: edition.contributors_text || "",
         publisher: edition.publisher || "",
-        cover_file_id: edition.cover_file_id || "",
+        cover_url: edition.cover_url || "",
         cache_hit: Boolean(lookup.cache_hit),
         provider_called: Boolean(lookup.provider_called)
       });

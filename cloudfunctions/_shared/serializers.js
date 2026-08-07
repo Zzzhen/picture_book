@@ -12,6 +12,7 @@ function editionSummary(edition) {
     contributors_text: edition.contributors_text || "",
     publisher: edition.publisher || "",
     cover_file_id: edition.cover_file_id || "",
+    cover_url: edition.cover_url || "",
     cover_status: edition.cover_status || "missing",
     source: edition.source || "",
     audit_status: edition.audit_status || "pending",
@@ -29,7 +30,7 @@ function shelfSummary(shelf) {
     description: shelf.description || "",
     sort_order: shelf.sort_order || 0,
     book_count: shelf.book_count || 0,
-    cover_file_ids: shelf.cover_file_ids || [],
+    cover_urls: shelf.cover_urls || [],
     updated_at: iso(shelf.updated_at)
   };
 }

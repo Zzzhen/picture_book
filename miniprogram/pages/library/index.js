@@ -1,8 +1,7 @@
 const { services } = require("../../services/api");
 const { track } = require("../../services/analytics");
-const { getTempFileUrl } = require("../../utils/cloud-file");
 
-async function mapBook(item) {
+function mapBook(item) {
   const edition = item.edition || {};
   return {
     _id: item.user_book_id,
@@ -10,7 +9,7 @@ async function mapBook(item) {
     title: edition.title,
     author: edition.contributors_text,
     publisher: edition.publisher,
-    coverUrl: await getTempFileUrl(edition.cover_file_id || ""),
+    coverUrl: edition.cover_url || "",
     reviewStatus: edition.audit_status,
     quantity: item.quantity,
     preference: item.preference,

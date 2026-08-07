@@ -1,6 +1,7 @@
 const https = require("node:https");
 const { AppError } = require("./errors");
 const { validateCoverUrl, resolvePublicAddresses, detectImageType } = require("./cover-security");
+const { uploadCoverBuffer } = require("./qiniu-cover");
 
 const configuredMaxBytes = Number(process.env.COVER_MAX_BYTES);
 const MAX_BYTES = Number.isFinite(configuredMaxBytes)
@@ -128,16 +129,12 @@ async function fetchSafeImage(source, redirectCount = 0) {
   return { buffer, contentType: magicType, dimensions };
 }
 
-async function transferCover(cloud, editionId, sourceUrl) {
+async function transferCover(_cloud, editionId, sourceUrl) {
   if (!sourceUrl) return { cover_file_id: "", cover_status: "missing" };
   try {
     const image = await fetchSafeImage(sourceUrl);
-    const extension = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" }[image.contentType];
-    const upload = await cloud.uploadFile({
-      cloudPath: `edition-covers/${editionId}.${extension}`,
-      fileContent: image.buffer
-    });
-    return { cover_file_id: upload.fileID, cover_status: "ready" };
+    const upload = await uploadCoverBuffer({ editionId, body: image.buffer, contentType: image.contentType });
+    return { cover_file_id: "", cover_key: upload.key, cover_url: upload.cover_url, cover_status: "ready" };
   } catch (error) {
     console.error("cover transfer failed", { editionId, code: error.code || "UNKNOWN" });
     return { cover_file_id: "", cover_status: "failed" };
