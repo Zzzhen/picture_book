@@ -1,58 +1,93 @@
 const { services } = require("../../services/api");
 const { normalizeIsbn, isValidIsbn } = require("../../utils/isbn");
 const { track } = require("../../services/analytics");
+const {
+  SESSION_VERSION,
+  createContinuousSession,
+  mergeScanItem: mergePendingScanItem,
+  removeScanItem: removePendingScanItem,
+  sessionTotals
+} = require("../../utils/continuous-scan");
 
 const CONTINUOUS_SCAN_STORAGE_KEY = "v1_core_continuous_scan";
 const CONTINUOUS_SCAN_TTL_MS = 24 * 60 * 60 * 1000;
+const SUCCESS_FEEDBACK_MS = 800;
 const sessionStorageKey = (sessionId) => `${CONTINUOUS_SCAN_STORAGE_KEY}:${sessionId}`;
 
 Page({
   data: {
     mode: "choose",
     state: "idle",
-    scanState: "idle",
+    scanState: "ready",
     isbn: "",
     isbnError: "",
     querying: false,
     cacheKeyword: "",
     cacheResult: null,
-    session: { total: 0, added: 0, duplicates: 0, skipped: 0, failures: 0 },
+    session: { total: 0, successful: 0, skipped: 0, failures: 0 },
+    scanItems: [],
+    uniqueCount: 0,
+    copyCount: 0,
+    committedCount: 0,
+    selectedShelf: null,
+    submissionStarted: false,
+    submitting: false,
     lastBook: {},
-    pendingLookup: null,
     failedItems: []
   },
 
   onLoad(query) {
     if (query.mode) this.setData({ mode: query.mode });
-    if (query.mode === "continuous") this.restoreSession();
+    if (query.mode === "continuous" && !this.restoreSession()) this.createTrackedSession();
   },
 
   onShow() {
+    this._pageAlive = true;
     this._confirmationOpening = false;
   },
 
+  onHide() {
+    this._pageAlive = false;
+    this.clearScanTimer();
+    if (this.data.mode === "continuous") this.persistSession();
+  },
+
   onUnload() {
+    this._pageAlive = false;
+    this._autoScanning = false;
+    this.clearScanTimer();
     if (this.data.mode === "continuous") this.persistSession();
   },
 
   chooseMode(event) {
     this.setData({ mode: event.currentTarget.dataset.mode });
     if (event.currentTarget.dataset.mode === "continuous") {
-      if (!this.restoreSession()) {
-        const sessionId = this.startSession();
-        track("continuous_scan_started", { scan_mode: "continuous", scan_session_id: sessionId });
-      }
+      if (!this.restoreSession()) this.createTrackedSession();
     }
+  },
+
+  createTrackedSession() {
+    const sessionId = this.startSession();
+    track("continuous_scan_started", { scan_mode: "continuous", scan_session_id: sessionId });
+    return sessionId;
   },
 
   startSession() {
     const sessionId = `scan_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+    const draft = createContinuousSession(sessionId);
     this.setData({
       scanSessionId: sessionId,
-      scanState: "idle",
-      pendingLookup: null,
+      scanState: "ready",
+      scanError: "",
       failedItems: [],
-      session: { total: 0, added: 0, duplicates: 0, skipped: 0, failures: 0 }
+      session: draft.session,
+      scanItems: draft.scanItems,
+      selectedShelf: draft.selectedShelf,
+      submissionStarted: draft.submissionStarted,
+      submitting: false,
+      uniqueCount: 0,
+      copyCount: 0,
+      committedCount: 0
     });
     this.persistSession();
     return sessionId;
@@ -62,18 +97,24 @@ Page({
     try {
       const activeSessionId = wx.getStorageSync(CONTINUOUS_SCAN_STORAGE_KEY);
       const saved = activeSessionId ? wx.getStorageSync(sessionStorageKey(activeSessionId)) : null;
-      if (!saved || saved.expiresAt <= Date.now() || !saved.scanSessionId) {
+      if (!saved || saved.version !== SESSION_VERSION || saved.expiresAt <= Date.now() || !saved.scanSessionId) {
         if (activeSessionId) wx.removeStorageSync(sessionStorageKey(activeSessionId));
         wx.removeStorageSync(CONTINUOUS_SCAN_STORAGE_KEY);
         return false;
       }
+      const scanItems = Array.isArray(saved.scanItems) ? saved.scanItems : [];
+      const totals = sessionTotals(scanItems);
       this.setData({
         scanSessionId: saved.scanSessionId,
-        session: saved.session,
-        scanState: saved.scanState === "scanning" ? "idle" : saved.scanState || "idle",
+        session: saved.session || { total: 0, successful: 0, skipped: 0, failures: 0 },
+        scanState: saved.scanState === "paused" ? "paused" : "ready",
         lastBook: saved.lastBook || {},
-        pendingLookup: saved.pendingLookup || null,
-        failedItems: saved.failedItems || []
+        scanItems,
+        failedItems: saved.failedItems || [],
+        selectedShelf: saved.selectedShelf || null,
+        submissionStarted: Boolean(saved.submissionStarted),
+        submitting: false,
+        ...totals
       });
       return true;
     } catch (_) {
@@ -86,21 +127,26 @@ Page({
     try {
       wx.setStorageSync(CONTINUOUS_SCAN_STORAGE_KEY, this.data.scanSessionId);
       wx.setStorageSync(sessionStorageKey(this.data.scanSessionId), {
+        version: SESSION_VERSION,
         scanSessionId: this.data.scanSessionId,
         session: this.data.session,
         scanState: this.data.scanState,
         lastBook: this.data.lastBook,
-        pendingLookup: this.data.pendingLookup,
+        scanItems: this.data.scanItems,
         failedItems: this.data.failedItems,
+        selectedShelf: this.data.selectedShelf,
+        submissionStarted: this.data.submissionStarted,
         expiresAt: Date.now() + CONTINUOUS_SCAN_TTL_MS
       });
     } catch (_) {}
   },
 
   markScanFailure(message) {
+    this._autoScanning = false;
+    this.clearScanTimer();
     const session = { ...this.data.session, failures: this.data.session.failures + 1 };
     const failedItems = [...this.data.failedItems, { isbn: this.data.currentScanIsbn || "未识别条码", message }].slice(-20);
-    this.setData({ session, failedItems, scanState: "failed", scanError: message });
+    this.setData({ session, failedItems, scanState: "paused", scanError: message });
     track("continuous_scan_book_added", {
       scan_mode: "continuous",
       scan_session_id: this.data.scanSessionId,
@@ -211,122 +257,139 @@ Page({
     if (book) wx.navigateTo({ url: `/pages/book-confirm/index?editionId=${book.edition_id}&isbn=${book.isbn13}&source=cache` });
   },
 
-  async scanContinuous() {
-    if (this.data.scanState === "scanning") return;
+  clearScanTimer() {
+    if (this._scanTimer) clearTimeout(this._scanTimer);
+    this._scanTimer = null;
+  },
+
+  scheduleNextScan() {
+    this.clearScanTimer();
+    this._scanTimer = setTimeout(() => {
+      if (this._autoScanning && this._pageAlive && !this.data.submitting) this.scanContinuous();
+    }, SUCCESS_FEEDBACK_MS);
+  },
+
+  startContinuousScan() {
+    if (this.data.submissionStarted || this.data.submitting) return;
+    if (!this.data.scanSessionId) this.createTrackedSession();
     if (this.data.session.total >= 100) {
-      wx.showToast({ title: "本轮已达到 100 次上限", icon: "none" });
-      this.finishContinuous();
+      this.stopContinuousScan("本轮已达到 100 次上限");
       return;
     }
-    this.setData({ scanState: "scanning" });
-    wx.scanCode({
-      scanType: ["barCode"],
-      success: async ({ result }) => {
-        const isbn = normalizeIsbn(result);
-        const session = { ...this.data.session, total: this.data.session.total + 1 };
-        this.setData({ session, currentScanIsbn: isbn, isbn });
-        this.persistSession();
-        if (!isValidIsbn(isbn)) {
-          this.markScanFailure("这不是有效的 ISBN 条码。");
-          return;
-        }
-        try {
-          let lookup;
-          try {
-            lookup = await services.book("lookupByIsbn", { isbn, scan_session_id: this.data.scanSessionId });
-          } catch (lookupError) {
-            if (lookupError.code !== "BOOK_LOOKUP_IN_PROGRESS") throw lookupError;
-            lookup = await this.waitForLookup(isbn);
-          }
-          const existingPage = await services.library("listBooks", { query: isbn, limit: 3 });
-          const existing = existingPage.items.find((item) => item.edition && item.edition.edition_id === lookup.edition.edition_id);
-          if (existing) {
-            this.setData({
-              pendingLookup: lookup,
-              lastBook: { title: lookup.edition.title, quantity: existing.quantity || 1 },
-              scanState: "duplicate-choice"
-            });
-            this.persistSession();
-            return;
-          }
-          const added = await services.library("addBook", { edition_id: lookup.edition.edition_id, quantity_delta: 1, scan_session_id: this.data.scanSessionId });
-          track("continuous_scan_book_added", {
-            scan_mode: "continuous",
-            scan_session_id: this.data.scanSessionId,
-            cache_hit: lookup.cache_hit,
-            provider_called: lookup.provider_called,
-            result_code: added.created ? "added" : "duplicate"
-          });
-          const nextSession = { ...this.data.session };
-          if (added.created) nextSession.added += 1;
-          else nextSession.duplicates += 1;
-          this.setData({ session: nextSession, lastBook: { title: lookup.edition.title }, scanState: added.created ? "success" : "duplicate" });
-          this.persistSession();
-        } catch (error) {
-          this.markScanFailure(error.message);
-        }
-      },
-      fail: (error) => {
-        if (String(error.errMsg || "").includes("cancel")) {
-          this.setData({ scanState: "idle", scanError: "" });
-          this.persistSession();
-          return;
-        }
-        const session = { ...this.data.session, total: this.data.session.total + 1 };
-        this.setData({ session });
-        this.markScanFailure("相机未识别到条码。");
+    this._autoScanning = true;
+    this.setData({ scanState: "ready", scanError: "" });
+    this.scanContinuous();
+  },
+
+  stopContinuousScan(message = "") {
+    this._autoScanning = false;
+    this.clearScanTimer();
+    if (!this.data.submitting) this.setData({ scanState: "ready", scanError: "" });
+    this.persistSession();
+    if (message) wx.showToast({ title: message, icon: "none" });
+  },
+
+  async scanContinuous() {
+    if (this._scanOpening) return;
+    if (!this._autoScanning) return;
+    if (this.data.session.total >= 100) {
+      this.stopContinuousScan("本轮已达到 100 次上限");
+      return;
+    }
+    const sessionId = this.data.scanSessionId;
+    this._scanOpening = true;
+    this.setData({ scanState: "opening", scanError: "" });
+    try {
+      const result = await new Promise((resolve, reject) => {
+        wx.scanCode({ scanType: ["barCode"], success: resolve, fail: reject });
+      });
+      if (sessionId !== this.data.scanSessionId) return;
+      const isbn = normalizeIsbn(result.result);
+      const session = { ...this.data.session, total: this.data.session.total + 1 };
+      this.setData({ session, currentScanIsbn: isbn, isbn, scanState: "looking_up" });
+      this.persistSession();
+      if (!isValidIsbn(isbn)) {
+        this.markScanFailure("这不是有效的 ISBN 条码。");
+        return;
       }
-    });
+      let lookup;
+      try {
+        lookup = await services.book("lookupByIsbn", { isbn, scan_session_id: sessionId });
+      } catch (lookupError) {
+        if (lookupError.code !== "BOOK_LOOKUP_IN_PROGRESS") throw lookupError;
+        lookup = await this.waitForLookup(isbn);
+      }
+      if (sessionId !== this.data.scanSessionId) return;
+      const edition = lookup.edition;
+      const scanItems = mergePendingScanItem(this.data.scanItems, {
+        edition_id: edition.edition_id,
+        isbn13: edition.isbn13,
+        title: edition.title,
+        contributors_text: edition.contributors_text || "",
+        publisher: edition.publisher || "",
+        cover_file_id: edition.cover_file_id || "",
+        cache_hit: Boolean(lookup.cache_hit),
+        provider_called: Boolean(lookup.provider_called)
+      });
+      const nextSession = { ...this.data.session, successful: this.data.session.successful + 1 };
+      this.setData({
+        session: nextSession,
+        scanItems,
+        lastBook: { title: edition.title },
+        scanState: "success",
+        scanError: "",
+        ...sessionTotals(scanItems)
+      });
+      this.persistSession();
+      this.scheduleNextScan();
+    } catch (error) {
+      if (String(error.errMsg || "").includes("cancel")) {
+        this.stopContinuousScan();
+        return;
+      }
+      const session = { ...this.data.session, total: this.data.session.total + 1 };
+      this.setData({ session });
+      this.markScanFailure(error.message || "相机未识别到条码。");
+    } finally {
+      this._scanOpening = false;
+    }
+  },
+
+  retryScan() {
+    this.startContinuousScan();
   },
 
   skip() {
     const session = { ...this.data.session, skipped: this.data.session.skipped + 1 };
-    this.setData({ session, scanState: "idle", scanError: "", pendingLookup: null });
+    this.setData({ session, scanState: "ready", scanError: "" });
     track("continuous_scan_book_added", {
       scan_mode: "continuous",
       scan_session_id: this.data.scanSessionId,
       result_code: "skipped"
     });
     this.persistSession();
-  },
-
-  async confirmDuplicate() {
-    const lookup = this.data.pendingLookup;
-    if (!lookup) return;
-    this.setData({ scanState: "scanning" });
-    try {
-      await services.library("addBook", {
-        edition_id: lookup.edition.edition_id,
-        quantity_delta: 1,
-        scan_session_id: this.data.scanSessionId
-      });
-      const session = { ...this.data.session, duplicates: this.data.session.duplicates + 1 };
-      track("continuous_scan_book_added", {
-        scan_mode: "continuous",
-        scan_session_id: this.data.scanSessionId,
-        result_code: "duplicate",
-        cache_hit: lookup.cache_hit,
-        provider_called: lookup.provider_called
-      });
-      this.setData({ session, pendingLookup: null, scanState: "duplicate" });
-      this.persistSession();
-    } catch (error) {
-      this.markScanFailure(error.message);
-    }
+    this.startContinuousScan();
   },
 
   finishContinuous() {
-    track("continuous_scan_finished", { scan_mode: "continuous", scan_session_id: this.data.scanSessionId });
-    this.setData({ mode: "summary" });
-    try {
-      wx.removeStorageSync(sessionStorageKey(this.data.scanSessionId));
-      wx.removeStorageSync(CONTINUOUS_SCAN_STORAGE_KEY);
-    } catch (_) {}
+    this.stopContinuousScan();
   },
 
-  restartContinuous() {
-    this.startSession();
-    this.setData({ mode: "continuous" });
+  removeScanItem(event) {
+    if (this.data.submissionStarted || this.data.submitting) return;
+    const editionId = event.currentTarget.dataset.id;
+    wx.showModal({
+      title: "从本轮列表移除？",
+      content: "这本书尚未加入绘本馆。",
+      confirmText: "移除",
+      confirmColor: "#B5543A",
+      success: ({ confirm }) => {
+        if (!confirm) return;
+        const scanItems = removePendingScanItem(this.data.scanItems, editionId);
+        this.setData({ scanItems, ...sessionTotals(scanItems) });
+        this.persistSession();
+      }
+    });
   },
 
   backToLibrary() {
@@ -334,6 +397,7 @@ Page({
   },
 
   goManual() {
+    if (this.data.mode === "continuous") this.stopContinuousScan();
     wx.navigateTo({ url: `/pages/manual-book-edit/index${this.data.isbn ? `?isbn=${this.data.isbn}` : ""}` });
   }
 });

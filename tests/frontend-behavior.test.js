@@ -21,16 +21,18 @@ test("manual entry requires only a title and keeps pending submissions editable"
   assert.doesNotMatch(source, /disabled:\s*this\.data\.reviewStatus === "pending"/);
 });
 
-test("continuous scan has a 100-scan cap, 24-hour recovery, duplicate choice and failure metrics", () => {
+test("continuous scan has a 100-scan cap, 24-hour versioned recovery and delayed writes", () => {
   const source = fs.readFileSync(path.join(root, "miniprogram/pages/add-book/index.js"), "utf8");
-  const template = fs.readFileSync(path.join(root, "miniprogram/pages/add-book/index.wxml"), "utf8");
   assert.match(source, />= 100/);
   assert.match(source, /24 \* 60 \* 60/);
+  assert.match(source, /SESSION_VERSION/);
   assert.match(source, /setStorageSync/);
-  assert.match(source, /confirmDuplicate/);
+  assert.match(source, /startContinuousScan/);
+  assert.match(source, /stopContinuousScan/);
+  assert.match(source, /scheduleNextScan/);
+  assert.match(source, /SUCCESS_FEEDBACK_MS\s*=\s*800/);
+  assert.match(source, /scanItems/);
   assert.match(source, /failures/);
-  assert.match(template, /duplicate-choice/);
-  assert.match(template, /失败/);
 });
 
 test("onboarding validation enforces all required child fields", () => {
@@ -218,12 +220,67 @@ test("bookshelf book picker filters existing relations and adds selections in ch
   assert.match(template, /都已加入这个书架/);
 });
 
-test("continuous scanning cannot overlap and canceling the camera keeps the session open", () => {
+test("continuous scanning cannot overlap and canceling the camera stops on the same page", () => {
   const source = fs.readFileSync(path.join(root, "miniprogram/pages/add-book/index.js"), "utf8");
-  assert.match(source, /async scanContinuous\(\)\s*\{\s*if \(this\.data\.scanState === "scanning"\) return;/);
-  assert.match(source, /if \(String\(error\.errMsg \|\| ""\)\.includes\("cancel"\)\) \{\s*this\.setData\(\{ scanState: "idle", scanError: "" \}\);/);
-  assert.doesNotMatch(source, /includes\("cancel"\)\) \{\s*this\.finishContinuous\(\);/);
-  assert.match(source, /scanState: saved\.scanState === "scanning" \? "idle" : saved\.scanState \|\| "idle"/);
+  assert.match(source, /if \(this\._scanOpening\) return;/);
+  assert.match(source, /includes\("cancel"\)[\s\S]*?stopContinuousScan/);
+  assert.doesNotMatch(source, /mode:\s*"summary"/);
+  assert.match(source, /scanState:\s*"ready"/);
+});
+
+test("successful continuous scan queues a book and schedules the next scan without writing the library", async () => {
+  let definition;
+  global.Page = (value) => { definition = value; };
+  global.wx = {
+    scanCode({ success }) { success({ result: "9787020024759" }); },
+    setStorageSync() {},
+    getStorageSync() { return null; },
+    removeStorageSync() {}
+  };
+  const apiPath = path.join(root, "miniprogram/services/api");
+  const pagePath = path.join(root, "miniprogram/pages/add-book/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  const { services } = require(apiPath);
+  const originalBook = services.book;
+  const originalLibrary = services.library;
+  const originalEvent = services.event;
+  let libraryCalls = 0;
+  services.book = async () => ({
+    edition: {
+      edition_id: "isbn_9787020024759",
+      isbn13: "9787020024759",
+      title: "围城",
+      contributors_text: "钱锺书",
+      publisher: "人民文学出版社",
+      cover_file_id: ""
+    },
+    cache_hit: true,
+    provider_called: false
+  });
+  services.library = async () => { libraryCalls += 1; return {}; };
+  services.event = async () => ({ accepted_count: 1 });
+  const page = {
+    ...definition,
+    data: JSON.parse(JSON.stringify(definition.data)),
+    _autoScanning: true,
+    _pageAlive: true,
+    setData(next) { this.data = { ...this.data, ...next }; },
+    persistSession() {},
+    scheduleNextScan() { this.scheduled = (this.scheduled || 0) + 1; }
+  };
+  page.data.scanSessionId = "scan_test";
+  try {
+    await page.scanContinuous();
+    assert.equal(page.data.scanItems.length, 1);
+    assert.equal(page.data.scanItems[0].scan_count, 1);
+    assert.equal(libraryCalls, 0);
+    assert.equal(page.scheduled, 1);
+  } finally {
+    services.book = originalBook;
+    services.library = originalLibrary;
+    services.event = originalEvent;
+  }
 });
 
 test("all route scripts register substantive page controllers", () => {
