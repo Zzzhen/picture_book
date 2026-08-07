@@ -283,6 +283,82 @@ test("successful continuous scan queues a book and schedules the next scan witho
   }
 });
 
+test("continuous scan batch commit uses stable request IDs and makes shelf assignment optional", () => {
+  const source = fs.readFileSync(path.join(root, "miniprogram/pages/add-book/index.js"), "utf8");
+  assert.match(source, /createRequestId/);
+  assert.match(source, /async confirmBatch\(\)/);
+  assert.match(source, /async commitCopy\(/);
+  assert.match(source, /chooseShelf\(\)/);
+  assert.match(source, /processInChunks/);
+  assert.match(source, /services\.library\("addBook",\s*\{[\s\S]*?operation\.request_id\)/);
+  assert.match(source, /if \(!this\.data\.selectedShelf\) return/);
+  assert.match(source, /services\.bookshelf\("addBooks"/);
+});
+
+test("ambiguous batch retry reuses the same per-copy request ID and does not touch shelves", async () => {
+  let definition;
+  global.Page = (value) => { definition = value; };
+  global.wx = {
+    setStorageSync() {},
+    removeStorageSync() {},
+    showToast() {},
+    reLaunch() {}
+  };
+  const apiPath = path.join(root, "miniprogram/services/api");
+  const pagePath = path.join(root, "miniprogram/pages/add-book/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  const { services } = require(apiPath);
+  const originals = { library: services.library, bookshelf: services.bookshelf, event: services.event };
+  const requestIds = [];
+  let attempt = 0;
+  let bookshelfCalls = 0;
+  services.library = async (action, payload, requestId) => {
+    requestIds.push(requestId);
+    attempt += 1;
+    if (attempt === 1) {
+      const error = new Error("网络中断");
+      error.code = "NETWORK_ERROR";
+      throw error;
+    }
+    return { created: true, user_book: { user_book_id: "user_book_1" } };
+  };
+  services.bookshelf = async () => { bookshelfCalls += 1; return { items: [] }; };
+  services.event = async () => ({ accepted_count: 1 });
+  const page = {
+    ...definition,
+    data: {
+      ...JSON.parse(JSON.stringify(definition.data)),
+      scanSessionId: "scan_commit",
+      scanItems: [{
+        edition_id: "isbn_9787020024759",
+        isbn13: "9787020024759",
+        title: "围城",
+        scan_count: 1,
+        committed_count: 0,
+        commit_operations: [],
+        status: "pending"
+      }],
+      copyCount: 1
+    },
+    setData(next) { this.data = { ...this.data, ...next }; },
+    persistSession() {},
+    clearScanTimer() {}
+  };
+  try {
+    await page.confirmBatch();
+    const stableId = page.data.scanItems[0].commit_operations[0].request_id;
+    assert.equal(page.data.scanItems[0].commit_operations[0].status, "processing");
+    await page.confirmBatch();
+    assert.deepEqual(requestIds, [stableId, stableId]);
+    assert.equal(bookshelfCalls, 0);
+  } finally {
+    services.library = originals.library;
+    services.bookshelf = originals.bookshelf;
+    services.event = originals.event;
+  }
+});
+
 test("all route scripts register substantive page controllers", () => {
   const routes = {
     bootstrap: ["bootstrap", "retry"],

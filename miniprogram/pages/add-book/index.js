@@ -1,4 +1,4 @@
-const { services } = require("../../services/api");
+const { services, createRequestId } = require("../../services/api");
 const { normalizeIsbn, isValidIsbn } = require("../../utils/isbn");
 const { track } = require("../../services/analytics");
 const {
@@ -6,13 +6,24 @@ const {
   createContinuousSession,
   mergeScanItem: mergePendingScanItem,
   removeScanItem: removePendingScanItem,
-  sessionTotals
+  sessionTotals,
+  prepareCommitOperations,
+  resetFailedCommitOperations,
+  isAmbiguousCommitError
 } = require("../../utils/continuous-scan");
 
 const CONTINUOUS_SCAN_STORAGE_KEY = "v1_core_continuous_scan";
 const CONTINUOUS_SCAN_TTL_MS = 24 * 60 * 60 * 1000;
 const SUCCESS_FEEDBACK_MS = 800;
 const sessionStorageKey = (sessionId) => `${CONTINUOUS_SCAN_STORAGE_KEY}:${sessionId}`;
+
+async function processInChunks(items, handler) {
+  for (let index = 0; index < items.length; index += 50) {
+    await handler(items.slice(index, index + 50));
+  }
+}
+
+const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 Page({
   data: {
@@ -390,6 +401,184 @@ Page({
         this.persistSession();
       }
     });
+  },
+
+  async chooseShelf() {
+    if (this.data.submitting) return;
+    try {
+      const data = await services.bookshelf("listShelves", {});
+      const shelves = data.items || [];
+      wx.showActionSheet({
+        itemList: ["不加入书架", ...shelves.map((shelf) => shelf.name)],
+        success: ({ tapIndex }) => {
+          const selectedShelf = tapIndex === 0 ? null : {
+            bookshelf_id: shelves[tapIndex - 1].bookshelf_id,
+            name: shelves[tapIndex - 1].name
+          };
+          this.setData({ selectedShelf, submitError: "" });
+          this.persistSession();
+        }
+      });
+    } catch (error) {
+      wx.showToast({ title: error.message || "书架加载失败", icon: "none" });
+    }
+  },
+
+  updateCommitItem(itemIndex, updater) {
+    const scanItems = this.data.scanItems.map((item, index) => index === itemIndex ? updater(item) : item);
+    this.setData({ scanItems, ...sessionTotals(scanItems) });
+    this.persistSession();
+    return scanItems[itemIndex];
+  },
+
+  async commitCopy(itemIndex, operationIndex) {
+    let item = this.data.scanItems[itemIndex];
+    let operation = item.commit_operations[operationIndex];
+    this.updateCommitItem(itemIndex, (current) => ({
+      ...current,
+      status: "submitting",
+      error_message: "",
+      commit_operations: current.commit_operations.map((candidate, index) => index === operationIndex
+        ? { ...candidate, status: "processing" }
+        : candidate)
+    }));
+    let inProgressRetries = 0;
+    try {
+      let result;
+      while (!result) {
+        try {
+          result = await services.library("addBook", {
+            edition_id: item.edition_id,
+            quantity_delta: 1,
+            scan_session_id: this.data.scanSessionId
+          }, operation.request_id);
+        } catch (error) {
+          if (error.code === "REQUEST_IN_PROGRESS" && inProgressRetries < 2) {
+            inProgressRetries += 1;
+            await wait(600);
+            continue;
+          }
+          throw error;
+        }
+      }
+      item = this.updateCommitItem(itemIndex, (current) => {
+        const commitOperations = current.commit_operations.map((candidate, index) => index === operationIndex
+          ? { ...candidate, status: "completed" }
+          : candidate);
+        const committedCount = commitOperations.filter((candidate) => candidate.status === "completed").length;
+        return {
+          ...current,
+          commit_operations: commitOperations,
+          committed_count: committedCount,
+          user_book_id: result.user_book.user_book_id,
+          status: committedCount === current.scan_count ? "added" : "submitting",
+          error_message: ""
+        };
+      });
+      track("continuous_scan_book_added", {
+        scan_mode: "continuous",
+        scan_session_id: this.data.scanSessionId,
+        cache_hit: item.cache_hit,
+        provider_called: item.provider_called,
+        result_code: result.created ? "added" : "duplicate"
+      });
+      return true;
+    } catch (error) {
+      const ambiguous = isAmbiguousCommitError(error);
+      this.updateCommitItem(itemIndex, (current) => ({
+        ...current,
+        status: "failed",
+        error_message: ambiguous ? "请求结果仍在确认中，请稍后重试" : (error.message || "入馆失败，请重试"),
+        commit_operations: current.commit_operations.map((candidate, index) => index === operationIndex
+          ? { ...candidate, status: ambiguous ? "processing" : "failed" }
+          : candidate)
+      }));
+      return false;
+    }
+  },
+
+  async commitPendingItems() {
+    for (let itemIndex = 0; itemIndex < this.data.scanItems.length; itemIndex += 1) {
+      const operationCount = this.data.scanItems[itemIndex].commit_operations.length;
+      for (let operationIndex = 0; operationIndex < operationCount; operationIndex += 1) {
+        const operation = this.data.scanItems[itemIndex].commit_operations[operationIndex];
+        if (operation.status === "completed") continue;
+        const completed = await this.commitCopy(itemIndex, operationIndex);
+        if (!completed) break;
+      }
+    }
+    return this.data.scanItems.every((item) => item.committed_count === item.scan_count);
+  },
+
+  async addCommittedBooksToShelf() {
+    if (!this.data.selectedShelf) return 0;
+    const shelves = await services.bookshelf("listShelves", {});
+    const shelf = (shelves.items || []).find((item) => item.bookshelf_id === this.data.selectedShelf.bookshelf_id);
+    if (!shelf) {
+      const error = new Error("选择的书架已不存在，请重新选择");
+      error.code = "BOOKSHELF_NOT_FOUND";
+      throw error;
+    }
+    const userBookIds = Array.from(new Set(this.data.scanItems.map((item) => item.user_book_id).filter(Boolean)));
+    let addedCount = 0;
+    await processInChunks(userBookIds, async (chunk) => {
+      const result = await services.bookshelf("addBooks", {
+        bookshelf_id: shelf.bookshelf_id,
+        user_book_ids: chunk
+      });
+      addedCount += result.added_count || 0;
+    });
+    track("books_added_to_shelf", { source: "continuous_scan" });
+    return addedCount;
+  },
+
+  completeContinuousSession(shelfAddedCount) {
+    track("continuous_scan_finished", { scan_mode: "continuous", scan_session_id: this.data.scanSessionId });
+    try {
+      wx.removeStorageSync(sessionStorageKey(this.data.scanSessionId));
+      wx.removeStorageSync(CONTINUOUS_SCAN_STORAGE_KEY);
+    } catch (_) {}
+    const suffix = this.data.selectedShelf ? `，${shelfAddedCount} 本已加入书架` : "";
+    wx.showToast({ title: `已入馆 ${this.data.copyCount} 册${suffix}`, icon: "success" });
+    wx.reLaunch({ url: "/pages/library/index" });
+  },
+
+  async confirmBatch() {
+    if (this.data.submitting || !this.data.scanItems.length) return;
+    this._autoScanning = false;
+    this.clearScanTimer();
+    const isRetry = this.data.submissionStarted;
+    let scanItems = this.data.scanItems.map((item) => isRetry
+      ? resetFailedCommitOperations(item, createRequestId)
+      : item);
+    scanItems = scanItems.map((item) => prepareCommitOperations(item, createRequestId));
+    this.setData({
+      scanItems,
+      submissionStarted: true,
+      submitting: true,
+      submitError: "",
+      scanState: "ready",
+      ...sessionTotals(scanItems)
+    });
+    this.persistSession();
+    try {
+      const allCommitted = await this.commitPendingItems();
+      if (!allCommitted) {
+        this.setData({ submitError: "部分绘本尚未入馆，请检查后重试失败项。" });
+        return;
+      }
+      const shelfAddedCount = await this.addCommittedBooksToShelf();
+      this.completeContinuousSession(shelfAddedCount);
+    } catch (error) {
+      this.setData({ submitError: error.message || "提交失败，请稍后重试" });
+      this.persistSession();
+    } finally {
+      this.setData({ submitting: false });
+    }
+  },
+
+  retryFailedItems() {
+    this.confirmBatch();
   },
 
   backToLibrary() {
