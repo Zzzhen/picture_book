@@ -10,6 +10,7 @@ const services = [
   "bookshelfService",
   "eventService",
   "adminService",
+  "shareService",
   "maintenanceService"
 ];
 const failures = [];

@@ -41,11 +41,16 @@ Page({
     selectedCount: 0,
     allSelected: false,
     operating: "",
-    removeVisible: false
+    removeVisible: false,
+    shareState: "loading",
+    shareToken: "",
+    shareReason: "",
+    shareError: ""
   },
 
   onLoad(query) {
     this.setData({ id: query.id || "" });
+    if (wx.hideShareMenu) wx.hideShareMenu();
   },
 
   onShow() {
@@ -71,12 +76,51 @@ Page({
         selectedCount: 0,
         allSelected: false
       });
+      await this.prepareShare();
     } catch (error) {
       this.setData({ state: "error", errorMessage: error.message || "请稍后重新加载" });
     }
   },
 
   reload() { this.loadShelf(); },
+
+  async prepareShare(showToast = false, reason = this.data.shareReason) {
+    if (!this.data.id) return;
+    if (this._sharePreparing) {
+      this._pendingShareReason = reason;
+      return;
+    }
+    this._sharePreparing = true;
+    this.setData({ shareState: "loading" });
+    try {
+      const result = await services.share("createShare", { bookshelf_id: this.data.id, reason });
+      this.setData({ shareState: "ready", shareToken: result.token, shareReason: result.reason || reason, shareError: "" });
+      if (wx.showShareMenu) wx.showShareMenu({ withShareTicket: true });
+    } catch (error) {
+      const message = error && error.code ? `${error.code}: ${error.message || "分享服务不可用"}` : (error.message || "分享服务不可用");
+      console.error("createShare failed", error);
+      this.setData({ shareState: "error", shareToken: "", shareError: message });
+      if (showToast) wx.showToast({ title: error.message || "分享准备失败", icon: "none" });
+    } finally {
+      this._sharePreparing = false;
+      const pendingReason = this._pendingShareReason;
+      this._pendingShareReason = undefined;
+      if (pendingReason !== undefined && pendingReason !== reason) this.prepareShare(false, pendingReason);
+    }
+  },
+
+  onShareReasonInput(event) {
+    const reason = (event.detail.value || "").trimStart();
+    this.setData({ shareReason: reason, shareState: "loading" });
+    clearTimeout(this._shareReasonTimer);
+    this._shareReasonTimer = setTimeout(() => this.prepareShare(false, reason), 350);
+  },
+
+  onShareAppMessage() {
+    const title = this.data.shareReason || `${this.data.shelf.name || "我的书架"} · 家庭数字绘本馆`;
+    if (!this.data.shareToken) return { title, path: "/pages/shared-shelf/index" };
+    return { title, path: `/pages/shared-shelf/index?token=${encodeURIComponent(this.data.shareToken)}` };
+  },
 
   editShelf() {
     wx.navigateTo({ url: `/pages/bookshelf-edit/index?id=${this.data.id}` });

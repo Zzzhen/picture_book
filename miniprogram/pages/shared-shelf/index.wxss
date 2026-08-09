@@ -1,0 +1,12 @@
+page { background: var(--color-background-paper); }
+
+.shared-shelf { min-height: 100vh; padding-bottom: calc(60rpx + env(safe-area-inset-bottom)); }
+.shared-shelf__head { padding: 38rpx 34rpx 30rpx; border-bottom: 1rpx solid var(--color-border-default); }
+.shared-shelf__eyebrow { display: block; color: var(--color-accent-terracotta); font-size: 23rpx; font-weight: 650; }
+.shared-shelf__name { display: block; margin-top: 10rpx; font-family: var(--font-display); font-size: 44rpx; font-weight: 700; }
+.shared-shelf__reason { display: block; margin-top: 14rpx; color: var(--color-accent-terracotta); font-size: 25rpx; line-height: 1.5; }
+.shared-shelf__description { display: block; margin-top: 12rpx; color: var(--color-text-secondary); font-size: 24rpx; line-height: 1.6; }
+.shared-shelf__count { display: block; margin-top: 16rpx; color: var(--color-brand-forest); font-size: 24rpx; font-weight: 650; }
+.shared-shelf__body { padding: 30rpx 32rpx; }
+.shared-shelf__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 38rpx 22rpx; }
+@media (max-width: 327px) { .shared-shelf__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

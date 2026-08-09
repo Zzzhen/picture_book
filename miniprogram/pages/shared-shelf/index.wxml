@@ -1,0 +1,20 @@
+<view class="shared-shelf">
+  <app-header title="分享书架" back="{{true}}"></app-header>
+  <view wx:if="{{state === 'content'}}" class="shared-shelf__head">
+    <text class="shared-shelf__eyebrow">朋友分享的书架</text>
+    <text class="shared-shelf__name">{{shelf.name || '未命名书架'}}</text>
+    <text wx:if="{{shareReason}}" class="shared-shelf__reason">“{{shareReason}}”</text>
+    <text wx:if="{{shelf.description}}" class="shared-shelf__description">{{shelf.description}}</text>
+    <text class="shared-shelf__count">{{books.length}} 本绘本</text>
+  </view>
+  <view class="shared-shelf__body">
+    <skeleton wx:if="{{state === 'loading'}}" type="grid" count="{{6}}" />
+    <empty-state wx:elif="{{state === 'error'}}" type="offline" title="无法打开分享" description="{{errorMessage}}" primary-text="重新加载" bind:primary="reload" />
+    <empty-state wx:elif="{{state === 'content' && !books.length}}" title="这个书架还没有绘本" description="书架主人暂时还没有放入绘本。" />
+    <view wx:elif="{{state === 'content'}}" class="shared-shelf__grid">
+      <block wx:for="{{books}}" wx:key="userBookId">
+        <book-card book="{{item}}" />
+      </block>
+    </view>
+  </view>
+</view>

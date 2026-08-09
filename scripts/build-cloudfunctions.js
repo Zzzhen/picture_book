@@ -5,7 +5,7 @@ const root = path.resolve(__dirname, "..");
 const sourceRoot = path.join(root, "cloudfunctions");
 const outputRoot = path.join(root, "dist", "cloudfunctions");
 const sharedRoot = path.join(sourceRoot, "_shared");
-const services = ["userService", "bookService", "libraryService", "bookshelfService", "eventService", "adminService", "maintenanceService"];
+const services = ["userService", "bookService", "libraryService", "bookshelfService", "eventService", "adminService", "shareService", "maintenanceService"];
 
 fs.rmSync(outputRoot, { recursive: true, force: true });
 fs.mkdirSync(outputRoot, { recursive: true });

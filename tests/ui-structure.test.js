@@ -13,6 +13,7 @@ const pages = [
   "book-detail",
   "bookshelves",
   "bookshelf-detail",
+  "shared-shelf",
   "bookshelf-edit",
   "manual-book-edit",
   "profile",

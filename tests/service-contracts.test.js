@@ -12,6 +12,7 @@ const expected = {
   bookshelfService: ["listShelves", "createShelf", "updateShelf", "deleteShelf", "reorderShelves", "listShelfBooks", "addBooks", "removeBooks", "reorderBooks", "pinBooks"],
   eventService: ["trackBatch"],
   adminService: ["dashboard", "listUsers", "setUserStatus", "listPendingBooks", "reviewManualBook", "updateEdition", "retryCoverTransfer"]
+  ,shareService: ["createShare", "getSharedShelf"]
 };
 
 test("cloud service action contracts exactly match product section 15", () => {
@@ -48,6 +49,7 @@ test("write actions are explicitly marked for idempotency", () => {
     ["bookshelfService", "createShelf"],
     ["eventService", "trackBatch"],
     ["adminService", "reviewManualBook"]
+    ,["shareService", "createShare"]
   ];
   for (const [service, action] of writes) {
     assert.equal(contracts[service][action].write, true, `${service}.${action}`);

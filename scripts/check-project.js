@@ -25,9 +25,9 @@ for (const file of walk(root)) {
 }
 
 const app = JSON.parse(fs.readFileSync(path.join(root, "miniprogram/app.json"), "utf8"));
-if (app.pages.length !== 15) failures.push(`app.json: expected 15 routes, got ${app.pages.length}`);
-if (app.pages.some((route) => route.includes("share"))) failures.push("app.json: V1-Share route found");
-if (fs.existsSync(path.join(root, "cloudfunctions/shareService"))) failures.push("V1-Share cloud function found");
+if (app.pages.length !== 16) failures.push(`app.json: expected 16 routes, got ${app.pages.length}`);
+if (!app.pages.includes("pages/shared-shelf/index")) failures.push("app.json: shared shelf route missing");
+if (!fs.existsSync(path.join(root, "cloudfunctions/shareService"))) failures.push("shareService cloud function missing");
 
 if (failures.length) {
   console.error(failures.join("\n"));

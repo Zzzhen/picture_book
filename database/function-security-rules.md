@@ -7,6 +7,9 @@
   },
   "maintenanceService": {
     "invoke": false
+  },
+  "shareService": {
+    "invoke": true
   }
 }
 ```

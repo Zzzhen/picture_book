@@ -1,6 +1,6 @@
 # 书芽芽｜家庭数字绘本馆 V1-Core
 
-原生微信小程序 + 微信云开发实现。当前只包含核心建馆版：首次建馆、ISBN 录入与缓存、连续扫码、手工审核、家庭藏书、书架、资料、指标、反馈和管理员审核。仓库中没有分享页面、分享云函数或 `share_*` 集合。
+原生微信小程序 + 微信云开发实现。当前包含核心建馆、ISBN 录入与缓存、连续扫码、手工审核、家庭藏书、书架、书架分享、资料、指标、反馈和管理员审核。
 
 当前 `project.config.json` 使用 `touristappid`，`miniprogram/config/env.js` 的云环境 ID 为空。它们是安全占位，不可直接用于发布。
 
@@ -15,7 +15,7 @@ npm run build:cloud
 npm run check:cloud-build
 ```
 
-测试不会调用阿里云付费 ISBN 接口。`build:cloud` 会把共享代码复制到每个云函数的 `_shared/` 内，并输出到 `dist/cloudfunctions/`，使七个云函数可以独立部署。云函数依赖固定为 `wx-server-sdk@4.0.2`；更新模板锁文件后执行 `npm run lock:cloud` 同步七个独立锁文件。
+测试不会调用阿里云付费 ISBN 接口。`build:cloud` 会把共享代码复制到每个云函数的 `_shared/` 内，并输出到 `dist/cloudfunctions/`，使八个云函数可以独立部署。云函数依赖固定为 `wx-server-sdk@4.0.2`；更新模板锁文件后执行 `npm run lock:cloud` 同步八个独立锁文件。
 
 ## 导入微信开发者工具
 
@@ -61,9 +61,9 @@ npm run check:cloud-build
 
 1. 执行 `npm run build:cloud`。
 2. 在微信开发者工具将云函数根目录指向 `dist/cloudfunctions/`。
-3. 依次上传并部署 `userService`、`bookService`、`libraryService`、`bookshelfService`、`eventService`、`adminService`、`maintenanceService`，选择“云端安装依赖”。其中三个涉及七牛的函数必须配置完整的七牛环境变量。
+3. 依次上传并部署 `userService`、`bookService`、`libraryService`、`bookshelfService`、`eventService`、`adminService`、`shareService`、`maintenanceService`，选择“云端安装依赖”。其中涉及七牛的函数必须配置完整的七牛环境变量。
 4. 按开发文档配置超时与内存：普通服务 10–20 秒、256–512 MB；`maintenanceService` 60 秒、512 MB。
-5. 检查七个函数的 `USER_ID_SECRET` 一致，production 与 development 不得共用。
+5. 检查八个业务函数的 `USER_ID_SECRET` 一致，production 与 development 不得共用。
 
 ## 定时触发器
 

@@ -37,12 +37,17 @@ const requiredFiles = [
   "cloudfunctions/bookshelfService/index.js",
   "cloudfunctions/eventService/index.js",
   "cloudfunctions/adminService/index.js",
+  "cloudfunctions/shareService/index.js",
   "cloudfunctions/maintenanceService/index.js",
   "database/collections.md",
   "database/indexes.md",
   "database/database-security-rules.md",
   "database/function-security-rules.md",
   "README.md",
+  "miniprogram/pages/shared-shelf/index.js",
+  "miniprogram/pages/shared-shelf/index.json",
+  "miniprogram/pages/shared-shelf/index.wxml",
+  "miniprogram/pages/shared-shelf/index.wxss",
 ];
 
 test("V1-Core scaffold contains every required route and cloud function", () => {
@@ -52,12 +57,7 @@ test("V1-Core scaffold contains every required route and cloud function", () => 
   assert.deepEqual(missing, []);
 });
 
-test("V1-Share routes and cloud functions are not scaffolded", () => {
-  const forbidden = [
-    "miniprogram/pages/share-edit",
-    "miniprogram/pages/share-preview",
-    "miniprogram/pages/share-view",
-    "cloudfunctions/shareService",
-  ].filter((file) => fs.existsSync(path.join(root, file)));
-  assert.deepEqual(forbidden, []);
+test("shared shelf route and cloud function are scaffolded", () => {
+  assert.equal(fs.existsSync(path.join(root, "cloudfunctions/shareService")), true);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root, "miniprogram/app.json"), "utf8")).pages.includes("pages/shared-shelf/index"), true);
 });

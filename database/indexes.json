@@ -67,6 +67,13 @@
       ]
     },
     {
+      "name": "shelf_shares",
+      "indexes": [
+        { "name": "token_status", "fields": [{ "field": "share_token", "order": "asc" }, { "field": "status", "order": "asc" }] },
+        { "name": "owner_shelf_status", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "bookshelf_id", "order": "asc" }, { "field": "status", "order": "asc" }, { "field": "created_at", "order": "desc" }] }
+      ]
+    },
+    {
       "name": "events",
       "indexes": [
         { "name": "owner_id", "fields": [{ "field": "owner_id", "order": "asc" }, { "field": "_id", "order": "asc" }] },

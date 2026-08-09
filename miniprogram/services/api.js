@@ -52,6 +52,7 @@ const services = {
   book: (action, payload, requestId) => callService("bookService", action, payload, requestId),
   library: (action, payload, requestId) => callService("libraryService", action, payload, requestId),
   bookshelf: (action, payload, requestId) => callService("bookshelfService", action, payload, requestId),
+  share: (action, payload, requestId) => callService("shareService", action, payload, requestId),
   event: (action, payload, requestId) => callService("eventService", action, payload, requestId),
   admin: (action, payload, requestId) => callService("adminService", action, payload, requestId)
 };

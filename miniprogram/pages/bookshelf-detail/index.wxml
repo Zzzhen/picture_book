@@ -10,6 +10,17 @@
       <view wx:if="{{books.length}}" class="shelf-detail__action-divider"></view>
       <text wx:if="{{books.length}}" class="shelf-detail__action" bindtap="startSelecting">选择</text>
     </view>
+    <button wx:if="{{shareState === 'ready'}}" class="shelf-detail__share" open-type="share">
+      <text class="shelf-detail__share-icon">↗</text>
+      <text>分享这个书架</text>
+      <text class="shelf-detail__share-hint">好友打开即可浏览</text>
+    </button>
+    <view wx:elif="{{shareState === 'loading'}}" class="shelf-detail__share shelf-detail__share--loading">正在准备分享链接…</view>
+    <view wx:else class="shelf-detail__share-error">
+      <text class="shelf-detail__share-error-message">分享准备失败：{{shareError || '请检查云函数部署和权限配置'}}</text>
+      <button class="shelf-detail__share shelf-detail__share--retry" bindtap="prepareShare">重新准备分享</button>
+    </view>
+    <input class="shelf-detail__share-reason" value="{{shareReason}}" maxlength="80" placeholder="写一句分享理由（可选）" bindinput="onShareReasonInput" />
   </view>
 
   <view wx:else class="shelf-detail__selection-head">

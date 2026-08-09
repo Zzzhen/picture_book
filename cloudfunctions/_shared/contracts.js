@@ -51,5 +51,9 @@ module.exports = {
     updateEdition: write(["edition_id", "patch", "reason"]),
     retryCoverTransfer: write(["edition_id"])
   },
+  shareService: {
+    createShare: write(["bookshelf_id", "reason"]),
+    getSharedShelf: read(["token"])
+  },
   maintenanceService: {}
 };
