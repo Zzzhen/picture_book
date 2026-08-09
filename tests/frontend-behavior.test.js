@@ -218,7 +218,7 @@ test("library refreshes once when returning from a completed deletion", () => {
 test("library book cards constrain every cover to the same grid ratio", () => {
   const cardStyles = fs.readFileSync(path.join(root, "miniprogram/components/book-card/index.wxss"), "utf8");
   assert.match(cardStyles, /\.book-card__cover\s*\{[\s\S]*?width:\s*100%;[\s\S]*?aspect-ratio:\s*3\s*\/\s*4;/);
-  assert.match(cardStyles, /\.book-card__cover\s+book-cover\s*\{[\s\S]*?display:\s*block;[\s\S]*?width:\s*100%;/);
+  assert.match(cardStyles, /\.book-card__cover-component\s*\{[\s\S]*?display:\s*block;[\s\S]*?width:\s*100%;/);
 });
 
 test("book confirmation guards against duplicate add submissions", () => {
@@ -260,12 +260,25 @@ test("library uses a three-column book grid at normal phone widths", () => {
   assert.match(styles, /\.library__grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\);/);
 });
 
-test("daily book picker is frontend-only, remembers today and cleans up motion sensors", () => {
+test("daily book picker has an immersive route, remembers today and cleans up motion sensors", () => {
   const script = fs.readFileSync(path.join(root, "miniprogram/components/daily-book-picker/index.js"), "utf8");
-  const template = fs.readFileSync(path.join(root, "miniprogram/pages/library/index.wxml"), "utf8");
+  const libraryScript = fs.readFileSync(path.join(root, "miniprogram/pages/library/index.js"), "utf8");
+  const libraryTemplate = fs.readFileSync(path.join(root, "miniprogram/pages/library/index.wxml"), "utf8");
+  const pickerTemplate = fs.readFileSync(path.join(root, "miniprogram/pages/daily-pick/index.wxml"), "utf8");
   const styles = fs.readFileSync(path.join(root, "miniprogram/components/daily-book-picker/index.wxss"), "utf8");
-  assert.match(template, /<daily-book-picker/);
+  const app = JSON.parse(fs.readFileSync(path.join(root, "miniprogram/app.json"), "utf8"));
+  assert.equal(app.pages.includes("pages/daily-pick/index"), true);
+  assert.match(libraryTemplate, /class="library__daily-entry"/);
+  assert.doesNotMatch(libraryTemplate, /<daily-book-picker/);
+  assert.match(libraryScript, /pages\/daily-pick\/index/);
+  assert.match(pickerTemplate, /<daily-book-picker/);
+  const componentTemplate = fs.readFileSync(path.join(root, "miniprogram/components/daily-book-picker/index.wxml"), "utf8");
+  assert.match(componentTemplate, /<swiper[\s\S]*bindchange="onSwiperChange"/);
+  assert.match(componentTemplate, /wx:for="\{\{displayBooks\}\}"/);
+  assert.doesNotMatch(componentTemplate, /picker__today-badge|>今日</);
+  assert.doesNotMatch(componentTemplate, /<block[^>]*wx:if[^>]*wx:for/);
   assert.match(script, /DAILY_PICK_PREFIX/);
+  assert.match(script, /MAX_DISPLAY_BOOKS\s*=\s*10/);
   assert.match(script, /setStorageSync/);
   assert.match(script, /startAccelerometer/);
   assert.match(script, /offAccelerometerChange/);
@@ -273,6 +286,11 @@ test("daily book picker is frontend-only, remembers today and cleans up motion s
   assert.match(script, /preference !== "not_recommended"/);
   assert.match(script, /reviewStatus !== "pending"/);
   assert.match(script, /reviewStatus !== "rejected"/);
+  assert.match(script, /advanceAutoSlide/);
+  const manualSwipeHandler = script.slice(script.indexOf("onSwiperChange(event)"), script.indexOf("async startDraw()"));
+  assert.doesNotMatch(manualSwipeHandler, /setStorageSync/);
+  assert.match(styles, /picker__swiper/);
+  assert.match(styles, /picker__slide-card--active/);
   assert.match(styles, /prefers-reduced-motion/);
 });
 
@@ -304,6 +322,7 @@ test("bookshelf detail supports full-shelf selection, removal and shelf-only pin
   assert.match(script, /processInChunks/);
   assert.match(script, /"removeBooks"/);
   assert.match(script, /"pinBooks"/);
+  assert.doesNotMatch(script, /\.\.\.page\.items|\[\.\.\.this\.data\.selectedIds\]/);
   assert.match(template, /选择书籍/);
   assert.match(template, /已选择.*本书籍/);
   assert.match(template, /全选/);

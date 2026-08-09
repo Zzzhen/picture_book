@@ -48,7 +48,7 @@
       <empty-state wx:elif="{{state === 'empty'}}" title="{{tab === 'conflict' ? '没有待处理的 ISBN 冲突' : (tab === 'users' ? '暂时没有用户' : '审核队列已经清空')}}" description="新的记录出现时会显示在这里。" />
       <view wx:elif="{{tab !== 'dashboard' && tab !== 'users'}}" class="admin__queue">
         <button wx:for="{{items}}" wx:key="_id" class="admin__item" data-id="{{item._id}}" bindtap="openItem">
-          <book-cover size="small" src="{{item.coverUrl}}" title="{{item.title}}" />
+          <book-cover size="small" src="{{item.coverUrl || ''}}" title="{{item.title || ''}}" />
           <view class="admin__item-copy">
             <text class="admin__item-title">{{item.title || '未命名绘本'}}</text>
             <text class="admin__item-meta">{{item.author || '作者待补充'}}</text>
@@ -65,14 +65,14 @@
           <view class="admin__version {{selectedVersion === 'candidate' ? 'admin__version--selected' : ''}}" data-version="candidate" bindtap="selectVersion">
             <text class="admin__version-label">{{tab === 'conflict' ? '新提交版本' : '待审核信息'}}</text>
             <view class="admin__version-book">
-              <book-cover size="small" src="{{current.coverUrl}}" title="{{current.title}}" />
+              <book-cover size="small" src="{{current.coverUrl || ''}}" title="{{current.title || ''}}" />
               <view><text class="admin__item-title">{{current.title}}</text><text class="admin__item-meta">{{current.author}}</text><text class="admin__item-meta">{{current.publisher}}</text></view>
             </view>
           </view>
           <view wx:if="{{tab === 'conflict'}}" class="admin__version {{selectedVersion === 'existing' ? 'admin__version--selected' : ''}}" data-version="existing" bindtap="selectVersion">
             <text class="admin__version-label">已有公共版本</text>
             <view class="admin__version-book">
-              <book-cover size="small" src="{{current.existing.coverUrl}}" title="{{current.existing.title}}" />
+              <book-cover size="small" src="{{current.existing.coverUrl || ''}}" title="{{current.existing.title || ''}}" />
               <view><text class="admin__item-title">{{current.existing.title}}</text><text class="admin__item-meta">{{current.existing.author}}</text><text class="admin__item-meta">{{current.existing.publisher}}</text></view>
             </view>
           </view>

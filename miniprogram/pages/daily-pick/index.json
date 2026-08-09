@@ -1,8 +1,8 @@
 {
   "navigationStyle": "custom",
+  "disableScroll": true,
   "usingComponents": {
     "app-header": "/components/app-header/index",
-    "text-field": "/components/text-field/index",
-    "ui-button": "/components/ui-button/index"
+    "daily-book-picker": "/components/daily-book-picker/index"
   }
 }

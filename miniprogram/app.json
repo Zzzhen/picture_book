@@ -3,6 +3,7 @@
     "pages/bootstrap/index",
     "pages/onboarding/index",
     "pages/library/index",
+    "pages/daily-pick/index",
     "pages/add-book/index",
     "pages/book-confirm/index",
     "pages/book-detail/index",
@@ -43,5 +44,6 @@
       }
     ]
   },
+  "lazyCodeLoading": "requiredComponents",
   "sitemapLocation": "sitemap.json"
 }

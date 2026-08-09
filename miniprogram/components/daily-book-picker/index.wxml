@@ -1,20 +1,81 @@
-<view class="daily daily--{{state}}">
-  <view class="daily__copy">
-    <text class="daily__kicker">{{state === 'result' ? '今天就读这本' : state === 'rolling' ? '正在翻找馆藏…' : '今天看什么？'}}</text>
-    <text class="daily__title" wx:if="{{state === 'idle'}}">摇一摇，从家里的绘本中选一本</text>
-    <block wx:else>
-      <text class="daily__title">{{(book && book.title) || '正在选一本…'}}</text>
-      <text class="daily__author" wx:if="{{book && book.author}}">{{book.author}}</text>
-    </block>
-    <view class="daily__actions">
-      <button wx:if="{{state === 'idle'}}" class="daily__primary" bindtap="startDraw">摇一摇选书</button>
-      <button wx:if="{{state === 'result'}}" class="daily__primary" bindtap="openBook">查看绘本</button>
-      <button wx:if="{{state === 'result'}}" class="daily__secondary" bindtap="startDraw">换一本</button>
-      <text wx:if="{{state === 'rolling'}}" class="daily__wait">稍等，马上揭晓</text>
+<view class="picker picker--{{state}}">
+  <view class="picker__ambient picker__ambient--one"></view>
+  <view class="picker__ambient picker__ambient--two"></view>
+
+  <view class="picker__deck">
+    <swiper
+      wx:if="{{displayBooks.length}}"
+      class="picker__swiper"
+      current="{{swiperCurrent}}"
+      duration="{{swiperDuration}}"
+      circular="{{displayBooks.length > 2}}"
+      previous-margin="120rpx"
+      next-margin="120rpx"
+      easing-function="easeOutCubic"
+      disable-touch="{{state === 'rolling'}}"
+      bindchange="onSwiperChange"
+    >
+      <block wx:for="{{displayBooks}}" wx:key="userBookId">
+        <swiper-item class="picker__slide">
+          <view class="picker__slide-card {{index === swiperCurrent ? 'picker__slide-card--active' : ''}}">
+            <book-cover src="{{item.coverUrl || ''}}" title="{{item.title || ''}}" status="{{item.reviewStatus || ''}}" />
+          </view>
+        </swiper-item>
+      </block>
+    </swiper>
+    <view wx:else class="picker__swiper picker__swiper--skeleton">
+      <view class="picker__skeleton-card"></view>
+    </view>
+    <view wx:if="{{displayBooks.length > 1}}" class="picker__deck-meta">
+      <text>左右滑动浏览</text>
+      <text>{{swiperCurrent + 1}} / {{displayBooks.length}}</text>
     </view>
   </view>
-  <view class="daily__cover {{state === 'rolling' ? 'daily__cover--rolling' : ''}}">
-    <book-cover wx:if="{{book}}" src="{{book.coverUrl}}" title="{{book.title}}" status="{{book.reviewStatus}}" />
-    <view wx:else class="daily__placeholder"><text>?</text><view></view></view>
+
+  <view class="picker__content">
+    <block wx:if="{{state === 'loading'}}">
+      <text class="picker__kicker">正在打开家庭绘本馆</text>
+      <text class="picker__title">看看今天读哪一本</text>
+      <text class="picker__description">正在整理可选的绘本…</text>
+    </block>
+
+    <block wx:elif="{{state === 'ready'}}">
+      <text class="picker__kicker">已选出 {{displayBooks.length}} 本候选绘本</text>
+      <text class="picker__title">摇一摇，今天看什么书？</text>
+      <text class="picker__description">可以手动滑动，也可以让它自动选一本</text>
+      <button class="picker__primary" bindtap="startDraw">开始选书</button>
+      <text class="picker__shake-hint">也可以直接摇动手机</text>
+    </block>
+
+    <block wx:elif="{{state === 'rolling'}}">
+      <text class="picker__kicker">正在自动选书</text>
+      <text class="picker__title">看看会停在哪一本</text>
+      <text class="picker__description">封面会逐渐减速并定格</text>
+      <button class="picker__primary picker__primary--disabled" disabled="{{true}}">正在选书…</button>
+    </block>
+
+    <block wx:elif="{{state === 'result'}}">
+      <text class="picker__kicker">今天就读这本</text>
+      <text class="picker__title picker__title--book">{{book.title || '未命名绘本'}}</text>
+      <text class="picker__description">{{book.author || '和孩子一起打开看看吧'}}</text>
+      <view class="picker__actions">
+        <button class="picker__primary" bindtap="openBook">查看绘本</button>
+        <button class="picker__secondary" bindtap="startDraw">再选一次</button>
+      </view>
+    </block>
+
+    <block wx:elif="{{state === 'empty'}}">
+      <text class="picker__kicker">绘本馆还是空的</text>
+      <text class="picker__title">先放几本绘本进来吧</text>
+      <text class="picker__description">录入后，就能从自己的馆藏里随机选书</text>
+      <button class="picker__primary" bindtap="goAddBook">录入绘本</button>
+    </block>
+
+    <block wx:elif="{{state === 'error'}}">
+      <text class="picker__kicker">这次没有打开成功</text>
+      <text class="picker__title">暂时没能读到馆藏</text>
+      <text class="picker__description">{{errorMessage}}</text>
+      <button class="picker__primary" bindtap="retry">重新加载</button>
+    </block>
   </view>
 </view>

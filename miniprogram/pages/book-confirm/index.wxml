@@ -3,7 +3,7 @@
   <view class="confirm-page__content">
     <status-banner wx:if="{{duplicate}}" type="warning" title="馆里已经有这本" message="确认后只增加馆藏数量，不会创建重复记录。" />
     <view class="confirm-page__hero">
-      <book-cover size="large" src="{{book.coverUrl}}" title="{{book.title}}" />
+      <book-cover size="large" src="{{book.coverUrl || ''}}" title="{{book.title || ''}}" />
       <view class="confirm-page__summary">
         <text class="confirm-page__title">{{book.title || '绘本信息待确认'}}</text>
         <text class="confirm-page__author">{{book.author || '作者信息待补充'}}</text>

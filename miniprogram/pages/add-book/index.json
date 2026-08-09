@@ -1,11 +1,11 @@
 {
   "navigationStyle": "custom",
   "usingComponents": {
-    "app-header": "../../components/app-header/index",
-    "ui-button": "../../components/ui-button/index",
-    "text-field": "../../components/text-field/index",
-    "status-banner": "../../components/status-banner/index",
-    "book-cover": "../../components/book-cover/index",
-    "empty-state": "../../components/empty-state/index"
+    "app-header": "/components/app-header/index",
+    "ui-button": "/components/ui-button/index",
+    "text-field": "/components/text-field/index",
+    "status-banner": "/components/status-banner/index",
+    "book-cover": "/components/book-cover/index",
+    "empty-state": "/components/empty-state/index"
   }
 }

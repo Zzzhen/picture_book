@@ -5,7 +5,7 @@ async function loadAllShelfBooks(bookshelfId) {
   let cursor;
   do {
     const page = await services.bookshelf("listShelfBooks", { bookshelf_id: bookshelfId, cursor, limit: 50 });
-    items.push(...page.items);
+    Array.prototype.push.apply(items, page.items || []);
     cursor = page.next_cursor;
   } while (cursor && items.length < 500);
   return items.slice(0, 500);
@@ -192,7 +192,7 @@ Page({
 
   async removeSelected() {
     if (!this.data.selectedCount || this.data.operating) return;
-    const selectedIds = [...this.data.selectedIds];
+    const selectedIds = this.data.selectedIds.slice();
     this.setData({ operating: "removing", removeVisible: false });
     try {
       await processInChunks(selectedIds, (chunk) => services.bookshelf("removeBooks", {
@@ -211,7 +211,7 @@ Page({
 
   async pinSelected() {
     if (!this.data.selectedCount || this.data.operating) return;
-    const selectedIds = [...this.data.selectedIds];
+    const selectedIds = this.data.selectedIds.slice();
     this.setData({ operating: "pinning" });
     try {
       await services.bookshelf("pinBooks", { bookshelf_id: this.data.id, user_book_ids: selectedIds });

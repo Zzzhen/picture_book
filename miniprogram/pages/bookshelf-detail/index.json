@@ -1,11 +1,11 @@
 {
   "navigationStyle": "custom",
   "usingComponents": {
-    "app-header": "../../components/app-header/index",
-    "book-card": "../../components/book-card/index",
-    "empty-state": "../../components/empty-state/index",
-    "ui-button": "../../components/ui-button/index",
-    "skeleton": "../../components/skeleton/index",
-    "confirm-dialog": "../../components/confirm-dialog/index"
+    "app-header": "/components/app-header/index",
+    "book-card": "/components/book-card/index",
+    "empty-state": "/components/empty-state/index",
+    "ui-button": "/components/ui-button/index",
+    "skeleton": "/components/skeleton/index",
+    "confirm-dialog": "/components/confirm-dialog/index"
   }
 }

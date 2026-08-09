@@ -1,0 +1,4 @@
+<view class="daily-pick-page">
+  <app-header title="今日选书" back="{{true}}" transparent="{{true}}" />
+  <daily-book-picker />
+</view>

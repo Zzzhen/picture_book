@@ -2,16 +2,15 @@
   "navigationStyle": "custom",
   "enablePullDownRefresh": true,
   "usingComponents": {
-    "app-header": "../../components/app-header/index",
-    "bookplate-mark": "../../components/bookplate-mark/index",
-    "daily-book-picker": "../../components/daily-book-picker/index",
-    "search-field": "../../components/search-field/index",
-    "segmented-control": "../../components/segmented-control/index",
-    "book-card": "../../components/book-card/index",
-    "book-list-item": "../../components/book-list-item/index",
-    "empty-state": "../../components/empty-state/index",
-    "skeleton": "../../components/skeleton/index",
-    "status-banner": "../../components/status-banner/index",
-    "ui-button": "../../components/ui-button/index"
+    "app-header": "/components/app-header/index",
+    "bookplate-mark": "/components/bookplate-mark/index",
+    "search-field": "/components/search-field/index",
+    "segmented-control": "/components/segmented-control/index",
+    "book-card": "/components/book-card/index",
+    "book-list-item": "/components/book-list-item/index",
+    "empty-state": "/components/empty-state/index",
+    "skeleton": "/components/skeleton/index",
+    "status-banner": "/components/status-banner/index",
+    "ui-button": "/components/ui-button/index"
   }
 }

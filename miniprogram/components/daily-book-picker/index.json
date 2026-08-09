@@ -1,6 +1,7 @@
 {
   "component": true,
+  "styleIsolation": "apply-shared",
   "usingComponents": {
-    "book-cover": "../book-cover/index"
+    "book-cover": "/components/book-cover/index"
   }
 }

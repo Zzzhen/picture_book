@@ -1,8 +1,8 @@
 {
   "navigationStyle": "custom",
   "usingComponents": {
-    "bookplate-mark": "../../components/bookplate-mark/index",
-    "ui-button": "../../components/ui-button/index",
-    "status-banner": "../../components/status-banner/index"
+    "bookplate-mark": "/components/bookplate-mark/index",
+    "ui-button": "/components/ui-button/index",
+    "status-banner": "/components/status-banner/index"
   }
 }

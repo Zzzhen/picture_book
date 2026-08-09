@@ -1,6 +1,6 @@
 <view class="book-card {{selected ? 'book-card--selected' : ''}}" bindtap="onTap" hover-class="book-card--pressed">
   <view class="book-card__cover">
-    <book-cover src="{{book.coverUrl}}" title="{{book.title}}" status="{{book.reviewStatus}}" />
+    <book-cover class="book-card__cover-component" src="{{book.coverUrl || ''}}" title="{{book.title || ''}}" status="{{book.reviewStatus || ''}}" />
     <view wx:if="{{manage}}" class="book-card__check {{selected ? 'book-card__check--selected' : ''}}">{{selected ? '✓' : ''}}</view>
   </view>
   <text class="book-card__title">{{book.title || '未命名绘本'}}</text>

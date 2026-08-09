@@ -1,11 +1,11 @@
 {
   "navigationStyle": "custom",
   "usingComponents": {
-    "app-header": "../../components/app-header/index",
-    "search-field": "../../components/search-field/index",
-    "book-card": "../../components/book-card/index",
-    "empty-state": "../../components/empty-state/index",
-    "skeleton": "../../components/skeleton/index",
-    "ui-button": "../../components/ui-button/index"
+    "app-header": "/components/app-header/index",
+    "search-field": "/components/search-field/index",
+    "book-card": "/components/book-card/index",
+    "empty-state": "/components/empty-state/index",
+    "skeleton": "/components/skeleton/index",
+    "ui-button": "/components/ui-button/index"
   }
 }

@@ -1,8 +1,8 @@
 {
   "navigationStyle": "custom",
   "usingComponents": {
-    "app-header": "../../components/app-header/index",
-    "status-banner": "../../components/status-banner/index",
-    "confirm-dialog": "../../components/confirm-dialog/index"
+    "app-header": "/components/app-header/index",
+    "status-banner": "/components/status-banner/index",
+    "confirm-dialog": "/components/confirm-dialog/index"
   }
 }

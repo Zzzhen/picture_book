@@ -58,7 +58,7 @@
     <text-field label="书名、作者或 ISBN" value="{{cacheKeyword}}" placeholder="输入关键词" bind:input="onCacheKeyword" />
     <ui-button text="搜索" bind:tap="searchCache" />
     <view wx:if="{{cacheResult}}" class="add-book__result" bindtap="selectCacheResult">
-      <book-cover size="small" src="{{cacheResult.coverUrl}}" title="{{cacheResult.title}}" />
+      <book-cover size="small" src="{{cacheResult.coverUrl || ''}}" title="{{cacheResult.title || ''}}" />
       <view><text class="add-book__result-title">{{cacheResult.title}}</text><text class="add-book__result-meta">{{cacheResult.author}}</text></view>
       <text class="add-book__arrow">›</text>
     </view>
@@ -103,7 +103,7 @@
       </view>
       <view wx:for="{{scanItems}}" wx:key="edition_id" class="add-book__scan-item add-book__scan-item--{{item.status}}">
         <view class="add-book__scan-cover">
-          <book-cover size="medium" src="{{item.cover_url}}" title="{{item.title}}" />
+          <book-cover size="medium" src="{{item.cover_url || ''}}" title="{{item.title || ''}}" />
         </view>
         <view class="add-book__scan-info">
           <text class="add-book__scan-title">{{item.title}}</text>

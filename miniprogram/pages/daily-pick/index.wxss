@@ -1,0 +1,29 @@
+page {
+  min-height: 100%;
+  overflow: hidden;
+  background: #17231d;
+}
+
+.daily-pick-page {
+  --color-background-paper: transparent;
+  --color-text-primary: #fffefb;
+  display: flex;
+  min-height: 100vh;
+  overflow: hidden;
+  flex-direction: column;
+  color: #fffefb;
+  background:
+    radial-gradient(circle at 50% 24%, rgba(167, 105, 74, 0.34), transparent 36%),
+    radial-gradient(circle at 16% 82%, rgba(49, 90, 69, 0.34), transparent 38%),
+    linear-gradient(180deg, #2c2a23 0%, #2a1c18 52%, #121b17 100%);
+}
+
+.daily-pick-page app-header,
+.daily-pick-page daily-book-picker {
+  display: block;
+}
+
+.daily-pick-page daily-book-picker {
+  flex: 1;
+  min-height: 0;
+}

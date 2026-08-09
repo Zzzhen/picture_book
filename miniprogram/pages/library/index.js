@@ -149,6 +149,10 @@ Page({
     wx.navigateTo({ url: `/pages/book-detail/index?id=${event.detail.book.userBookId}` });
   },
 
+  goDailyPick() {
+    wx.navigateTo({ url: "/pages/daily-pick/index" });
+  },
+
   goAddBook() {
     track("add_book_clicked", { source: "library" });
     wx.navigateTo({ url: "/pages/add-book/index" });
