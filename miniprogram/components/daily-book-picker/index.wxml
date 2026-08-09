@@ -18,7 +18,7 @@
       <block wx:for="{{displayBooks}}" wx:key="userBookId">
         <swiper-item class="picker__slide">
           <view class="picker__slide-card {{index === swiperCurrent ? 'picker__slide-card--active' : ''}}">
-            <book-cover src="{{item.coverUrl || ''}}" title="{{item.title || ''}}" status="{{item.reviewStatus || ''}}" />
+            <book-cover class="picker__cover-component" src="{{item.coverUrl || ''}}" title="{{item.title || ''}}" status="{{item.reviewStatus || ''}}" />
           </view>
         </swiper-item>
       </block>

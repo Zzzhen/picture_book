@@ -48,7 +48,7 @@
       <ui-button text="打开相机扫码" bind:tap="scan" />
     </view>
     <view class="add-book__divider"><view></view><text>或输入 ISBN</text><view></view></view>
-    <text-field label="ISBN" value="{{isbn}}" placeholder="输入 10 或 13 位 ISBN" error="{{isbnError}}" maxlength="{{20}}" bind:input="onIsbnInput" />
+    <text-field label="ISBN" value="{{isbn || ''}}" placeholder="输入 10 或 13 位 ISBN" error="{{isbnError || ''}}" maxlength="{{20}}" bind:input="onIsbnInput" />
     <ui-button type="secondary" text="查询绘本" loading="{{querying}}" disabled="{{!isbn}}" bind:tap="lookup" />
     <status-banner wx:if="{{state === 'provider-unavailable'}}" type="warning" title="图书信息服务暂时不可用" message="没有产生付费查询，请稍后重试，或选择手工录入。" action-text="手工录入" bind:action="goManual" />
   </view>

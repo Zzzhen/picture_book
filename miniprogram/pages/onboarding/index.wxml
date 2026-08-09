@@ -11,8 +11,8 @@
       <text class="onboarding__description">昵称、出生年月和性别用于整理适龄阅读记录，只在家庭绘本馆内使用。</text>
     </view>
     <view class="onboarding__form">
-      <text-field label="孩子昵称" required="{{true}}" value="{{form.nickname}}" placeholder="例如：依依" error="{{errors.nickname}}" bind:input="onNickname" />
-      <text-field label="出生年月" required="{{true}}" type="month" value="{{form.birthMonth}}" placeholder="请选择出生年月" error="{{errors.birthMonth}}" bind:change="onBirthMonth" />
+      <text-field label="孩子昵称" required="{{true}}" value="{{form.nickname || ''}}" placeholder="例如：依依" error="{{errors.nickname || ''}}" bind:input="onNickname" />
+      <text-field label="出生年月" required="{{true}}" type="month" value="{{form.birthMonth || ''}}" placeholder="请选择出生年月" error="{{errors.birthMonth || ''}}" bind:change="onBirthMonth" />
       <view class="onboarding__field">
         <text class="onboarding__label">性别 <text class="onboarding__required">*</text></text>
         <view class="onboarding__gender">

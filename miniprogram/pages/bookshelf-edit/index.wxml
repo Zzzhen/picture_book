@@ -5,7 +5,7 @@
     <text class="shelf-edit__hint">用简短的名称和说明，记下这个书架的共读主题。</text>
   </view>
   <view class="shelf-edit__form">
-    <text-field label="书架名称" required="{{true}}" value="{{form.name}}" placeholder="例如：睡前共读" error="{{errors.name}}" bind:input="onName" />
+    <text-field label="书架名称" required="{{true}}" value="{{form.name || ''}}" placeholder="例如：睡前共读" error="{{errors.name || ''}}" bind:input="onName" />
     <text-field label="说明（可选）" type="textarea" value="{{form.description}}" placeholder="记录这个书架适合什么时间或主题" bind:input="onDescription" />
   </view>
   <view class="shelf-edit__actions">

@@ -51,7 +51,7 @@
   height: 100%;
 }
 
-.shelf-card__slot-empty view {
+.shelf-card__empty-rule {
   width: 24rpx;
   height: 3rpx;
   background: rgba(49, 90, 69, 0.32);

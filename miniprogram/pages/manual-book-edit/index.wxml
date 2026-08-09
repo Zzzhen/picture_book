@@ -19,9 +19,9 @@
       </view>
     </view>
     <view class="manual__form">
-      <text-field label="书名" required="{{true}}" value="{{form.title}}" placeholder="请输入绘本完整书名" error="{{errors.title}}" bind:input="onTitle" />
-      <text-field label="作者（可选）" value="{{form.author}}" placeholder="作者、文/图译者可用“/”分隔" error="{{errors.author}}" bind:input="onAuthor" />
-      <text-field label="ISBN（可选）" value="{{form.isbn}}" placeholder="没有 ISBN 可以留空" error="{{errors.isbn}}" maxlength="{{20}}" bind:input="onIsbn" />
+      <text-field label="书名" required="{{true}}" value="{{form.title || ''}}" placeholder="请输入绘本完整书名" error="{{errors.title || ''}}" bind:input="onTitle" />
+      <text-field label="作者（可选）" value="{{form.author || ''}}" placeholder="作者、文/图译者可用“/”分隔" error="{{errors.author || ''}}" bind:input="onAuthor" />
+      <text-field label="ISBN（可选）" value="{{form.isbn || ''}}" placeholder="没有 ISBN 可以留空" error="{{errors.isbn || ''}}" maxlength="{{20}}" bind:input="onIsbn" />
       <text-field label="出版社（可选）" value="{{form.publisher}}" placeholder="请输入出版社" bind:input="onPublisher" />
     </view>
     <ui-button text="{{reviewStatus === 'pending' ? '保存修改' : (reviewStatus === 'rejected' ? '修改并重新提交' : '提交审核')}}" loading="{{submitting}}" bind:tap="submit" />

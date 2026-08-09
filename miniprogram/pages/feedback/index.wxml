@@ -14,7 +14,7 @@
         <button wx:for="{{types}}" wx:key="value" class="{{form.type === item.value ? 'feedback__type--active' : ''}}" data-value="{{item.value}}" bindtap="chooseType">{{item.label}}</button>
       </view>
       <view class="feedback__form">
-        <text-field label="详细说明" required="{{true}}" type="textarea" value="{{form.content}}" placeholder="请描述操作步骤、看到的提示或希望改进的地方" maxlength="{{1000}}" error="{{errors.content}}" bind:input="onContent" />
+        <text-field label="详细说明" required="{{true}}" type="textarea" value="{{form.content || ''}}" placeholder="请描述操作步骤、看到的提示或希望改进的地方" maxlength="{{1000}}" error="{{errors.content || ''}}" bind:input="onContent" />
         <text-field label="联系方式（可选）" value="{{form.contact}}" placeholder="手机号、邮箱或其他方便联系的方式" maxlength="{{100}}" bind:input="onContact" />
       </view>
       <status-banner wx:if="{{errorMessage}}" type="error" title="提交失败" message="{{errorMessage}}" />

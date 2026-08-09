@@ -64,7 +64,7 @@
   transform: translateY(0) scale(1);
 }
 
-.picker__slide-card book-cover {
+.picker__cover-component {
   display: block;
   width: 100%;
 }

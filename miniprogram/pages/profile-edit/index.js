@@ -22,10 +22,10 @@ Page({
       const data = await services.user("getProfile", {});
       this.setData({
         form: {
-          nickname: data.child.nickname,
-          birthMonth: data.child.birth_year_month,
-          gender: data.child.gender,
-          libraryName: data.user.library_name
+          nickname: data.child.nickname || "",
+          birthMonth: data.child.birth_year_month || "",
+          gender: data.child.gender || "",
+          libraryName: data.user.library_name || ""
         }
       });
     } catch (error) {

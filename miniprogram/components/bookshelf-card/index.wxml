@@ -3,7 +3,7 @@
     <block wx:for="{{shelf.coverSlots}}" wx:key="id">
       <view class="shelf-card__slot">
         <image wx:if="{{item.url}}" class="shelf-card__cover" src="{{item.url}}" mode="aspectFit" lazy-load="{{true}}" />
-        <view wx:else class="shelf-card__slot-empty"><view></view></view>
+        <view wx:else class="shelf-card__slot-empty"><view class="shelf-card__empty-rule"></view></view>
       </view>
     </block>
   </view>
