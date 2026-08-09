@@ -11,7 +11,7 @@ page {
   display: flex;
   align-items: center;
   gap: 22rpx;
-  padding: 30rpx 6rpx 36rpx;
+  padding: 30rpx 6rpx 28rpx;
 }
 
 .profile__avatar {
@@ -53,33 +53,66 @@ page {
 }
 
 .profile__edit {
+  flex: 0 0 auto;
+  height: 88rpx;
+  margin: 0;
+  padding: 0 18rpx;
+  border: 1rpx solid var(--color-border-default);
+  border-radius: var(--radius-pill);
   color: var(--color-brand-forest);
+  background: var(--color-surface-primary);
   font-size: 24rpx;
   font-weight: 650;
+  line-height: 86rpx;
 }
 
-.profile__metrics-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin-bottom: 18rpx;
+.profile__edit::after {
+  border: 0;
 }
 
-.profile__section-title {
-  font-family: var(--font-display);
-  font-size: 30rpx;
-  font-weight: 700;
-}
-
-.profile__hint {
-  color: var(--color-text-muted);
-  font-size: 20rpx;
-}
-
-.profile__metrics {
+.profile__summary {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16rpx;
+  grid-template-columns: 1fr 1rpx 1fr 1rpx 1fr 1rpx 1fr;
+  align-items: center;
+  min-height: 126rpx;
+  padding: 0 18rpx;
+  border: 1rpx solid var(--color-border-default);
+  border-radius: var(--radius-large);
+  background: var(--color-surface-primary);
+  box-shadow: var(--shadow-card);
+}
+
+.profile__summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.profile__summary-value,
+.profile__summary-label {
+  display: block;
+}
+
+.profile__summary-value {
+  font-family: var(--font-display);
+  color: var(--color-brand-forest);
+  font-size: 35rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.profile__summary-label {
+  margin-top: 10rpx;
+  color: var(--color-text-secondary);
+  font-size: 24rpx;
+  white-space: nowrap;
+}
+
+.profile__summary-divider {
+  width: 1rpx;
+  height: 54rpx;
+  background: var(--color-border-default);
 }
 
 .profile > status-banner {
@@ -87,9 +120,17 @@ page {
   margin-top: 22rpx;
 }
 
+.profile__group-title {
+  display: block;
+  margin: 30rpx 0 12rpx 8rpx;
+  color: var(--color-text-secondary);
+  font-size: 24rpx;
+  font-weight: 650;
+}
+
 .profile__menu {
   overflow: hidden;
-  margin-top: 28rpx;
+  margin-top: 0;
   border: 1rpx solid var(--color-border-default);
   border-radius: var(--radius-large);
   background: var(--color-surface-primary);
@@ -136,4 +177,25 @@ page {
   color: var(--color-text-muted);
   font-size: 20rpx;
   text-align: center;
+}
+
+@media (max-width: 327px) {
+  .profile__identity {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .profile__edit {
+    margin-left: 120rpx;
+  }
+
+  .profile__summary {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24rpx 12rpx;
+    padding: 24rpx 18rpx;
+  }
+
+  .profile__summary-divider {
+    display: none;
+  }
 }

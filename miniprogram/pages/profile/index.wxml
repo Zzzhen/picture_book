@@ -1,28 +1,34 @@
 <view class="profile">
-  <app-header title="我的绘本馆" />
+  <app-header title="我的" />
   <view class="profile__identity" bindlongpress="openAdmin">
     <view class="profile__avatar">{{childInitial || '家'}}</view>
     <view class="profile__identity-copy">
-      <text class="profile__name">{{child.nickname || '小读者'}}的绘本馆</text>
+      <text class="profile__name">{{libraryName || (child.nickname || '小读者') + '的绘本馆'}}</text>
       <text class="profile__meta">{{child.ageText || '资料待完善'}} · 建馆 {{createdDays || 0}} 天</text>
     </view>
-    <text class="profile__edit" bindtap="editProfile">编辑</text>
+    <button class="profile__edit" bindtap="editProfile">编辑资料</button>
   </view>
-  <view class="profile__metrics-head">
-    <text class="profile__section-title">馆藏指标</text>
-    <text class="profile__hint">只展示数据，不设置成功阈值</text>
-  </view>
-  <view class="profile__metrics">
-    <metric-card label="不同绘本" value="{{metrics.uniqueBooks || '0'}}" unit="本" note="按 ISBN / 审核记录去重" />
-    <metric-card label="馆藏册数" value="{{metrics.copies || '0'}}" unit="册" note="包含重复册数" />
-    <metric-card label="自定义书架" value="{{metrics.shelves || '0'}}" unit="个" note="按家庭阅读场景整理" />
-    <metric-card label="标记喜欢" value="{{metrics.favorites || '0'}}" unit="本" note="孩子的阅读偏好" />
+  <view class="profile__summary">
+    <view class="profile__summary-item"><text class="profile__summary-value">{{metrics.uniqueBooks || '0'}}</text><text class="profile__summary-label">种绘本</text></view>
+    <view class="profile__summary-divider"></view>
+    <view class="profile__summary-item"><text class="profile__summary-value">{{metrics.copies || '0'}}</text><text class="profile__summary-label">册馆藏</text></view>
+    <view class="profile__summary-divider"></view>
+    <view class="profile__summary-item"><text class="profile__summary-value">{{metrics.shelves || '0'}}</text><text class="profile__summary-label">个书架</text></view>
+    <view class="profile__summary-divider"></view>
+    <view class="profile__summary-item"><text class="profile__summary-value">{{metrics.favorites || '0'}}</text><text class="profile__summary-label">本喜欢</text></view>
   </view>
   <status-banner wx:if="{{accountStatus === 'deleting'}}" type="warning" title="注销申请处理中" message="账号已停止业务操作，个人资料会在 24 小时内删除。" action-text="查看说明" bind:action="cancelDeletion" />
+  <text class="profile__group-title">家庭资料</text>
   <view class="profile__menu">
     <button bindtap="editProfile"><text>孩子与绘本馆资料</text><text>›</text></button>
+  </view>
+  <text class="profile__group-title">支持与信息</text>
+  <view class="profile__menu">
     <button bindtap="goFeedback"><text>意见反馈</text><text>›</text></button>
     <button bindtap="showAbout"><text>关于书芽芽</text><text>›</text></button>
+  </view>
+  <text class="profile__group-title">账号与隐私</text>
+  <view class="profile__menu">
     <button class="profile__danger" bindtap="askDeleteAccount"><text>注销绘本馆</text><text>›</text></button>
   </view>
   <text class="profile__version">V1-Core · 核心建馆版</text>

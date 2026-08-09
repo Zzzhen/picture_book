@@ -7,14 +7,17 @@ page {
   padding-bottom: calc(132rpx + env(safe-area-inset-bottom));
 }
 
-.shelves__action {
-  color: var(--color-brand-forest);
-  font-size: 25rpx;
-  font-weight: 650;
+.shelves__intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24rpx;
+  padding: 30rpx 36rpx 26rpx;
 }
 
-.shelves__intro {
-  padding: 30rpx 36rpx 24rpx;
+.shelves__intro-copy {
+  flex: 1;
+  min-width: 0;
 }
 
 .shelves__title,
@@ -29,11 +32,35 @@ page {
 }
 
 .shelves__copy {
-  max-width: 600rpx;
+  max-width: 480rpx;
   margin-top: 12rpx;
   color: var(--color-text-secondary);
   font-size: 24rpx;
   line-height: 1.65;
+}
+
+.shelves__create {
+  flex: 0 0 auto;
+  height: 88rpx;
+  margin: 0;
+  padding: 0 22rpx;
+  border: 0;
+  border-radius: var(--radius-pill);
+  color: #fff;
+  background: var(--color-brand-forest);
+  box-shadow: var(--shadow-card);
+  font-size: 23rpx;
+  font-weight: 650;
+  line-height: 88rpx;
+}
+
+.shelves__create text {
+  margin-right: 7rpx;
+  font-size: 28rpx;
+}
+
+.shelves__create::after {
+  border: 0;
 }
 
 .shelves__body {
@@ -46,24 +73,13 @@ page {
   gap: 18rpx;
 }
 
-.shelves__add {
-  z-index: 20;
-  position: fixed;
-  right: 30rpx;
-  bottom: calc(130rpx + env(safe-area-inset-bottom));
-  width: 76rpx;
-  height: 76rpx;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  color: #fff;
-  background: var(--color-brand-forest);
-  box-shadow: var(--shadow-floating);
-  font-size: 38rpx;
-  line-height: 76rpx;
-}
+@media (max-width: 327px) {
+  .shelves__intro {
+    align-items: stretch;
+    flex-direction: column;
+  }
 
-.shelves__add::after {
-  border: 0;
+  .shelves__create {
+    align-self: flex-start;
+  }
 }

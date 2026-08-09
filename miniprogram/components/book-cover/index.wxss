@@ -22,6 +22,10 @@
   height: 100%;
 }
 
+.cover__image {
+  background: var(--color-surface-cover);
+}
+
 .cover__fallback {
   box-sizing: border-box;
   display: flex;
@@ -47,6 +51,13 @@
   line-height: 1.35;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+}
+
+.cover__missing {
+  margin-top: 10rpx;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 20rpx;
 }
 
 .cover__badge {

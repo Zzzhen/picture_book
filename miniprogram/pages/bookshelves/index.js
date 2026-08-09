@@ -23,7 +23,7 @@ Page({
         name: item.name,
         description: item.description,
         bookCount: item.book_count,
-        covers: item.cover_urls || []
+        coverSlots: Array.from({ length: 4 }, (_, index) => ({ id: index, url: (item.cover_urls || [])[index] || "" }))
       }));
       this.setData({ shelves, state: shelves.length ? "content" : "empty" });
     } catch (error) {

@@ -29,6 +29,7 @@ Page({
           nickname: data.child.nickname,
           ageText: this.ageText(data.child.birth_year_month)
         },
+        libraryName: data.user.library_name || `${data.child.nickname || "小读者"}的绘本馆`,
         childInitial: Array.from(data.child.nickname || "家")[0],
         metrics: {
           uniqueBooks: String(data.stats.book_count || 0),

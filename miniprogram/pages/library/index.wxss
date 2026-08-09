@@ -24,6 +24,11 @@ page {
   margin-bottom: 28rpx;
 }
 
+.library__daily {
+  display: block;
+  margin-bottom: 24rpx;
+}
+
 .library__eyebrow,
 .library__count {
   display: block;

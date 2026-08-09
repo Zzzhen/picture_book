@@ -1,15 +1,16 @@
 <view class="library">
-  <app-header title="{{libraryName || '家庭绘本馆'}}">
+  <app-header title="绘本馆">
     <text slot="action" class="library__manage" bindtap="toggleManage">{{manageMode ? '完成' : '管理'}}</text>
   </app-header>
   <view class="library__top">
     <view class="library__identity">
       <view>
-        <text class="library__eyebrow">{{childNickname || '小读者'}}的家庭藏书</text>
+        <text class="library__eyebrow">{{libraryName || (childNickname || '小读者') + '的绘本馆'}}</text>
         <text class="library__count">{{total || 0}} 本绘本 · {{copies || 0}} 册</text>
       </view>
       <bookplate-mark size="small" />
     </view>
+    <view wx:if="{{state === 'content' && !manageMode}}" class="library__daily"><daily-book-picker /></view>
     <search-field value="{{keyword}}" placeholder="按书名、作者或 ISBN 搜索已入库绘本" bind:input="onSearchInput" bind:confirm="onSearch" bind:clear="onSearchClear" />
     <view class="library__toolbar">
       <view class="library__filters">

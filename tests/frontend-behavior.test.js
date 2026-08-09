@@ -260,6 +260,35 @@ test("library uses a three-column book grid at normal phone widths", () => {
   assert.match(styles, /\.library__grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\);/);
 });
 
+test("daily book picker is frontend-only, remembers today and cleans up motion sensors", () => {
+  const script = fs.readFileSync(path.join(root, "miniprogram/components/daily-book-picker/index.js"), "utf8");
+  const template = fs.readFileSync(path.join(root, "miniprogram/pages/library/index.wxml"), "utf8");
+  const styles = fs.readFileSync(path.join(root, "miniprogram/components/daily-book-picker/index.wxss"), "utf8");
+  assert.match(template, /<daily-book-picker/);
+  assert.match(script, /DAILY_PICK_PREFIX/);
+  assert.match(script, /setStorageSync/);
+  assert.match(script, /startAccelerometer/);
+  assert.match(script, /offAccelerometerChange/);
+  assert.match(script, /stopAccelerometer/);
+  assert.match(script, /preference !== "not_recommended"/);
+  assert.match(script, /reviewStatus !== "pending"/);
+  assert.match(script, /reviewStatus !== "rejected"/);
+  assert.match(styles, /prefers-reduced-motion/);
+});
+
+test("bookshelf and profile tabs use task-focused layouts", () => {
+  const shelves = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelves/index.wxml"), "utf8");
+  const shelfCard = fs.readFileSync(path.join(root, "miniprogram/components/bookshelf-card/index.wxml"), "utf8");
+  const profile = fs.readFileSync(path.join(root, "miniprogram/pages/profile/index.wxml"), "utf8");
+  assert.match(shelves, /新建书架/);
+  assert.doesNotMatch(shelves, /class="shelves__add"/);
+  assert.match(shelfCard, /shelf\.coverSlots/);
+  assert.match(profile, /class="profile__summary"/);
+  assert.match(profile, /家庭资料/);
+  assert.match(profile, /账号与隐私/);
+  assert.doesNotMatch(profile, /<metric-card/);
+});
+
 test("bookshelf detail constrains its book grid and card hosts", () => {
   const styles = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelf-detail/index.wxss"), "utf8");
   assert.match(styles, /\.shelf-detail__grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\);/);

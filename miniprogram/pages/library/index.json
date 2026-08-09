@@ -4,6 +4,7 @@
   "usingComponents": {
     "app-header": "../../components/app-header/index",
     "bookplate-mark": "../../components/bookplate-mark/index",
+    "daily-book-picker": "../../components/daily-book-picker/index",
     "search-field": "../../components/search-field/index",
     "segmented-control": "../../components/segmented-control/index",
     "book-card": "../../components/book-card/index",

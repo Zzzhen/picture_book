@@ -1,17 +1,16 @@
 <view class="shelf-card" bindtap="onTap" hover-class="shelf-card--pressed">
   <view class="shelf-card__collage">
-    <block wx:for="{{shelf.covers}}" wx:key="*this">
-      <image wx:if="{{item}}" class="shelf-card__cover shelf-card__cover--{{index}}" src="{{item}}" mode="aspectFill" />
+    <block wx:for="{{shelf.coverSlots}}" wx:key="id">
+      <view class="shelf-card__slot">
+        <image wx:if="{{item.url}}" class="shelf-card__cover" src="{{item.url}}" mode="aspectFit" lazy-load="{{true}}" />
+        <view wx:else class="shelf-card__slot-empty"><view></view></view>
+      </view>
     </block>
-    <view wx:if="{{!shelf.covers || !shelf.covers.length}}" class="shelf-card__empty">
-      <view class="shelf-card__spine"></view>
-      <view class="shelf-card__spine shelf-card__spine--short"></view>
-      <view class="shelf-card__spine"></view>
-    </view>
   </view>
   <view class="shelf-card__body">
     <text class="shelf-card__name">{{shelf.name || '未命名书架'}}</text>
     <text class="shelf-card__count">{{shelf.bookCount || 0}} 本绘本</text>
+    <text wx:if="{{shelf.description}}" class="shelf-card__description">{{shelf.description}}</text>
   </view>
   <text class="shelf-card__arrow">›</text>
 </view>

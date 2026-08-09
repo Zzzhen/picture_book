@@ -2,7 +2,6 @@
   "navigationStyle": "custom",
   "usingComponents": {
     "app-header": "../../components/app-header/index",
-    "metric-card": "../../components/metric-card/index",
     "status-banner": "../../components/status-banner/index",
     "confirm-dialog": "../../components/confirm-dialog/index"
   }

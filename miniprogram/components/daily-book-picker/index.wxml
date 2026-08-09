@@ -1,0 +1,20 @@
+<view class="daily daily--{{state}}">
+  <view class="daily__copy">
+    <text class="daily__kicker">{{state === 'result' ? '今天就读这本' : state === 'rolling' ? '正在翻找馆藏…' : '今天看什么？'}}</text>
+    <text class="daily__title" wx:if="{{state === 'idle'}}">摇一摇，从家里的绘本中选一本</text>
+    <block wx:else>
+      <text class="daily__title">{{(book && book.title) || '正在选一本…'}}</text>
+      <text class="daily__author" wx:if="{{book && book.author}}">{{book.author}}</text>
+    </block>
+    <view class="daily__actions">
+      <button wx:if="{{state === 'idle'}}" class="daily__primary" bindtap="startDraw">摇一摇选书</button>
+      <button wx:if="{{state === 'result'}}" class="daily__primary" bindtap="openBook">查看绘本</button>
+      <button wx:if="{{state === 'result'}}" class="daily__secondary" bindtap="startDraw">换一本</button>
+      <text wx:if="{{state === 'rolling'}}" class="daily__wait">稍等，马上揭晓</text>
+    </view>
+  </view>
+  <view class="daily__cover {{state === 'rolling' ? 'daily__cover--rolling' : ''}}">
+    <book-cover wx:if="{{book}}" src="{{book.coverUrl}}" title="{{book.title}}" status="{{book.reviewStatus}}" />
+    <view wx:else class="daily__placeholder"><text>?</text><view></view></view>
+  </view>
+</view>
