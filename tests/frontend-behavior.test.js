@@ -129,8 +129,10 @@ test("library cover mapping resolves cloud file IDs into temporary image URLs", 
 
 test("library page uses the persisted Qiniu cover URL without per-book temp URL calls", () => {
   const script = fs.readFileSync(path.join(root, "miniprogram/pages/library/index.js"), "utf8");
+  const mapBookSource = script.match(/function mapBook\(item\)\s*\{[\s\S]*?\n\}/);
+  assert.ok(mapBookSource);
   assert.match(script, /cover_url/);
-  assert.doesNotMatch(script, /getTempFileUrl/);
+  assert.doesNotMatch(mapBookSource[0], /getTempFileUrl/);
 });
 
 test("book detail stays editable and saves without a header edit mode", () => {
@@ -260,6 +262,250 @@ test("library uses a three-column book grid at normal phone widths", () => {
   assert.match(styles, /\.library__grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\);/);
 });
 
+test("library header reserves the real status bar and navigation area", () => {
+  const script = fs.readFileSync(path.join(root, "miniprogram/pages/library/index.js"), "utf8");
+  const template = fs.readFileSync(path.join(root, "miniprogram/pages/library/index.wxml"), "utf8");
+  const styles = fs.readFileSync(path.join(root, "miniprogram/pages/library/index.wxss"), "utf8");
+  assert.match(script, /statusHeight:\s*20/);
+  assert.match(script, /getMenuButtonBoundingClientRect/);
+  assert.match(script, /headerHeight:\s*64/);
+  assert.match(template, /style="padding-top:\s*\{\{statusHeight\}\}px;\s*min-height:\s*\{\{headerHeight\}\}px;"/);
+  assert.doesNotMatch(styles, /padding:\s*calc\(env\(safe-area-inset-top\)/);
+});
+
+test("library home directly renders the full collection with filtering and newest sorting", () => {
+  const script = fs.readFileSync(path.join(root, "miniprogram/pages/library/index.js"), "utf8");
+  const template = fs.readFileSync(path.join(root, "miniprogram/pages/library/index.wxml"), "utf8");
+  assert.doesNotMatch(template, /class="library__recent"/);
+  assert.doesNotMatch(template, /查看全部|showAllBooks/);
+  assert.match(script, /showAll:\s*true/);
+  assert.match(template, /class="library__full"[\s\S]*class="library__filter/);
+  assert.match(template, /sortLabel \|\| '最近加入'/);
+});
+
+test("library home loads the complete collection directly", async () => {
+  let definition;
+  global.Page = (value) => { definition = value; };
+  global.wx = { stopPullDownRefresh() {} };
+  const apiPath = path.join(root, "miniprogram/services/api");
+  const pagePath = path.join(root, "miniprogram/pages/library/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  const { services } = require(apiPath);
+  const originalLibrary = services.library;
+  services.library = async () => ({
+    items: Array.from({ length: 8 }, (_, index) => ({
+      user_book_id: `book_${index + 1}`,
+      quantity: 1,
+      edition: { title: `绘本 ${index + 1}`, cover_url: `https://cdn.example/${index + 1}.jpg` }
+    })),
+    next_cursor: null,
+    has_more: false
+  });
+  const page = {
+    ...definition,
+    data: JSON.parse(JSON.stringify(definition.data)),
+    setData(next) { this.data = { ...this.data, ...next }; }
+  };
+  try {
+    await page.loadBooks(true);
+    assert.equal(page.data.showAll, true);
+    assert.equal(page.data.books.length, 8);
+  } finally {
+    services.library = originalLibrary;
+  }
+});
+
+test("library search enters the full result state and clearing returns to the overview", () => {
+  let definition;
+  global.Page = (value) => { definition = value; };
+  const pagePath = path.join(root, "miniprogram/pages/library/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  let reloads = 0;
+  const page = {
+    ...definition,
+    data: { ...JSON.parse(JSON.stringify(definition.data)), sort: "title", sortLabel: "按书名", preference: "recommended", cover: "with", filterCount: 2 },
+    loadBooks() { reloads += 1; },
+    setData(next) { this.data = { ...this.data, ...next }; }
+  };
+  page.onSearch();
+  assert.equal(page.data.showAll, true);
+  page.onSearchClear();
+  assert.equal(page.data.showAll, true);
+  assert.equal(page.data.keyword, "");
+  assert.equal(page.data.sort, "newest");
+  assert.equal(page.data.sortLabel, "最近加入");
+  assert.equal(page.data.preference, "");
+  assert.equal(page.data.cover, "");
+  assert.equal(page.data.filterCount, 0);
+  assert.equal(reloads, 2);
+});
+
+test("library keeps the full collection visible after clearing search", () => {
+  let definition;
+  global.Page = (value) => { definition = value; };
+  const pagePath = path.join(root, "miniprogram/pages/library/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  let reloads = 0;
+  const page = {
+    ...definition,
+    data: { ...JSON.parse(JSON.stringify(definition.data)), showAll: true, keyword: "月亮", sort: "title", preference: "recommended" },
+    loadBooks() { reloads += 1; },
+    setData(next) { this.data = { ...this.data, ...next }; }
+  };
+  page.onSearchClear();
+  assert.equal(page.data.showAll, true);
+  assert.equal(page.data.keyword, "");
+  assert.equal(page.data.sort, "newest");
+  assert.equal(page.data.preference, "");
+  assert.equal(reloads, 1);
+});
+
+test("library ignores a stale response after a newer reset load starts", async () => {
+  let definition;
+  global.Page = (value) => { definition = value; };
+  global.wx = { stopPullDownRefresh() {} };
+  const apiPath = path.join(root, "miniprogram/services/api");
+  const pagePath = path.join(root, "miniprogram/pages/library/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  const { services } = require(apiPath);
+  const originalLibrary = services.library;
+  const pending = [];
+  services.library = async (_, payload) => new Promise((resolve) => pending.push({ payload, resolve }));
+  const page = {
+    ...definition,
+    data: JSON.parse(JSON.stringify(definition.data)),
+    setData(next) { this.data = { ...this.data, ...next }; }
+  };
+  try {
+    page.data.keyword = "旧关键词";
+    const staleLoad = page.loadBooks(true);
+    page.data.keyword = "";
+    const freshLoad = page.loadBooks(true);
+    assert.equal(pending.length, 2);
+    pending[1].resolve({ items: [{ user_book_id: "fresh", quantity: 1, edition: { title: "新结果" } }], next_cursor: null, has_more: false });
+    await freshLoad;
+    pending[0].resolve({ items: [{ user_book_id: "stale", quantity: 1, edition: { title: "旧结果" } }], next_cursor: null, has_more: false });
+    await staleLoad;
+    assert.equal(page.data.books[0].userBookId, "fresh");
+  } finally {
+    services.library = originalLibrary;
+  }
+});
+
+test("library home exposes the hero and full collection entry state", () => {
+  const script = fs.readFileSync(path.join(root, "miniprogram/pages/library/index.js"), "utf8");
+  const template = fs.readFileSync(path.join(root, "miniprogram/pages/library/index.wxml"), "utf8");
+  assert.match(script, /getTempFileUrl/);
+  assert.match(script, /avatar_file_id/);
+  assert.match(script, /switchTab\(\{\s*url:\s*"\/pages\/profile\/index"/);
+  assert.match(template, /class="library__hero"[\s\S]*bindtap="goDailyPick"/);
+  assert.match(template, /wx:if="\{\{showAll\}\}"[\s\S]*library__toolbar/);
+  assert.doesNotMatch(template, /class="library__recent"|查看全部/);
+});
+
+test("library identity keeps profile data when avatar resolution fails and falls back locally", async () => {
+  let definition;
+  global.Page = (value) => { definition = value; };
+  const apiPath = require.resolve(path.join(root, "miniprogram/services/api"));
+  const cloudFilePath = require.resolve(path.join(root, "miniprogram/utils/cloud-file"));
+  const pagePath = require.resolve(path.join(root, "miniprogram/pages/library/index.js"));
+  const originalCloudFile = require.cache[cloudFilePath];
+  const { services } = require(apiPath);
+  const originalUser = services.user;
+  require.cache[cloudFilePath] = {
+    id: cloudFilePath,
+    filename: cloudFilePath,
+    loaded: true,
+    exports: { getTempFileUrl: async () => { throw new Error("avatar unavailable"); } }
+  };
+  delete require.cache[pagePath];
+  services.user = async () => ({
+    user: { library_name: "芽芽的绘本馆", avatar_file_id: "cloud://avatar", preferred_library_view: "grid" },
+    child: { nickname: "芽芽" }
+  });
+  try {
+    require(pagePath);
+    const page = {
+      ...definition,
+      data: JSON.parse(JSON.stringify(definition.data)),
+      setData(next) { this.data = { ...this.data, ...next }; }
+    };
+    await page.loadIdentity();
+    assert.equal(page.data.libraryName, "芽芽的绘本馆");
+    assert.equal(page.data.avatarUrl, "");
+  } finally {
+    services.user = originalUser;
+    delete require.cache[pagePath];
+    if (originalCloudFile) require.cache[cloudFilePath] = originalCloudFile;
+    else delete require.cache[cloudFilePath];
+  }
+});
+
+test("library refresh keeps existing books visible in an offline state", async () => {
+  let definition;
+  global.Page = (value) => { definition = value; };
+  global.wx = { stopPullDownRefresh() {} };
+  const apiPath = path.join(root, "miniprogram/services/api");
+  const pagePath = path.join(root, "miniprogram/pages/library/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  const { services } = require(apiPath);
+  const originalLibrary = services.library;
+  services.library = async () => { throw new Error("network unavailable"); };
+  const existing = [{ _id: "book_1", userBookId: "book_1", title: "已有绘本", quantity: 1 }];
+  const page = {
+    ...definition,
+    _loadedSignature: JSON.stringify({ keyword: "", preference: "", cover: "", sort: "newest" }),
+    data: { ...JSON.parse(JSON.stringify(definition.data)), books: existing },
+    setData(next) { this.data = { ...this.data, ...next }; }
+  };
+  try {
+    await page.loadBooks(true);
+    assert.equal(page.data.state, "offline");
+    assert.equal(page.data.books.length, 1);
+  } finally {
+    services.library = originalLibrary;
+  }
+});
+
+test("library does not label old books as offline results for a changed query", async () => {
+  let definition;
+  global.Page = (value) => { definition = value; };
+  global.wx = { stopPullDownRefresh() {} };
+  const apiPath = path.join(root, "miniprogram/services/api");
+  const pagePath = path.join(root, "miniprogram/pages/library/index.js");
+  delete require.cache[require.resolve(pagePath)];
+  require(pagePath);
+  const { services } = require(apiPath);
+  const originalLibrary = services.library;
+  services.library = async () => { throw new Error("network unavailable"); };
+  const existing = [{ _id: "book_1", userBookId: "book_1", title: "已有绘本", quantity: 1 }];
+  const page = {
+    ...definition,
+    _loadedSignature: JSON.stringify({ keyword: "", preference: "", cover: "", sort: "newest" }),
+    data: { ...JSON.parse(JSON.stringify(definition.data)), books: existing, keyword: "新查询" },
+    setData(next) { this.data = { ...this.data, ...next }; }
+  };
+  try {
+    await page.loadBooks(true);
+    assert.equal(page.data.state, "error");
+  } finally {
+    services.library = originalLibrary;
+  }
+});
+
+test("custom tab bar applies the watercolor theme only while the library tab is selected", () => {
+  const template = fs.readFileSync(path.join(root, "miniprogram/custom-tab-bar/index.wxml"), "utf8");
+  const styles = fs.readFileSync(path.join(root, "miniprogram/custom-tab-bar/index.wxss"), "utf8");
+  assert.match(template, /tabbar--library/);
+  assert.match(template, /selected\s*===\s*0/);
+  assert.match(styles, /\.tabbar--library[\s\S]*?#963a2f/i);
+});
+
 test("daily book picker has an immersive route, remembers today and cleans up motion sensors", () => {
   const script = fs.readFileSync(path.join(root, "miniprogram/components/daily-book-picker/index.js"), "utf8");
   const libraryScript = fs.readFileSync(path.join(root, "miniprogram/pages/library/index.js"), "utf8");
@@ -268,7 +514,7 @@ test("daily book picker has an immersive route, remembers today and cleans up mo
   const styles = fs.readFileSync(path.join(root, "miniprogram/components/daily-book-picker/index.wxss"), "utf8");
   const app = JSON.parse(fs.readFileSync(path.join(root, "miniprogram/app.json"), "utf8"));
   assert.equal(app.pages.includes("pages/daily-pick/index"), true);
-  assert.match(libraryTemplate, /class="library__daily-entry"/);
+  assert.doesNotMatch(libraryTemplate, /class="library__shake"/);
   assert.doesNotMatch(libraryTemplate, /<daily-book-picker/);
   assert.match(libraryScript, /pages\/daily-pick\/index/);
   assert.match(pickerTemplate, /<daily-book-picker/);

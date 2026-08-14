@@ -1,5 +1,6 @@
 const { services } = require("../../services/api");
 const { track } = require("../../services/analytics");
+const { getTempFileUrl } = require("../../utils/cloud-file");
 
 const LIBRARY_REFRESH_KEY = "v1_core_library_needs_refresh";
 const LIBRARY_REFRESH_TTL_MS = 60 * 1000;
@@ -20,11 +21,25 @@ function mapBook(item) {
   };
 }
 
+function getLoadSignature(data) {
+  return JSON.stringify({
+    keyword: data.keyword || "",
+    preference: data.preference || "",
+    cover: data.cover || "",
+    sort: data.sort || "newest"
+  });
+}
+
 Page({
   data: {
     state: "loading",
     view: "grid",
+    statusHeight: 20,
+    navigationHeight: 44,
+    headerHeight: 64,
     books: [],
+    avatarUrl: "",
+    showAll: true,
     total: 0,
     copies: 0,
     keyword: "",
@@ -40,8 +55,21 @@ Page({
   },
 
   onLoad() {
+    this.loadHeaderMetrics();
     this.loadBooks(true);
     this.loadIdentity();
+  },
+
+  loadHeaderMetrics() {
+    const windowInfo = wx.getWindowInfo ? wx.getWindowInfo() : {};
+    const menu = wx.getMenuButtonBoundingClientRect
+      ? wx.getMenuButtonBoundingClientRect()
+      : null;
+    const statusHeight = windowInfo.statusBarHeight || 20;
+    const navigationHeight = menu
+      ? (menu.top - statusHeight) * 2 + menu.height
+      : 44;
+    this.setData({ statusHeight, navigationHeight, headerHeight: statusHeight + navigationHeight });
   },
 
   onShow() {
@@ -64,18 +92,27 @@ Page({
   async loadIdentity() {
     try {
       const data = await services.user("getProfile", {});
+      let avatarUrl = "";
+      try {
+        avatarUrl = await getTempFileUrl(data.user.avatar_file_id || "");
+      } catch (_) {}
       this.setData({
         libraryName: data.user.library_name,
-        childNickname: data.child.nickname,
+        childNickname: data.child ? data.child.nickname : "",
+        avatarUrl,
         view: data.user.preferred_library_view || this.data.view
       });
     } catch (_) {}
   },
 
   async loadBooks(reset = false) {
-    if (this.data.paginationState === "loading") return;
+    if (!reset && this.data.paginationState === "loading") return;
+    const loadVersion = reset ? (this._loadVersion || 0) + 1 : (this._loadVersion || 0);
+    if (reset) this._loadVersion = loadVersion;
+    const loadSignature = getLoadSignature(this.data);
+    const hadBooks = this.data.books.length > 0;
     this.setData(reset
-      ? { state: "loading", cursor: null, books: [], paginationState: "loading" }
+      ? { state: "loading", cursor: null, paginationState: "loading" }
       : { paginationState: "loading" });
     try {
       const page = await services.library("listBooks", {
@@ -87,6 +124,7 @@ Page({
         limit: 24
       });
       const incoming = await Promise.all(page.items.map(mapBook));
+      if (loadVersion !== this._loadVersion) return;
       const books = reset ? incoming : this.data.books.concat(incoming);
       const copies = books.reduce((sum, book) => sum + (book.quantity || 1), 0);
       this.setData({
@@ -97,9 +135,13 @@ Page({
         state: books.length ? "content" : this.data.keyword ? "search-empty" : "empty",
         paginationState: page.has_more ? "idle" : "end"
       });
+      this._loadedSignature = loadSignature;
     } catch (error) {
-      this.setData({ state: "error", errorMessage: error.message, paginationState: "idle" });
+      if (loadVersion !== this._loadVersion) return;
+      const canShowCachedBooks = hadBooks && (!this._loadedSignature || this._loadedSignature === loadSignature);
+      this.setData({ state: canShowCachedBooks ? "offline" : "error", errorMessage: error.message, paginationState: "idle" });
     } finally {
+      if (loadVersion !== this._loadVersion) return;
       wx.stopPullDownRefresh();
       if (this._refreshAfterLoad) {
         this._refreshAfterLoad = false;
@@ -113,7 +155,7 @@ Page({
   },
 
   onReachBottom() {
-    if (this.data.cursor) this.loadBooks(false);
+    if (this.data.showAll && this.data.cursor) this.loadBooks(false);
   },
 
   onSearchInput(event) {
@@ -121,11 +163,21 @@ Page({
   },
 
   onSearch() {
+    this.setData({ showAll: true, manageMode: false });
     this.loadBooks(true);
   },
 
   onSearchClear() {
-    this.setData({ keyword: "" });
+    this.setData({
+      keyword: "",
+      showAll: true,
+      manageMode: false,
+      sort: "newest",
+      sortLabel: "最近加入",
+      preference: "",
+      cover: "",
+      filterCount: 0
+    });
     this.loadBooks(true);
   },
 
@@ -151,6 +203,10 @@ Page({
 
   goDailyPick() {
     wx.navigateTo({ url: "/pages/daily-pick/index" });
+  },
+
+  goProfile() {
+    wx.switchTab({ url: "/pages/profile/index" });
   },
 
   goAddBook() {

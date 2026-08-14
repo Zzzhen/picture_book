@@ -1,29 +1,51 @@
 <view class="library">
-  <app-header title="绘本馆">
-    <text slot="action" class="library__manage" bindtap="toggleManage">{{manageMode ? '完成' : '管理'}}</text>
-  </app-header>
-  <view class="library__top">
-    <view class="library__identity">
-      <view>
-        <text class="library__eyebrow">{{libraryName || (childNickname || '小读者') + '的绘本馆'}}</text>
-        <text class="library__count">{{total || 0}} 本绘本 · {{copies || 0}} 册</text>
+  <view class="library__header" style="padding-top: {{statusHeight}}px; min-height: {{headerHeight}}px;">
+    <view class="library__header-spacer"></view>
+    <text class="library__page-title">绘本馆</text>
+  </view>
+
+  <view class="library__home">
+    <status-banner wx:if="{{state === 'offline'}}" type="warning" title="当前处于离线状态" message="暂时显示上次加载的藏书，编辑操作将在联网后重试。" />
+    <button wx:if="{{(state === 'content' || state === 'offline') && !manageMode}}" class="library__hero" bindtap="goDailyPick" aria-label="开始随机选书">
+      <view class="library__hero-copy">
+        <text class="library__hero-title">{{libraryName || (childNickname || '小读者') + '的绘本馆'}}</text>
+        <text class="library__hero-question">今天想读什么？</text>
+        <view class="library__hero-arrow">
+          <image src="/assets/library-home/hero-arrow.png"  mode="aspectFit" aria-hidden="true"></image>
+        </view>
       </view>
-      <bookplate-mark size="small" />
-    </view>
-    <button wx:if="{{state === 'content' && !manageMode}}" class="library__daily-entry" bindtap="goDailyPick" aria-label="摇一摇选一本绘本">
-      <view class="library__daily-icon" aria-hidden="true">
-        <view class="library__daily-book library__daily-book--left"></view>
-        <view class="library__daily-book library__daily-book--middle"></view>
-        <view class="library__daily-book library__daily-book--right"></view>
-      </view>
-      <view class="library__daily-copy">
-        <text class="library__daily-kicker">推荐</text>
-        <text class="library__daily-title">今天看什么书呢？</text>
-        <text class="library__daily-meta">从家庭馆藏里随机选一本</text>
-      </view>
-      <text class="library__daily-arrow">›</text>
+      <image class="library__hero-art" src="/assets/library-home/hero-books.png" mode="aspectFit" aria-hidden="true" />
     </button>
-    <search-field value="{{keyword}}" placeholder="按书名、作者或 ISBN 搜索已入库绘本" bind:input="onSearchInput" bind:confirm="onSearch" bind:clear="onSearchClear" />
+
+    <view class="library__search">
+      <view class="library__search-icon" aria-hidden="true"></view>
+      <input
+        class="library__search-input"
+        value="{{keyword}}"
+        placeholder="搜索书名、作者或 ISBN"
+        placeholder-class="library__search-placeholder"
+        confirm-type="search"
+        bindinput="onSearchInput"
+        bindconfirm="onSearch"
+      />
+      <button wx:if="{{keyword}}" class="library__search-clear" bindtap="onSearchClear" aria-label="清空搜索">×</button>
+    </view>
+
+    <view wx:if="{{!showAll && state !== 'content' && state !== 'offline'}}" class="library__overview-state">
+      <skeleton wx:if="{{state === 'loading'}}" type="grid" count="{{6}}" />
+      <empty-state wx:elif="{{state === 'empty'}}" title="第一本绘本，等你放进来" description="扫码录入很快；没有 ISBN 的绘本也可以手工提交。" primary-text="录入第一本" bind:primary="goAddBook" />
+      <empty-state wx:elif="{{state === 'error'}}" type="offline" title="藏书加载失败" description="{{errorMessage || '请稍后重新加载'}}" primary-text="重新加载" bind:primary="reload" />
+    </view>
+  </view>
+
+  <view wx:if="{{showAll}}" class="library__full">
+    <view class="library__full-head">
+      <view class="library__full-heading">
+        <text class="library__full-title">{{keyword ? '搜索结果' : '全部绘本'}}</text>
+        <text class="library__full-count">{{total || 0}} 本绘本 · {{copies || 0}} 册</text>
+      </view>
+      <button class="library__manage" bindtap="toggleManage">{{manageMode ? '完成' : '管理'}}</button>
+    </view>
     <view class="library__toolbar">
       <view class="library__filters">
         <button class="library__filter {{filterCount ? 'library__filter--active' : ''}}" bindtap="openFilter">筛选<text wx:if="{{filterCount}}"> · {{filterCount}}</text></button>
@@ -31,30 +53,32 @@
       </view>
       <segmented-control value="{{view}}" bind:change="onViewChange" />
     </view>
+
+    <status-banner wx:if="{{state === 'offline'}}" type="warning" title="当前处于离线状态" message="暂时显示上次加载的藏书，编辑操作将在联网后重试。" />
+    <view class="library__body">
+      <skeleton wx:if="{{state === 'loading'}}" type="{{view}}" count="{{6}}" />
+      <empty-state wx:elif="{{state === 'search-empty'}}" type="search" title="书库里还没有这本书" description="这里只搜索已经查询并入库过的绘本。可以扫码或输入 ISBN 去查询新书。" primary-text="去录入绘本" bind:primary="goAddBook" />
+      <empty-state wx:elif="{{state === 'empty'}}" title="第一本绘本，等你放进来" description="扫码录入很快；没有 ISBN 的绘本也可以手工提交。" primary-text="录入第一本" bind:primary="goAddBook" />
+      <empty-state wx:elif="{{state === 'error'}}" type="offline" title="藏书加载失败" description="{{errorMessage || '请稍后重新加载'}}" primary-text="重新加载" bind:primary="reload" />
+      <block wx:else>
+        <view wx:if="{{view === 'grid'}}" class="library__grid">
+          <block wx:for="{{books}}" wx:key="_id">
+            <book-card book="{{item}}" manage="{{manageMode}}" selected="{{item.selected}}" bind:open="openBook" bind:select="selectBook" />
+          </block>
+        </view>
+        <view wx:else class="library__list">
+          <block wx:for="{{books}}" wx:key="_id">
+            <book-list-item book="{{item}}" manage="{{manageMode}}" selected="{{item.selected}}" bind:open="openBook" bind:select="selectBook" />
+          </block>
+        </view>
+        <text wx:if="{{paginationState === 'loading'}}" class="library__paging">正在加载更多…</text>
+        <text wx:if="{{paginationState === 'end' && books.length}}" class="library__paging">已经看到全部藏书</text>
+      </block>
+    </view>
   </view>
-  <status-banner wx:if="{{state === 'offline'}}" type="warning" title="当前处于离线状态" message="暂时显示上次加载的藏书，编辑操作将在联网后重试。" />
-  <view class="library__body">
-    <skeleton wx:if="{{state === 'loading'}}" type="{{view}}" count="{{6}}" />
-    <empty-state wx:elif="{{state === 'search-empty'}}" type="search" title="书库里还没有这本书" description="这里只搜索已经查询并入库过的绘本。可以扫码或输入 ISBN 去查询新书。" primary-text="去录入绘本" bind:primary="goAddBook" />
-    <empty-state wx:elif="{{state === 'empty'}}" title="第一本绘本，等你放进来" description="扫码录入很快；没有 ISBN 的绘本也可以手工提交，审核通常需要 1–3 天。" primary-text="录入第一本" bind:primary="goAddBook" />
-    <empty-state wx:elif="{{state === 'error'}}" type="offline" title="藏书加载失败" description="{{errorMessage || '请稍后重新加载'}}" primary-text="重新加载" bind:primary="reload" />
-    <block wx:else>
-      <view wx:if="{{view === 'grid'}}" class="library__grid">
-        <block wx:for="{{books}}" wx:key="_id">
-          <book-card book="{{item}}" manage="{{manageMode}}" selected="{{item.selected}}" bind:open="openBook" bind:select="selectBook" />
-        </block>
-      </view>
-      <view wx:else class="library__list">
-        <block wx:for="{{books}}" wx:key="_id">
-          <book-list-item book="{{item}}" manage="{{manageMode}}" selected="{{item.selected}}" bind:open="openBook" bind:select="selectBook" />
-        </block>
-      </view>
-      <text wx:if="{{paginationState === 'loading'}}" class="library__paging">正在加载更多…</text>
-      <text wx:if="{{paginationState === 'end' && books.length}}" class="library__paging">已经看到全部藏书</text>
-    </block>
-  </view>
-  <button wx:if="{{!manageMode}}" class="library__add" bindtap="goAddBook" aria-label="录入绘本"><text>＋</text><text class="library__add-label">录入绘本</text></button>
-  <view wx:if="{{manageMode}}" class="library__selection">
+
+  <button wx:if="{{showAll && !manageMode}}" class="library__add" bindtap="goAddBook" aria-label="录入绘本"><text>＋</text><text class="library__add-label">录入绘本</text></button>
+  <view wx:if="{{showAll && manageMode}}" class="library__selection">
     <text>已选 {{selectedCount || 0}} 本</text>
     <ui-button block="{{false}}" size="small" type="secondary" text="移入书架" disabled="{{!selectedCount}}" bind:tap="addToShelf" />
   </view>

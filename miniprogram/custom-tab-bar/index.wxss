@@ -19,6 +19,7 @@
 .tabbar__item {
   display: flex;
   flex-direction: column;
+  position: relative;
   align-items: center;
   justify-content: center;
   margin: 0;
@@ -37,6 +38,59 @@
 .tabbar__item--active {
   color: var(--color-forest, #315a45);
   font-weight: 650;
+}
+
+.tabbar--library {
+  border-top-color: rgba(116, 80, 49, 0.08);
+  background: rgba(255, 254, 251, 0.98);
+  box-shadow: 0 -8rpx 30rpx rgba(94, 67, 43, 0.06);
+}
+
+.tabbar--library .tabbar__item--active {
+  color: #963a2f;
+}
+
+.tabbar--library .tabbar__item--active::before {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 26rpx;
+  height: 4rpx;
+  border-radius: 4rpx;
+  background: #963a2f;
+  content: "";
+  transform: translateX(-50%);
+}
+
+.tabbar--library .tabbar__item--active .tabbar__icon--library {
+  border: 0;
+  border-bottom: 3rpx solid currentColor;
+  border-radius: 0;
+}
+
+.tabbar--library .tabbar__item--active .tabbar__icon--library::before,
+.tabbar--library .tabbar__item--active .tabbar__icon--library::after {
+  position: absolute;
+  top: 4rpx;
+  bottom: 3rpx;
+  width: 19rpx;
+  border: 3rpx solid currentColor;
+  border-top-left-radius: 9rpx;
+  border-top-right-radius: 9rpx;
+  background: rgba(255, 254, 251, 0.98);
+  content: "";
+}
+
+.tabbar--library .tabbar__item--active .tabbar__icon--library::before {
+  left: 1rpx;
+  border-right: 1rpx solid currentColor;
+  transform: skewY(5deg);
+}
+
+.tabbar--library .tabbar__item--active .tabbar__icon--library::after {
+  right: 1rpx;
+  border-left: 1rpx solid currentColor;
+  transform: skewY(-5deg);
 }
 
 .tabbar__icon {
