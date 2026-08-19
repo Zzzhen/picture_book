@@ -1,36 +1,55 @@
 <view class="profile">
-  <app-header title="我的" />
-  <view class="profile__identity" bindlongpress="openAdmin">
-    <view class="profile__avatar">{{childInitial || '家'}}</view>
-    <view class="profile__identity-copy">
-      <text class="profile__name">{{libraryName || (child.nickname || '小读者') + '的绘本馆'}}</text>
-      <text class="profile__meta">{{child.ageText || '资料待完善'}} · 建馆 {{createdDays || 0}} 天</text>
+  <view class="profile__header" style="padding-top: {{statusHeight}}px; min-height: {{headerHeight}}px;">
+    <view class="profile__header-bar" style="height: {{navigationHeight}}px;">
+      <view class="profile__header-spacer"></view>
+      <text class="profile__page-title">我的</text>
+      <button class="profile__more" aria-label="更多"><image class="profile__more-image" src="/assets/profile/profile-more.png" mode="aspectFit" /></button>
     </view>
-    <button class="profile__edit" bindtap="editProfile">编辑资料</button>
   </view>
-  <view class="profile__summary">
-    <view class="profile__summary-item"><text class="profile__summary-value">{{metrics.uniqueBooks || '0'}}</text><text class="profile__summary-label">种绘本</text></view>
-    <view class="profile__summary-divider"></view>
-    <view class="profile__summary-item"><text class="profile__summary-value">{{metrics.copies || '0'}}</text><text class="profile__summary-label">册馆藏</text></view>
-    <view class="profile__summary-divider"></view>
-    <view class="profile__summary-item"><text class="profile__summary-value">{{metrics.shelves || '0'}}</text><text class="profile__summary-label">个书架</text></view>
-    <view class="profile__summary-divider"></view>
-    <view class="profile__summary-item"><text class="profile__summary-value">{{metrics.favorites || '0'}}</text><text class="profile__summary-label">本喜欢</text></view>
+
+  <view class="profile__content">
+    <view class="profile__identity" bindlongpress="openAdmin">
+      <image class="profile__avatar-image" src="/assets/profile/profile-avatar.png" mode="aspectFit" />
+      <view class="profile__identity-copy">
+        <text class="profile__name">{{libraryName || (child.nickname || '小读者') + '的绘本馆'}}</text>
+        <text class="profile__meta">一起读过 {{createdDays || 0}} 天</text>
+      </view>
+      <button class="profile__edit" bindtap="editProfile">编辑资料</button>
+    </view>
+
+    <view class="profile__summary">
+      <view class="profile__summary-item"><image src="/assets/profile/metric-books.png" mode="widthFix" /><text class="profile__summary-value">{{metrics.uniqueBooks || '0'}}</text><text class="profile__summary-label">本绘本</text></view>
+      <view class="profile__summary-divider"></view>
+      <view class="profile__summary-item"><image src="/assets/profile/metric-library.png" mode="widthFix" /><text class="profile__summary-value">{{metrics.copies || '0'}}</text><text class="profile__summary-label">册馆藏</text></view>
+      <view class="profile__summary-divider"></view>
+      <view class="profile__summary-item"><image src="/assets/profile/metric-shelf.png" mode="widthFix" /><text class="profile__summary-value">{{metrics.shelves || '0'}}</text><text class="profile__summary-label">个书架</text></view>
+      <view class="profile__summary-divider"></view>
+      <view class="profile__summary-item"><image src="/assets/profile/metric-heart.png" mode="widthFix" /><text class="profile__summary-value">{{metrics.favorites || '0'}}</text><text class="profile__summary-label">本喜欢</text></view>
+    </view>
+
+    <status-banner wx:if="{{accountStatus === 'deleting'}}" type="warning" title="注销申请处理中" message="账号已停止业务操作，个人资料会在 24 小时内删除。" action-text="查看说明" bind:action="cancelDeletion" />
+
+    <view class="profile__feature-row">
+      <button class="profile__feature-card profile__feature-card--family" bindtap="editProfile">
+        <image src="/assets/profile/profile-family-illustration.png" mode="aspectFit" />
+        <text>家庭资料</text><image class="profile__feature-arrow" src="/assets/profile/profile-arrow.png" mode="aspectFit" />
+      </button>
+      <view class="profile__feature-card profile__feature-card--report profile__report-card">
+        <image src="/assets/profile/profile-report-illustration.png" mode="aspectFit" />
+        <text>阅读报告</text><image class="profile__feature-arrow" src="/assets/profile/profile-arrow.png" mode="aspectFit" />
+      </view>
+    </view>
+
+    <view class="profile__menu">
+      <button bindtap="editProfile"><image src="/assets/profile/menu-family.png" mode="aspectFit" /><text>孩子与绘本馆资料</text><image class="profile__row-arrow" src="/assets/profile/profile-arrow.png" mode="aspectFit" /></button>
+      <button bindtap="goFeedback"><image src="/assets/profile/menu-feedback.png" mode="aspectFit" /><text>意见反馈</text><image class="profile__row-arrow" src="/assets/profile/profile-arrow.png" mode="aspectFit" /></button>
+      <button bindtap="showAbout"><image src="/assets/profile/menu-about.png" mode="aspectFit" /><text>关于书芽芽</text><image class="profile__row-arrow" src="/assets/profile/profile-arrow.png" mode="aspectFit" /></button>
+    </view>
+
+    <view class="profile__menu profile__menu--account">
+      <button class="profile__danger" bindtap="askDeleteAccount"><image src="/assets/profile/menu-account.png" mode="widthFix" /><text>账号与隐私</text><image class="profile__row-arrow" src="/assets/profile/profile-arrow.png" mode="widthFix" /></button>
+    </view>
+    <text class="profile__version">V1-Core · 核心建馆版</text>
+    <confirm-dialog visible="{{deleteVisible}}" danger="{{true}}" title="申请注销绘本馆？" message="申请后进入保护期。到期将删除孩子资料、馆藏、书架和家庭备注；公共图书元数据与审计记录按合规要求处理。" confirm-text="申请注销" bind:confirm="requestDeletion" bind:cancel="closeDelete" />
   </view>
-  <status-banner wx:if="{{accountStatus === 'deleting'}}" type="warning" title="注销申请处理中" message="账号已停止业务操作，个人资料会在 24 小时内删除。" action-text="查看说明" bind:action="cancelDeletion" />
-  <text class="profile__group-title">家庭资料</text>
-  <view class="profile__menu">
-    <button bindtap="editProfile"><text>孩子与绘本馆资料</text><text>›</text></button>
-  </view>
-  <text class="profile__group-title">支持与信息</text>
-  <view class="profile__menu">
-    <button bindtap="goFeedback"><text>意见反馈</text><text>›</text></button>
-    <button bindtap="showAbout"><text>关于书芽芽</text><text>›</text></button>
-  </view>
-  <text class="profile__group-title">账号与隐私</text>
-  <view class="profile__menu">
-    <button class="profile__danger" bindtap="askDeleteAccount"><text>注销绘本馆</text><text>›</text></button>
-  </view>
-  <text class="profile__version">V1-Core · 核心建馆版</text>
-  <confirm-dialog visible="{{deleteVisible}}" danger="{{true}}" title="申请注销绘本馆？" message="申请后进入保护期。到期将删除孩子资料、馆藏、书架和家庭备注；公共图书元数据与审计记录按合规要求处理。" confirm-text="申请注销" bind:confirm="requestDeletion" bind:cancel="closeDelete" />
 </view>

@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "source": "D:\\code\\yiyi_picture_book_project\\tools\\ui-asset-slicer\\test-runtime\\screen.png",
+  "source_size": [
+    100,
+    80
+  ],
+  "source_sha256": "91d5f6c4139e47b580c09f574c0990cd66405e15c85c195f69921dbaece65bc4",
+  "asset_count": 1,
+  "warnings": []
+}

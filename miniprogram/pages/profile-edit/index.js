@@ -6,6 +6,9 @@ Page({
     saving: false,
     form: { nickname: "", birthMonth: "", gender: "", libraryName: "" },
     errors: {},
+    statusHeight: 20,
+    navigationHeight: 44,
+    headerHeight: 64,
     genderOptions: [
       { value: "female", label: "女孩" },
       { value: "male", label: "男孩" },
@@ -14,7 +17,29 @@ Page({
   },
 
   onLoad() {
+    this.loadHeaderMetrics();
     this.loadProfile();
+  },
+
+  loadHeaderMetrics() {
+    if (typeof wx.getWindowInfo !== "function") return;
+    const windowInfo = wx.getWindowInfo();
+    const statusHeight = Number(windowInfo.statusBarHeight) || 20;
+    const menu = typeof wx.getMenuButtonBoundingClientRect === "function"
+      ? wx.getMenuButtonBoundingClientRect()
+      : null;
+    const navigationHeight = menu
+      ? Math.max(44, (menu.bottom - statusHeight) + (menu.top - statusHeight))
+      : 44;
+    this.setData({
+      statusHeight,
+      navigationHeight,
+      headerHeight: statusHeight + navigationHeight
+    });
+  },
+
+  goBack() {
+    wx.navigateBack();
   },
 
   async loadProfile() {

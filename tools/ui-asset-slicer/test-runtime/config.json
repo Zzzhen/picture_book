@@ -1,0 +1,1 @@
+{"defaults": {"padding": 4, "min_area": 120}, "images": {"profile.png": {"regions": [{"name": "avatar", "box": [10, 20, 30, 40], "action": "include"}]}}}

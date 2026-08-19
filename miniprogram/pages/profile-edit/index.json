@@ -1,8 +1,4 @@
 {
   "navigationStyle": "custom",
-  "usingComponents": {
-    "app-header": "/components/app-header/index",
-    "text-field": "/components/text-field/index",
-    "ui-button": "/components/ui-button/index"
-  }
+  "usingComponents": {}
 }

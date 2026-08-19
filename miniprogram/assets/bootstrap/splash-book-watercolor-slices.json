@@ -1,0 +1,19 @@
+{
+  "defaults": {
+    "padding": 6,
+    "keep_shadows": true,
+    "min_area": 120
+  },
+  "images": {
+    "00-splash-screen-watercolor-v1.png": {
+      "regions": [
+        {
+          "name": "splash-book-watercolor",
+          "box": [286, 638, 288, 248],
+          "action": "include",
+          "padding": 6
+        }
+      ]
+    }
+  }
+}

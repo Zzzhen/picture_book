@@ -1,0 +1,81 @@
+{
+  "source": "D:\\code\\yiyi_picture_book_project\\design\\ui-concepts\\homepage-v1\\03-profile(1).png",
+  "source_size": [
+    853,
+    255
+  ],
+  "source_sha256": "41dce51f65701c533e7c7ce8a18f22ec04caec4069da9fca65d47c4fad3c0630",
+  "assets": [
+    {
+      "name": "asset-003",
+      "source_box": [
+        312,
+        45,
+        43,
+        49
+      ],
+      "output": "assets\\asset-003.png",
+      "width": 43,
+      "height": 49,
+      "confidence": 0.9,
+      "source": "auto",
+      "alpha_coverage": 0.916944,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 29,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.423913,
+      "warnings": [
+        "one or more output corners are not transparent"
+      ]
+    },
+    {
+      "name": "asset-004",
+      "source_box": [
+        492,
+        46,
+        54,
+        48
+      ],
+      "output": "assets\\asset-004.png",
+      "width": 54,
+      "height": 48,
+      "confidence": 0.9,
+      "source": "auto",
+      "alpha_coverage": 0.778935,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 15,
+        "bottom_right": 15
+      },
+      "border_opaque_ratio": 0.254902,
+      "warnings": []
+    },
+    {
+      "name": "asset-006",
+      "source_box": [
+        680,
+        50,
+        45,
+        43
+      ],
+      "output": "assets\\asset-006.png",
+      "width": 45,
+      "height": 43,
+      "confidence": 0.9,
+      "source": "auto",
+      "alpha_coverage": 0.710594,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.125,
+      "warnings": []
+    }
+  ]
+}

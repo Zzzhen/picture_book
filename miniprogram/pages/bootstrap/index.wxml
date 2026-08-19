@@ -1,11 +1,15 @@
 <view class="bootstrap">
   <view class="bootstrap__brand">
-    <bookplate-mark size="large" />
+    <image class="bootstrap__illustration" src="/assets/bootstrap/splash-book-watercolor.png" mode="aspectFit" />
     <text class="bootstrap__name">书芽芽</text>
     <text class="bootstrap__caption">家庭绘本，轻松整理与分享</text>
   </view>
   <view wx:if="{{state === 'loading'}}" class="bootstrap__loading">
-    <view class="bootstrap__loading-line"></view>
+    <view class="bootstrap__loading-line" aria-hidden="true">
+      <view class="bootstrap__loading-segment"></view>
+      <view class="bootstrap__loading-segment bootstrap__loading-segment--active"></view>
+      <view class="bootstrap__loading-segment"></view>
+    </view>
     <text>正在打开绘本馆</text>
   </view>
   <view wx:elif="{{state === 'error' || state === 'offline'}}" class="bootstrap__state">

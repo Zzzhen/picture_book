@@ -1,0 +1,102 @@
+{
+  "source": "C:\\Users\\Administrator\\AppData\\Local\\Temp\\codex-clipboard-638f193a-91d4-4df6-8f38-0c12dba1a05c.png",
+  "source_size": [
+    853,
+    1844
+  ],
+  "source_sha256": "c5daa7acad07509cc004935daae4e69181094b4d9ab697b60fad3c67754f9979",
+  "assets": [
+    {
+      "name": "sleep-before-bedtime",
+      "source_box": [
+        72,
+        282,
+        120,
+        84
+      ],
+      "output": "assets\\sleep-before-bedtime.png",
+      "width": 120,
+      "height": 83,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.398293,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.012315,
+      "warnings": []
+    },
+    {
+      "name": "nature-exploration",
+      "source_box": [
+        72,
+        400,
+        116,
+        112
+      ],
+      "output": "assets\\nature-exploration.png",
+      "width": 90,
+      "height": 110,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.289697,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "emotional-growth",
+      "source_box": [
+        72,
+        1364,
+        120,
+        88
+      ],
+      "output": "assets\\emotional-growth.png",
+      "width": 120,
+      "height": 88,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.356629,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "art-enlightenment",
+      "source_box": [
+        72,
+        1480,
+        126,
+        112
+      ],
+      "output": "assets\\art-enlightenment.png",
+      "width": 86,
+      "height": 84,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.534053,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    }
+  ]
+}

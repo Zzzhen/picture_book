@@ -7,11 +7,28 @@ Page({
     accountStatus: "active",
     createdDays: 0,
     deleteVisible: false,
-    adminPresses: 0
+    adminPresses: 0,
+    statusHeight: 20,
+    navigationHeight: 44,
+    headerHeight: 64
   },
 
   onLoad() {
+    this.loadHeaderMetrics();
     this.loadProfile();
+  },
+
+  loadHeaderMetrics() {
+    if (typeof wx.getWindowInfo !== "function") return;
+    const windowInfo = wx.getWindowInfo();
+    const statusHeight = Number(windowInfo.statusBarHeight) || 20;
+    const menu = typeof wx.getMenuButtonBoundingClientRect === "function"
+      ? wx.getMenuButtonBoundingClientRect()
+      : null;
+    const navigationHeight = menu
+      ? Math.max(44, Math.round(menu.height + (menu.top - statusHeight) * 2))
+      : 44;
+    this.setData({ statusHeight, navigationHeight, headerHeight: statusHeight + navigationHeight });
   },
 
   onShow() {

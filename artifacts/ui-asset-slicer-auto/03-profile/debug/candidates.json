@@ -1,0 +1,114 @@
+{
+  "candidates": [
+    {
+      "name": "asset-001",
+      "box": [
+        754,
+        56,
+        55,
+        55
+      ],
+      "confidence": 0.9,
+      "source": "auto"
+    },
+    {
+      "name": "asset-003",
+      "box": [
+        55,
+        146,
+        188,
+        191
+      ],
+      "confidence": 0.9,
+      "source": "auto"
+    },
+    {
+      "name": "asset-013",
+      "box": [
+        310,
+        397,
+        45,
+        52
+      ],
+      "confidence": 0.9,
+      "source": "auto"
+    },
+    {
+      "name": "asset-014",
+      "box": [
+        491,
+        398,
+        55,
+        49
+      ],
+      "confidence": 0.9,
+      "source": "auto"
+    },
+    {
+      "name": "asset-015",
+      "box": [
+        121,
+        401,
+        53,
+        43
+      ],
+      "confidence": 0.9,
+      "source": "auto"
+    },
+    {
+      "name": "asset-016",
+      "box": [
+        680,
+        401,
+        46,
+        43
+      ],
+      "confidence": 0.9,
+      "source": "auto"
+    },
+    {
+      "name": "asset-055",
+      "box": [
+        753,
+        1257,
+        15,
+        24
+      ],
+      "confidence": 0.7472222222222222,
+      "source": "auto"
+    },
+    {
+      "name": "asset-059",
+      "box": [
+        753,
+        1356,
+        15,
+        21
+      ],
+      "confidence": 0.7912698412698412,
+      "source": "auto"
+    },
+    {
+      "name": "asset-063",
+      "box": [
+        753,
+        1452,
+        15,
+        23
+      ],
+      "confidence": 0.7471014492753623,
+      "source": "auto"
+    },
+    {
+      "name": "asset-067",
+      "box": [
+        753,
+        1581,
+        15,
+        24
+      ],
+      "confidence": 0.8055555555555556,
+      "source": "auto"
+    }
+  ]
+}

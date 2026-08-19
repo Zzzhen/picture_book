@@ -1,0 +1,332 @@
+{
+  "source": "D:\\code\\yiyi_picture_book_project\\design\\ui-concepts\\homepage-v1\\03-profile.png",
+  "source_size": [
+    853,
+    1844
+  ],
+  "source_sha256": "9c6fdc7cc561343b6f89df17c4fd8a2ef7a8902e9b2e780d0c3dada3974124a8",
+  "assets": [
+    {
+      "name": "profile-avatar",
+      "source_box": [
+        50,
+        145,
+        220,
+        220
+      ],
+      "output": "assets\\profile-avatar.png",
+      "width": 194,
+      "height": 179,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.526925,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "profile-more",
+      "source_box": [
+        744,
+        48,
+        76,
+        76
+      ],
+      "output": "assets\\profile-more.png",
+      "width": 62,
+      "height": 62,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.622789,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "metric-books",
+      "source_box": [
+        102,
+        398,
+        70,
+        72
+      ],
+      "output": "assets\\metric-books.png",
+      "width": 57,
+      "height": 72,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.496589,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.135659,
+      "warnings": []
+    },
+    {
+      "name": "metric-library",
+      "source_box": [
+        300,
+        398,
+        70,
+        72
+      ],
+      "output": "assets\\metric-library.png",
+      "width": 52,
+      "height": 72,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.535791,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.116935,
+      "warnings": []
+    },
+    {
+      "name": "metric-shelf",
+      "source_box": [
+        498,
+        398,
+        70,
+        72
+      ],
+      "output": "assets\\metric-shelf.png",
+      "width": 52,
+      "height": 53,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.717344,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.157143,
+      "warnings": []
+    },
+    {
+      "name": "metric-heart",
+      "source_box": [
+        690,
+        398,
+        70,
+        65
+      ],
+      "output": "assets\\metric-heart.png",
+      "width": 39,
+      "height": 50,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.601026,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.168539,
+      "warnings": []
+    },
+    {
+      "name": "reading-bear",
+      "source_box": [
+        560,
+        730,
+        250,
+        240
+      ],
+      "output": "assets\\reading-bear.png",
+      "width": 219,
+      "height": 204,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.431104,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "profile-family-illustration",
+      "source_box": [
+        50,
+        1008,
+        190,
+        180
+      ],
+      "output": "assets\\profile-family-illustration.png",
+      "width": 172,
+      "height": 150,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.674496,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "profile-report-illustration",
+      "source_box": [
+        455,
+        1038,
+        165,
+        145
+      ],
+      "output": "assets\\profile-report-illustration.png",
+      "width": 161,
+      "height": 124,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.37202,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "menu-family",
+      "source_box": [
+        68,
+        1222,
+        80,
+        80
+      ],
+      "output": "assets\\menu-family.png",
+      "width": 47,
+      "height": 50,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.446383,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "menu-feedback",
+      "source_box": [
+        68,
+        1328,
+        80,
+        80
+      ],
+      "output": "assets\\menu-feedback.png",
+      "width": 48,
+      "height": 45,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.584259,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "menu-about",
+      "source_box": [
+        68,
+        1434,
+        80,
+        70
+      ],
+      "output": "assets\\menu-about.png",
+      "width": 45,
+      "height": 47,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.341371,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "menu-account",
+      "source_box": [
+        68,
+        1550,
+        80,
+        70
+      ],
+      "output": "assets\\menu-account.png",
+      "width": 43,
+      "height": 52,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.529964,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "profile-arrow",
+      "source_box": [
+        738,
+        1228,
+        54,
+        70
+      ],
+      "output": "assets\\profile-arrow.png",
+      "width": 21,
+      "height": 31,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.230415,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    }
+  ]
+}

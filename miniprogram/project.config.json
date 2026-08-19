@@ -41,6 +41,12 @@
     },{
       "type": "folder",
       "value": "design" 
+    },{
+      "type": "folder",
+      "value": "tools" 
+    },{
+      "type": "folder",
+      "value": "artifacts" 
     }],
     "include": []
   },

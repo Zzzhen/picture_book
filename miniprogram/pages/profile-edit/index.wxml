@@ -1,22 +1,82 @@
 <view class="profile-edit">
-  <app-header title="编辑资料" back="{{true}}" />
-  <view class="profile-edit__content">
-    <view class="profile-edit__intro">
-      <text class="profile-edit__title">小读者资料</text>
-      <text class="profile-edit__copy">出生年月用于展示年龄段，不记录具体生日。修改后会同步到家庭绘本馆。</text>
+  <view class="profile-edit__header" style="padding-top: {{statusHeight}}px; min-height: {{headerHeight}}px;">
+    <view class="profile-edit__header-bar" style="height: {{navigationHeight}}px;">
+      <button class="profile-edit__back" bindtap="goBack" hover-class="none">
+        <image class="profile-edit__back-image" src="/assets/profile-edit/profile-edit-back.png" mode="widthFix" />
+      </button>
+      <text class="profile-edit__page-title">编辑资料</text>
+      <view class="profile-edit__more">
+        <image class="profile-edit__more-image" src="/assets/profile/profile-more.png" mode="widthFix" />
+      </view>
     </view>
-    <view class="profile-edit__form">
-      <text-field label="孩子昵称" required="{{true}}" value="{{form.nickname || ''}}" placeholder="请输入昵称" error="{{errors.nickname || ''}}" bind:input="onNickname" />
-      <text-field label="出生年月" required="{{true}}" type="month" value="{{form.birthMonth || ''}}" error="{{errors.birthMonth || ''}}" bind:change="onBirthMonth" />
-      <view>
-        <text class="profile-edit__label">性别 <text>*</text></text>
+  </view>
+
+  <view class="profile-edit__content">
+    <view class="profile-edit__hero">
+      <image class="profile-edit__avatar" src="/assets/profile/profile-avatar.png" mode="widthFix" />
+      <text class="profile-edit__hero-title">小读者资料</text>
+      <image class="profile-edit__book-art" src="/assets/profile-edit/profile-edit-book.png" mode="widthFix" />
+    </view>
+
+    <view class="profile-edit__privacy-card">
+      <image class="profile-edit__lock" src="/assets/profile-edit/profile-edit-lock.png" mode="widthFix" />
+      <text class="profile-edit__privacy-copy">出生年月仅用于展示年龄段，不记录具体生日。<text>修改后会同步到家庭绘本馆。</text></text>
+    </view>
+
+    <view class="profile-edit__form-card">
+      <view class="profile-edit__field">
+        <view class="profile-edit__field-label-row">
+          <text class="profile-edit__field-label">孩子昵称</text>
+          <text class="profile-edit__required">必填</text>
+        </view>
+        <input class="profile-edit__control" value="{{form.nickname || ''}}" placeholder="——" maxlength="30" bindinput="onNickname" />
+        <text wx:if="{{errors.nickname}}" class="profile-edit__error">{{errors.nickname}}</text>
+      </view>
+
+      <view class="profile-edit__field">
+        <view class="profile-edit__field-label-row">
+          <text class="profile-edit__field-label">出生年月</text>
+          <text class="profile-edit__required">必填</text>
+        </view>
+        <picker mode="date" fields="month" value="{{form.birthMonth || ''}}" bindchange="onBirthMonth">
+          <view class="profile-edit__control profile-edit__control--picker {{form.birthMonth ? '' : 'profile-edit__control--placeholder'}}">
+            <text>{{form.birthMonth || '——'}}</text>
+            <view class="profile-edit__picker-end">
+              <image class="profile-edit__calendar" src="/assets/profile-edit/profile-edit-calendar.png" mode="widthFix" />
+              <image class="profile-edit__field-arrow" src="/assets/profile/profile-arrow.png" mode="widthFix" />
+            </view>
+          </view>
+        </picker>
+        <text wx:if="{{errors.birthMonth}}" class="profile-edit__error">{{errors.birthMonth}}</text>
+      </view>
+
+      <view class="profile-edit__field profile-edit__field--gender">
+        <view class="profile-edit__field-label-row">
+          <text class="profile-edit__field-label">性别</text>
+          <text class="profile-edit__required">必填</text>
+        </view>
         <view class="profile-edit__gender">
-          <button wx:for="{{genderOptions}}" wx:key="value" class="{{form.gender === item.value ? 'profile-edit__gender--active' : ''}}" data-value="{{item.value}}" bindtap="onGender">{{item.label}}</button>
+          <button wx:for="{{genderOptions}}" wx:key="value" class="profile-edit__gender-option {{form.gender === item.value ? 'profile-edit__gender-option--active' : ''}}" data-value="{{item.value}}" bindtap="onGender" hover-class="none">
+            <text>{{item.label}}</text>
+            <image wx:if="{{form.gender === item.value}}" class="profile-edit__check" src="/assets/profile-edit/profile-edit-check.png" mode="widthFix" />
+          </button>
         </view>
         <text wx:if="{{errors.gender}}" class="profile-edit__error">{{errors.gender}}</text>
       </view>
-      <text-field label="绘本馆名称" value="{{form.libraryName || ''}}" placeholder="例如：依依的绘本馆" maxlength="{{30}}" bind:input="onLibraryName" />
+
+      <view class="profile-edit__field profile-edit__field--library">
+        <view class="profile-edit__field-label-row">
+          <text class="profile-edit__field-label">绘本馆名称</text>
+        </view>
+        <input class="profile-edit__control" value="{{form.libraryName || ''}}" placeholder="——的绘本馆" maxlength="30" bindinput="onLibraryName" />
+        <text wx:if="{{errors.libraryName}}" class="profile-edit__error">{{errors.libraryName}}</text>
+      </view>
     </view>
-    <ui-button text="保存资料" loading="{{saving}}" bind:tap="save" />
+
+    <view class="profile-edit__family-note">
+      <text>这些资料仅家庭成员可见</text>
+    </view>
+
+    <button class="profile-edit__save" bindtap="save" loading="{{saving}}" hover-class="profile-edit__save--pressed">保存资料</button>
   </view>
 </view>

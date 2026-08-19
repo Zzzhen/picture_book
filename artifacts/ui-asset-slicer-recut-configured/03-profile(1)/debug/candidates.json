@@ -1,0 +1,48 @@
+{
+  "candidates": [
+    {
+      "name": "metric-books",
+      "box": [
+        110,
+        35,
+        85,
+        70
+      ],
+      "confidence": 1.0,
+      "source": "config"
+    },
+    {
+      "name": "metric-library",
+      "box": [
+        300,
+        35,
+        85,
+        70
+      ],
+      "confidence": 1.0,
+      "source": "config"
+    },
+    {
+      "name": "metric-shelf",
+      "box": [
+        480,
+        35,
+        85,
+        70
+      ],
+      "confidence": 1.0,
+      "source": "config"
+    },
+    {
+      "name": "metric-heart",
+      "box": [
+        670,
+        35,
+        85,
+        70
+      ],
+      "confidence": 1.0,
+      "source": "config"
+    }
+  ]
+}

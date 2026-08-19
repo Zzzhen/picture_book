@@ -1,0 +1,48 @@
+{
+  "candidates": [
+    {
+      "name": "sleep-before-bedtime",
+      "box": [
+        72,
+        282,
+        120,
+        84
+      ],
+      "confidence": 1.0,
+      "source": "config"
+    },
+    {
+      "name": "nature-exploration",
+      "box": [
+        72,
+        400,
+        116,
+        112
+      ],
+      "confidence": 1.0,
+      "source": "config"
+    },
+    {
+      "name": "emotional-growth",
+      "box": [
+        72,
+        1364,
+        120,
+        88
+      ],
+      "confidence": 1.0,
+      "source": "config"
+    },
+    {
+      "name": "art-enlightenment",
+      "box": [
+        72,
+        1480,
+        126,
+        112
+      ],
+      "confidence": 1.0,
+      "source": "config"
+    }
+  ]
+}

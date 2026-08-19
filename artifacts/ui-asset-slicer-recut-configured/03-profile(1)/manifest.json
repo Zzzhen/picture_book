@@ -1,0 +1,102 @@
+{
+  "source": "D:\\code\\yiyi_picture_book_project\\design\\ui-concepts\\homepage-v1\\03-profile(1).png",
+  "source_size": [
+    853,
+    255
+  ],
+  "source_sha256": "41dce51f65701c533e7c7ce8a18f22ec04caec4069da9fca65d47c4fad3c0630",
+  "assets": [
+    {
+      "name": "metric-books",
+      "source_box": [
+        110,
+        35,
+        85,
+        70
+      ],
+      "output": "assets\\metric-books.png",
+      "width": 61,
+      "height": 50,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.688525,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "metric-library",
+      "source_box": [
+        300,
+        35,
+        85,
+        70
+      ],
+      "output": "assets\\metric-library.png",
+      "width": 53,
+      "height": 59,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.646946,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "metric-shelf",
+      "source_box": [
+        480,
+        35,
+        85,
+        70
+      ],
+      "output": "assets\\metric-shelf.png",
+      "width": 64,
+      "height": 57,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.568257,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "metric-heart",
+      "source_box": [
+        670,
+        35,
+        85,
+        70
+      ],
+      "output": "assets\\metric-heart.png",
+      "width": 55,
+      "height": 51,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.498396,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    }
+  ]
+}

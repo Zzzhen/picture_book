@@ -1,0 +1,17 @@
+{
+  "defaults": {
+    "padding": 4,
+    "keep_shadows": true,
+    "min_area": 80
+  },
+  "images": {
+    "codex-clipboard-638f193a-91d4-4df6-8f38-0c12dba1a05c.png": {
+      "regions": [
+        { "name": "sleep-before-bedtime", "box": [72, 282, 120, 84], "action": "include", "padding": 4 },
+        { "name": "nature-exploration", "box": [72, 400, 116, 112], "action": "include", "padding": 4 },
+        { "name": "emotional-growth", "box": [72, 1364, 120, 88], "action": "include", "padding": 4 },
+        { "name": "art-enlightenment", "box": [72, 1480, 126, 112], "action": "include", "padding": 4 }
+      ]
+    }
+  }
+}

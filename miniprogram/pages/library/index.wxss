@@ -1,5 +1,20 @@
 page {
-  background: #F8F2E7;
+  background:
+    radial-gradient(
+      ellipse at 15% 8%,
+      rgba(255, 255, 255, 0.65) 0%,
+      transparent 42%
+    ),
+    radial-gradient(
+      ellipse at 85% 45%,
+      rgba(235, 213, 180, 0.16) 0%,
+      transparent 52%
+    ),
+    linear-gradient(
+      180deg,
+      #fbf7ef 0%,
+      #faf3e8 100%
+    );
 }
 
 .library {
@@ -79,12 +94,13 @@ page {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  border: 1rpx solid rgba(186, 139, 82, 0.16);
   border-radius: 28rpx;
   color: #412c1a;
-  background: #FDE7CF;
-  box-shadow: 0 10rpx 26rpx rgba(108, 75, 43, 0.1);
   text-align: left;
+  background: #f5e8d3;
+  border: 2rpx solid rgba(190, 145, 82, 0.2);
+  border-radius: 28rpx;
+  box-shadow: 0 8rpx 24rpx rgba(115, 77, 35, 0.08);
 }
 
 .library__hero-copy {
@@ -149,8 +165,8 @@ page {
   padding: 0 30rpx;
   border: 1rpx solid rgba(112, 91, 70, 0.07);
   border-radius: 48rpx;
-  background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 8rpx 24rpx rgba(92, 64, 38, 0.08);
+  background: rgba(255, 255, 255, 0.82);
 }
 
 .library__search:focus-within {

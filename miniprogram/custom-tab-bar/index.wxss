@@ -93,6 +93,38 @@
   transform: skewY(-5deg);
 }
 
+.tabbar--shelf .tabbar__item--active {
+  color: #a7372c;
+}
+
+.tabbar--shelf .tabbar__item--active::before {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 26rpx;
+  height: 4rpx;
+  border-radius: 4rpx;
+  background: #a7372c;
+  content: "";
+  transform: translateX(-50%);
+}
+
+.tabbar--profile .tabbar__item--active {
+  color: #a7372c;
+}
+
+.tabbar--profile .tabbar__item--active::before {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 26rpx;
+  height: 4rpx;
+  border-radius: 4rpx;
+  background: #a7372c;
+  content: "";
+  transform: translateX(-50%);
+}
+
 .tabbar__icon {
   box-sizing: border-box;
   position: relative;

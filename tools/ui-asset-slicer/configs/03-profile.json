@@ -1,0 +1,30 @@
+{
+  "defaults": {
+    "padding": 3,
+    "keep_shadows": true,
+    "min_area": 120
+  },
+  "images": {
+    "03-profile.png": {
+      "regions": [
+        {"name": "profile-avatar", "box": [50, 145, 220, 220], "action": "include"},
+        {"name": "profile-more", "box": [744, 48, 76, 76], "action": "include"},
+        {"name": "metric-books", "box": [102, 398, 70, 72], "action": "include"},
+        {"name": "metric-library", "box": [300, 398, 70, 72], "action": "include"},
+        {"name": "metric-shelf", "box": [498, 398, 70, 72], "action": "include"},
+        {"name": "metric-heart", "box": [690, 398, 70, 65], "action": "include"},
+        {"name": "reading-bear", "box": [560, 730, 250, 240], "action": "include", "padding": 5},
+        {"name": "profile-family-illustration", "box": [50, 1008, 190, 180], "action": "include"},
+        {"name": "profile-report-illustration", "box": [455, 1038, 165, 145], "action": "include"},
+        {"name": "menu-family", "box": [68, 1222, 80, 80], "action": "include"},
+        {"name": "menu-feedback", "box": [68, 1328, 80, 80], "action": "include"},
+        {"name": "menu-about", "box": [68, 1434, 80, 70], "action": "include"},
+        {"name": "menu-account", "box": [68, 1550, 80, 70], "action": "include"},
+        {"name": "profile-arrow", "box": [738, 1228, 54, 70], "action": "include"},
+        {"name": "exclude-profile-title", "box": [270, 205, 430, 125], "action": "exclude"},
+        {"name": "exclude-summary-labels", "box": [80, 465, 700, 110], "action": "exclude"},
+        {"name": "exclude-menu-labels", "box": [135, 1210, 600, 430], "action": "exclude"}
+      ]
+    }
+  }
+}

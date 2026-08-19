@@ -5,6 +5,22 @@ const fs = require("node:fs");
 
 const root = path.resolve(__dirname, "..");
 
+test("bootstrap splash matches the watercolor screen without recreating device chrome", () => {
+  const template = fs.readFileSync(path.join(root, "miniprogram/pages/bootstrap/index.wxml"), "utf8");
+  const styles = fs.readFileSync(path.join(root, "miniprogram/pages/bootstrap/index.wxss"), "utf8");
+  const asset = path.join(root, "miniprogram/assets/bootstrap/splash-book-watercolor.png");
+  assert.match(template, /splash-book-watercolor\.png/);
+  assert.doesNotMatch(template, /bookplate-mark/);
+  assert.match(template, /正在打开绘本馆/);
+  assert.match(template, /bind:tap="retry"/);
+  assert.match(template, /bind:tap="goFeedback"/);
+  assert.match(styles, /paper-texture\.png/);
+  assert.match(styles, /safe-area-inset-top/);
+  assert.match(styles, /bootstrap-loading/);
+  assert.match(styles, /prefers-reduced-motion/);
+  assert.equal(fs.existsSync(asset), true);
+});
+
 test("ISBN normalization accepts valid ISBN-10/13 and rejects bad check digits", () => {
   const { normalizeIsbn, isValidIsbn } = require(path.join(root, "miniprogram/utils/isbn"));
   assert.equal(normalizeIsbn("978-7-5442-9092-0"), "9787544290920");
@@ -551,6 +567,141 @@ test("bookshelf and profile tabs use task-focused layouts", () => {
   assert.match(profile, /家庭资料/);
   assert.match(profile, /账号与隐私/);
   assert.doesNotMatch(profile, /<metric-card/);
+});
+
+test("empty bookshelf page matches the illustrated empty state and keeps shelf actions", () => {
+  const script = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelves/index.js"), "utf8");
+  const template = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelves/index.wxml"), "utf8");
+  const styles = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelves/index.wxss"), "utf8");
+  const tabBarStyles = fs.readFileSync(path.join(root, "miniprogram/custom-tab-bar/index.wxss"), "utf8");
+  assert.match(template, /class="shelves__empty"/);
+  assert.match(template, /class="shelves__empty-art"/);
+  assert.match(template, /bookshelf-empty-illustration-v2\.png/);
+  assert.match(template, /按阅读场景整理/);
+  assert.match(template, /还没有自定义书架/);
+  assert.match(template, /新建第一个书架/);
+  assert.match(template, /也可以稍后创建/);
+  assert.match(template, /bindtap="createShelf"/g);
+  assert.match(styles, /paper-texture\.png/);
+  assert.match(styles, /shelves__empty-art/);
+  assert.match(template, /headerHeight/);
+  assert.match(script, /getWindowInfo/);
+  assert.match(script, /shelves\.length \? "content" : "empty"/);
+  assert.match(script, /pages\/bookshelf-edit\/index\?new=1/);
+  assert.match(script, /pages\/bookshelf-detail\/index\?id=/);
+  assert.match(tabBarStyles, /\.tabbar--shelf \.tabbar__item--active[\s\S]*?#a7372c/);
+});
+
+test("bookshelf page uses an accordion drawer with paged books and the final shelf icon set", () => {
+  const script = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelves/index.js"), "utf8");
+  const template = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelves/index.wxml"), "utf8");
+  const styles = fs.readFileSync(path.join(root, "miniprogram/pages/bookshelves/index.wxss"), "utf8");
+  const sourceDir = path.join(root, "design", "ui-concepts", "homepage-v1", "shelf-icons-final", "normalized-256");
+  const targetDir = path.join(root, "miniprogram", "assets", "shelf-icons");
+
+  assert.match(template, /shelves__new-button/);
+  assert.match(template, /shelves__accordion/);
+  assert.match(template, /shelves__drawer/);
+  assert.match(template, /shelves__progress/);
+  assert.match(template, /bindtap="toggleShelf"/);
+  assert.match(template, /bindtap="goShelfPage"/);
+  assert.match(template, /bindtouchstart="onShelfTouchStart"/);
+  assert.match(template, /bindtouchend="onShelfTouchEnd"/);
+  assert.doesNotMatch(template, /shelves__header-add/);
+  assert.doesNotMatch(template, /shelves__create[^\n]*<text>＋<\/text>/);
+  assert.match(script, /loadShelfBooks/);
+  assert.match(script, /resolveShelfIcon/);
+  assert.match(script, /toggleShelf/);
+  assert.match(script, /goShelfPage/);
+  assert.match(script, /onShelfTouchStart/);
+  assert.match(script, /onShelfTouchEnd/);
+  assert.match(script, /slice\(page \* PAGE_SIZE, \(page \+ 1\) \* PAGE_SIZE\)/);
+  assert.match(styles, /max-height/);
+  assert.match(styles, /transform/);
+  assert.match(styles, /transition/);
+  assert.match(styles, /shelves__drawer/);
+
+  for (const name of [
+    "art-enlightenment.png",
+    "animal-world.png",
+    "emotional-growth.png",
+    "festival-stories.png",
+    "traditional-culture.png",
+    "sleep-before-bedtime.png",
+    "science-discovery.png",
+    "parent-child-time.png",
+    "nature-exploration.png",
+    "language-expression.png"
+  ]) {
+    assert.deepEqual(
+      fs.readFileSync(path.join(targetDir, name)),
+      fs.readFileSync(path.join(sourceDir, name)),
+      `${name} should be copied without visual changes`
+    );
+  }
+});
+
+test("profile page follows the illustrated visual hierarchy without weekly reading behavior", () => {
+  const script = fs.readFileSync(path.join(root, "miniprogram/pages/profile/index.js"), "utf8");
+  const template = fs.readFileSync(path.join(root, "miniprogram/pages/profile/index.wxml"), "utf8");
+  const styles = fs.readFileSync(path.join(root, "miniprogram/pages/profile/index.wxss"), "utf8");
+  assert.match(template, /class="profile__header"/);
+  assert.match(template, /class="profile__avatar-image"/);
+  assert.match(template, /profile__report-card/);
+  assert.match(template, /阅读报告/);
+  assert.doesNotMatch(template, /本周阅读/);
+  assert.doesNotMatch(template, /bindtap=".*Report/);
+  assert.match(template, /家庭资料/);
+  assert.match(template, /账号与隐私/);
+  assert.match(styles, /paper-texture\.png/);
+  assert.match(styles, /profile__report-card/);
+  assert.match(template, /headerHeight/);
+  assert.match(script, /getWindowInfo/);
+  assert.match(script, /editProfile/);
+  assert.match(script, /goFeedback/);
+  assert.match(script, /showAbout/);
+  assert.match(script, /requestDeletion/);
+  const tabBarStyles = fs.readFileSync(path.join(root, "miniprogram/custom-tab-bar/index.wxss"), "utf8");
+  assert.match(tabBarStyles, /\.tabbar--profile \.tabbar__item--active[\s\S]*?#a7372c/);
+});
+
+test("profile metric icons use the recut asset set", () => {
+  const sourceDir = path.join(root, "artifacts", "ui-asset-slicer-recut-configured", "03-profile(1)", "assets");
+  const targetDir = path.join(root, "miniprogram", "assets", "profile");
+  for (const name of ["metric-books.png", "metric-library.png", "metric-shelf.png", "metric-heart.png"]) {
+    assert.deepEqual(
+      fs.readFileSync(path.join(targetDir, name)),
+      fs.readFileSync(path.join(sourceDir, name)),
+      `${name} should match the recut profile asset`
+    );
+  }
+});
+
+test("profile edit page follows the illustrated form layout and keeps the save flow", () => {
+  const script = fs.readFileSync(path.join(root, "miniprogram/pages/profile-edit/index.js"), "utf8");
+  const template = fs.readFileSync(path.join(root, "miniprogram/pages/profile-edit/index.wxml"), "utf8");
+  const styles = fs.readFileSync(path.join(root, "miniprogram/pages/profile-edit/index.wxss"), "utf8");
+  const pageConfig = fs.readFileSync(path.join(root, "miniprogram/pages/profile-edit/index.json"), "utf8");
+
+  assert.match(template, /profile-edit__header/);
+  assert.match(template, /编辑资料/);
+  assert.match(template, /profile-edit__avatar/);
+  assert.match(template, /profile-edit__privacy-card/);
+  assert.match(template, /profile-edit__form-card/);
+  assert.match(template, /孩子昵称/);
+  assert.match(template, /出生年月/);
+  assert.match(template, /性别/);
+  assert.match(template, /绘本馆名称/);
+  assert.match(template, /保存资料/);
+  assert.match(styles, /paper-texture\.png/);
+  assert.match(styles, /profile-edit__header/);
+  assert.match(styles, /profile-edit__form-card/);
+  assert.match(styles, /#a7372c/);
+  assert.match(script, /getWindowInfo/);
+  assert.match(script, /validateOnboarding/);
+  assert.match(script, /services\.user\("updateProfile"/);
+  assert.match(script, /navigateBack/);
+  assert.match(pageConfig, /"navigationStyle"\s*:\s*"custom"/);
 });
 
 test("bookshelf detail constrains its book grid and card hosts", () => {

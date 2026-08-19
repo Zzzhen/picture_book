@@ -1,0 +1,33 @@
+{
+  "source": "D:\\code\\yiyi_picture_book_project\\tools\\ui-asset-slicer\\test-runtime\\screen.png",
+  "source_size": [
+    100,
+    80
+  ],
+  "source_sha256": "91d5f6c4139e47b580c09f574c0990cd66405e15c85c195f69921dbaece65bc4",
+  "assets": [
+    {
+      "name": "icon",
+      "source_box": [
+        20,
+        10,
+        60,
+        60
+      ],
+      "output": "assets\\icon.png",
+      "width": 51,
+      "height": 51,
+      "confidence": 1.0,
+      "source": "config",
+      "alpha_coverage": 0.549404,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    }
+  ]
+}

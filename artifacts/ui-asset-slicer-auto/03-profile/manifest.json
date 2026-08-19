@@ -1,0 +1,240 @@
+{
+  "source": "D:\\code\\yiyi_picture_book_project\\design\\ui-concepts\\homepage-v1\\03-profile.png",
+  "source_size": [
+    853,
+    1844
+  ],
+  "source_sha256": "9c6fdc7cc561343b6f89df17c4fd8a2ef7a8902e9b2e780d0c3dada3974124a8",
+  "assets": [
+    {
+      "name": "asset-001",
+      "source_box": [
+        754,
+        56,
+        55,
+        55
+      ],
+      "output": "assets\\asset-001.png",
+      "width": 55,
+      "height": 55,
+      "confidence": 0.9,
+      "source": "auto",
+      "alpha_coverage": 0.790083,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "asset-003",
+      "source_box": [
+        55,
+        146,
+        188,
+        191
+      ],
+      "output": "assets\\asset-003.png",
+      "width": 188,
+      "height": 181,
+      "confidence": 0.9,
+      "source": "auto",
+      "alpha_coverage": 0.540996,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "asset-013",
+      "source_box": [
+        310,
+        397,
+        45,
+        52
+      ],
+      "output": "assets\\asset-013.png",
+      "width": 45,
+      "height": 52,
+      "confidence": 0.9,
+      "source": "auto",
+      "alpha_coverage": 0.867521,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.025773,
+      "warnings": []
+    },
+    {
+      "name": "asset-014",
+      "source_box": [
+        491,
+        398,
+        55,
+        49
+      ],
+      "output": "assets\\asset-014.png",
+      "width": 55,
+      "height": 49,
+      "confidence": 0.9,
+      "source": "auto",
+      "alpha_coverage": 0.771429,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.019231,
+      "warnings": []
+    },
+    {
+      "name": "asset-015",
+      "source_box": [
+        121,
+        401,
+        53,
+        43
+      ],
+      "output": "assets\\asset-015.png",
+      "width": 53,
+      "height": 43,
+      "confidence": 0.9,
+      "source": "auto",
+      "alpha_coverage": 0.920579,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "asset-016",
+      "source_box": [
+        680,
+        401,
+        46,
+        43
+      ],
+      "output": "assets\\asset-016.png",
+      "width": 46,
+      "height": 43,
+      "confidence": 0.9,
+      "source": "auto",
+      "alpha_coverage": 0.708797,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.016854,
+      "warnings": []
+    },
+    {
+      "name": "asset-055",
+      "source_box": [
+        753,
+        1257,
+        15,
+        24
+      ],
+      "output": "assets\\asset-055.png",
+      "width": 15,
+      "height": 24,
+      "confidence": 0.7472222222222222,
+      "source": "auto",
+      "alpha_coverage": 0.4,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    },
+    {
+      "name": "asset-059",
+      "source_box": [
+        753,
+        1356,
+        15,
+        21
+      ],
+      "output": "assets\\asset-059.png",
+      "width": 15,
+      "height": 21,
+      "confidence": 0.7912698412698412,
+      "source": "auto",
+      "alpha_coverage": 0.447619,
+      "corner_alpha": {
+        "top_left": 15,
+        "top_right": 0,
+        "bottom_left": 15,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.083333,
+      "warnings": []
+    },
+    {
+      "name": "asset-063",
+      "source_box": [
+        753,
+        1452,
+        15,
+        23
+      ],
+      "output": "assets\\asset-063.png",
+      "width": 15,
+      "height": 23,
+      "confidence": 0.7471014492753623,
+      "source": "auto",
+      "alpha_coverage": 0.417391,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 15,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.039474,
+      "warnings": []
+    },
+    {
+      "name": "asset-067",
+      "source_box": [
+        753,
+        1581,
+        15,
+        24
+      ],
+      "output": "assets\\asset-067.png",
+      "width": 15,
+      "height": 24,
+      "confidence": 0.8055555555555556,
+      "source": "auto",
+      "alpha_coverage": 0.427778,
+      "corner_alpha": {
+        "top_left": 0,
+        "top_right": 0,
+        "bottom_left": 0,
+        "bottom_right": 0
+      },
+      "border_opaque_ratio": 0.0,
+      "warnings": []
+    }
+  ]
+}

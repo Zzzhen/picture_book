@@ -1,20 +1,90 @@
 <view class="shelves">
-  <app-header title="书架" />
-  <view class="shelves__intro">
-    <view class="shelves__intro-copy">
-      <text class="shelves__title">按阅读场景整理</text>
-      <text class="shelves__copy">睡前、兴趣或借阅，每本绘本都可以放进多个书架。</text>
+  <view class="shelves__header" style="padding-top: {{statusHeight}}px; min-height: {{headerHeight}}px;">
+    <view class="shelves__header-bar" style="height: {{navigationHeight}}px;">
+      <view class="shelves__header-spacer"></view>
+      <text class="shelves__page-title">书架</text>
+      <view class="shelves__header-spacer"></view>
     </view>
-    <button class="shelves__create" bindtap="createShelf"><text>＋</text>新建书架</button>
   </view>
-  <view class="shelves__body">
-    <skeleton wx:if="{{state === 'loading'}}" type="list" count="{{4}}" />
-    <empty-state wx:elif="{{state === 'empty'}}" title="还没有自定义书架" description="把绘本按主题、阅读场景或借阅状态分组，会更容易找到。" primary-text="新建第一个书架" bind:primary="createShelf" />
-    <empty-state wx:elif="{{state === 'error'}}" type="offline" title="书架加载失败" description="{{errorMessage || '请稍后重试'}}" primary-text="重新加载" bind:primary="reload" />
-    <view wx:else class="shelves__list">
-      <block wx:for="{{shelves}}" wx:key="_id">
-        <bookshelf-card shelf="{{item}}" bind:open="openShelf" />
-      </block>
+
+  <view class="shelves__scroll">
+    <view wx:if="{{state === 'empty'}}" class="shelves__empty">
+      <view class="shelves__intro">
+        <text class="shelves__title">按阅读场景整理</text>
+        <text class="shelves__copy">睡前、兴趣或借阅，每本绘本都可以放进多个书架。</text>
+      </view>
+
+      <image class="shelves__empty-art" src="/assets/bookshelf-empty/bookshelf-empty-illustration-v2.png" mode="widthFix" />
+
+      <view class="shelves__empty-copy">
+        <text class="shelves__empty-title">还没有自定义书架</text>
+        <text class="shelves__empty-description">把绘本按主题、阅读场景或借阅状态分组，会更容易找到。</text>
+      </view>
+      <button class="shelves__empty-cta" bindtap="createShelf">新建第一个书架</button>
+      <text class="shelves__empty-later">也可以稍后创建</text>
+    </view>
+
+    <view wx:elif="{{state === 'loading'}}" class="shelves__body">
+      <skeleton type="list" count="{{4}}" />
+    </view>
+    <view wx:elif="{{state === 'error'}}" class="shelves__body">
+      <empty-state type="offline" title="书架加载失败" description="{{errorMessage || '请稍后重试'}}" primary-text="重新加载" bind:primary="reload" />
+    </view>
+    <view wx:else class="shelves__body">
+      <view class="shelves__content-head">
+        <text class="shelves__content-title">按阅读场景整理</text>
+        <button class="shelves__new-button" bindtap="createShelf" hover-class="shelves__new-button--pressed"><text>＋</text>新建书架</button>
+      </view>
+
+      <view class="shelves__accordion">
+        <block wx:for="{{shelves}}" wx:key="_id">
+          <view class="shelves__item shelves__item--{{item.tone}} {{item.expanded ? 'shelves__item--expanded' : ''}}">
+            <view class="shelves__item-header" data-index="{{index}}" bindtap="toggleShelf">
+              <image class="shelves__item-icon" src="{{item.icon}}" mode="widthFix" />
+              <view class="shelves__item-copy">
+                <text class="shelves__item-name">{{item.name}}</text>
+                <text wx:if="{{item.expanded}}" class="shelves__item-subtitle">{{item.bookCount}} 本</text>
+              </view>
+              <view class="shelves__item-meta">
+                <text class="shelves__item-count">{{item.bookCount}}</text>
+                <text class="shelves__item-chevron">{{item.expanded ? '⌃' : '⌄'}}</text>
+              </view>
+            </view>
+
+            <view class="shelves__drawer {{item.expanded ? 'shelves__drawer--open' : ''}}">
+              <view class="shelves__drawer-inner" data-index="{{index}}" bindtouchstart="onShelfTouchStart" bindtouchend="onShelfTouchEnd">
+                <view wx:if="{{item.booksLoading}}" class="shelves__drawer-state">正在打开书架…</view>
+                <view wx:elif="{{item.booksError}}" class="shelves__drawer-state shelves__drawer-state--error">{{item.booksError}}</view>
+                <view wx:else class="shelves__drawer-content">
+                  <view class="shelves__progress">
+                    <view class="shelves__progress-track">
+                      <view wx:for="{{item.totalPages}}" wx:for-item="progressIndex" wx:key="*this" class="shelves__progress-dot {{progressIndex === item.currentPage ? 'shelves__progress-dot--active' : ''}}"></view>
+                    </view>
+                    <text>{{item.currentPage + 1}} / {{item.totalPages}}</text>
+                  </view>
+
+                  <view class="shelves__book-window">
+                    <button class="shelves__page-arrow shelves__page-arrow--left" data-index="{{index}}" data-direction="-1" bindtap="goShelfPage" disabled="{{item.currentPage === 0}}" hover-class="shelves__page-arrow--pressed">‹</button>
+                    <view class="shelves__books-grid">
+                      <block wx:for="{{item.pageBooks}}" wx:key="_id">
+                        <view class="shelves__book-item">
+                          <view class="shelves__book-cover">
+                            <image wx:if="{{item.coverUrl}}" src="{{item.coverUrl}}" mode="aspectFill" lazy-load="{{true}}" />
+                            <view wx:else class="shelves__book-cover-fallback">封面</view>
+                          </view>
+                          <text class="shelves__book-title">{{item.title}}</text>
+                        </view>
+                      </block>
+                      <view wx:if="{{!item.pageBooks.length}}" class="shelves__books-empty">这个书架还没有绘本</view>
+                    </view>
+                    <button class="shelves__page-arrow shelves__page-arrow--right" data-index="{{index}}" data-direction="1" bindtap="goShelfPage" disabled="{{item.currentPage + 1 >= item.totalPages}}" hover-class="shelves__page-arrow--pressed">›</button>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </block>
+      </view>
     </view>
   </view>
 </view>

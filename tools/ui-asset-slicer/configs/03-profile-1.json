@@ -1,0 +1,37 @@
+{
+  "defaults": {
+    "padding": 4,
+    "keep_shadows": true,
+    "min_area": 80
+  },
+  "images": {
+    "03-profile(1).png": {
+      "regions": [
+        {
+          "name": "metric-books",
+          "box": [110, 35, 85, 70],
+          "action": "include",
+          "padding": 4
+        },
+        {
+          "name": "metric-library",
+          "box": [300, 35, 85, 70],
+          "action": "include",
+          "padding": 4
+        },
+        {
+          "name": "metric-shelf",
+          "box": [480, 35, 85, 70],
+          "action": "include",
+          "padding": 4
+        },
+        {
+          "name": "metric-heart",
+          "box": [670, 35, 85, 70],
+          "action": "include",
+          "padding": 4
+        }
+      ]
+    }
+  }
+}

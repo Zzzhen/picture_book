@@ -1,0 +1,1 @@
+{"images": {"x.png": {"regions": [{"name": "bad", "box": [1, 2, -3, 4], "action": "include"}]}}}
