@@ -4,6 +4,7 @@ Component({
     value: { type: String, value: "" },
     placeholder: { type: String, value: "" },
     type: { type: String, value: "text" },
+    variant: { type: String, value: "" },
     error: { type: String, value: "" },
     required: { type: Boolean, value: false },
     disabled: { type: Boolean, value: false },

@@ -55,3 +55,31 @@
   font-size: 24rpx;
   line-height: 1.4;
 }
+
+.field--detail .field__label-row {
+  margin-bottom: 14rpx;
+}
+
+.field--detail .field__label {
+  font-family: var(--font-display);
+  color: #47311c;
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.field--detail .field__control {
+  min-height: 158rpx;
+  padding: 23rpx 22rpx;
+  border: 1rpx solid #cfc1b1;
+  border-radius: 20rpx;
+  color: #47311c;
+  background-color: rgba(252, 248, 242, 0.54);
+  background-image: linear-gradient(to bottom, transparent 0, transparent 38rpx, rgba(220, 209, 196, 0.72) 39rpx, transparent 40rpx);
+  background-size: 100% 40rpx;
+  font-size: 25rpx;
+  line-height: 1.45;
+}
+
+.field--detail .field__placeholder {
+  color: #8d8175;
+}

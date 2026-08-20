@@ -3,6 +3,7 @@ Component({
     title: { type: String, value: "" },
     back: { type: Boolean, value: false },
     transparent: { type: Boolean, value: false },
+    variant: { type: String, value: "" },
   },
 
   data: {

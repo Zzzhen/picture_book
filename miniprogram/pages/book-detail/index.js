@@ -6,6 +6,7 @@ const LIBRARY_REFRESH_KEY = "v1_core_library_needs_refresh";
 function mapDetail(data) {
   const item = data.user_book;
   const edition = item.edition || {};
+  const subjects = Array.isArray(edition.subjects) ? edition.subjects : [];
   return {
     userBookId: item.user_book_id,
     editionId: edition.edition_id || "",
@@ -25,6 +26,8 @@ function mapDetail(data) {
     quantity: item.quantity,
     note: data.private_note || "",
     shelves: data.bookshelves || [],
+    categoryLabel: edition.category || edition.genre || edition.subject || subjects[0] || data.category || "",
+    shelfLabel: data.bookshelves && data.bookshelves[0] && data.bookshelves[0].name || "",
     createdAtText: item.created_at ? item.created_at.slice(0, 10) : ""
   };
 }
@@ -37,7 +40,8 @@ Page({
       coverUrl: "",
       reviewStatus: "",
       preference: "unmarked",
-      note: ""
+      note: "",
+      categoryLabel: ""
     },
     deleteVisible: false,
     deleting: false,
@@ -89,6 +93,16 @@ Page({
 
   onNote(event) {
     this.setData({ "book.note": event.detail.value });
+  },
+
+  openActions() {
+    wx.showActionSheet({
+      itemList: ["调整书架", "从绘本馆删除"],
+      success: ({ tapIndex }) => {
+        if (tapIndex === 0) this.chooseShelves();
+        if (tapIndex === 1) this.askDelete();
+      }
+    });
   },
 
   async chooseShelves() {

@@ -1,0 +1,31 @@
+{
+  "defaults": {
+    "padding": 6,
+    "keep_shadows": true,
+    "min_area": 120
+  },
+  "images": {
+    "04-book-detail.png": {
+      "regions": [
+        {
+          "name": "more-dots",
+          "box": [744, 24, 84, 102],
+          "action": "include",
+          "padding": 6
+        },
+        {
+          "name": "branch-watercolor",
+          "box": [636, 1264, 190, 220],
+          "action": "include",
+          "padding": 6
+        },
+        {
+          "name": "bear-watercolor",
+          "box": [548, 1720, 304, 124],
+          "action": "include",
+          "padding": 6
+        }
+      ]
+    }
+  }
+}

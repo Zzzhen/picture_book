@@ -57,3 +57,15 @@
   min-width: 112rpx;
   min-height: 88rpx;
 }
+
+.header--detail .header__back-icon {
+  font-size: 56rpx;
+  color: #47311c;
+}
+
+.header--detail .header__title {
+  font-family: var(--font-display);
+  color: #47311c;
+  font-size: 38rpx;
+  font-weight: 700;
+}

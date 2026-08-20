@@ -1,30 +1,48 @@
 page {
-  background: var(--color-background-paper);
+  background-color: #fcf7f1;
+  background-image: url("/assets/library-home/paper-texture.png");
+  background-position: top center;
+  background-size: 100% auto;
+  color: #47311c;
 }
 
 .detail {
+  box-sizing: border-box;
   min-height: 100vh;
-  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  color: #47311c;
+  font-family: var(--font-body);
 }
 
-.detail__edit,
-.detail__link {
-  color: var(--color-brand-forest);
-  font-size: 25rpx;
-  font-weight: 650;
-}
-
-.detail__edit-hit {
+.detail__more {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 96rpx;
-  min-height: 88rpx;
-  margin: -18rpx 0 -18rpx 12rpx;
+  width: 88rpx;
+  height: 88rpx;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.detail__more::after {
+  border: 0;
+}
+
+.detail__more image {
+  display: block;
+  width: 56rpx;
+  height: 56rpx;
+}
+
+.detail__scroll {
+  box-sizing: border-box;
+  height: calc(100vh - 228rpx - env(safe-area-inset-bottom));
 }
 
 .detail__content {
-  padding: 26rpx 36rpx;
+  box-sizing: border-box;
+  padding: 34rpx 40rpx 40rpx;
 }
 
 .detail__content > status-banner {
@@ -34,15 +52,22 @@ page {
 
 .detail__hero {
   display: flex;
-  align-items: flex-end;
-  gap: 34rpx;
-  margin-bottom: 30rpx;
+  align-items: flex-start;
+  gap: 36rpx;
+  margin: 0 0 33rpx;
+}
+
+.detail__hero book-cover,
+.detail__hero .detail__cover {
+  display: block;
+  flex: 0 0 260rpx;
+  width: 260rpx;
 }
 
 .detail__hero-copy {
   flex: 1;
   min-width: 0;
-  padding-bottom: 8rpx;
+  padding-top: 54rpx;
 }
 
 .detail__title,
@@ -51,95 +76,293 @@ page {
 .detail__isbn,
 .detail__section-title,
 .detail__section-note,
-.detail__private {
+.detail__facts-title {
   display: block;
 }
 
 .detail__title {
+  overflow: hidden;
   font-family: var(--font-display);
+  color: #47311c;
   font-size: 38rpx;
   font-weight: 700;
-  line-height: 1.38;
+  line-height: 1.22;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .detail__author {
-  margin-top: 17rpx;
-  font-size: 25rpx;
+  margin-top: 28rpx;
+  color: #47311c;
+  font-size: 27rpx;
+  line-height: 1.2;
 }
 
 .detail__meta,
 .detail__isbn {
-  margin-top: 8rpx;
-  color: var(--color-text-secondary);
-  font-size: 22rpx;
+  margin-top: 18rpx;
+  color: #6d6457;
+  font-size: 24rpx;
+  line-height: 1.15;
 }
 
-.detail__section {
-  margin-top: 20rpx;
-  padding: 30rpx;
-  border: 1rpx solid var(--color-border-default);
-  border-radius: var(--radius-large);
-  background: var(--color-surface-primary);
+.detail__isbn {
+  margin-top: 15rpx;
 }
 
-.detail__section-title {
+.detail__shelf-tag {
+  display: inline-block;
+  margin-top: 24rpx;
+  padding: 7rpx 18rpx;
+  border: 1rpx solid #9c3e35;
+  border-radius: 17rpx;
+  color: #9c3e35;
+  font-size: 24rpx;
+  line-height: 30rpx;
+}
+
+.detail__section,
+.detail__facts {
+  box-sizing: border-box;
+  margin-top: 22rpx;
+  border: 1rpx solid #dcd1c4;
+  border-radius: 28rpx;
+  background: rgba(252, 248, 242, 0.92);
+  box-shadow: 0 10rpx 28rpx rgba(119, 88, 56, 0.08);
+}
+
+.detail__section-title,
+.detail__facts-title {
   margin-bottom: 22rpx;
   font-family: var(--font-display);
-  font-size: 29rpx;
+  color: #47311c;
+  font-size: 32rpx;
   font-weight: 700;
+  line-height: 1.25;
 }
 
-.detail__section-note {
-  color: var(--color-text-secondary);
-  font-size: 22rpx;
+.detail__preference-card {
+  min-height: 221rpx;
+  padding: 30rpx;
 }
 
-.detail__row,
-.detail__section-head {
+.detail__preference-picker .preference {
+  gap: 17rpx;
+}
+
+.detail__preference-picker .preference__item {
+  height: 106rpx;
+  border-color: #dcd1c4;
+  border-radius: 20rpx;
+  color: #47311c;
+  background: #fcf8f2;
+  font-size: 24rpx;
+}
+
+.detail__preference-picker .preference__symbol {
+  margin-bottom: 10rpx;
+  color: #9c3e35;
+  font-size: 28rpx;
+}
+
+.detail__preference-picker .preference__item--active {
+  border-color: #506c5b;
+  color: #506c5b;
+  background: #e2e7de;
+}
+
+.detail__management {
+  min-height: 494rpx;
+  padding: 0 29rpx;
+}
+
+.detail__management-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.detail__row .detail__section-title,
-.detail__section-head .detail__section-title {
+.detail__management-row:first-child {
+  min-height: 121rpx;
+}
+
+.detail__management-row .detail__section-title {
   margin-bottom: 5rpx;
+}
+
+.detail__section-note {
+  color: #6d6457;
+  font-size: 24rpx;
+  line-height: 1.25;
+}
+
+.detail__divider {
+  height: 1rpx;
+  background: #dcd1c4;
+}
+
+.detail__shelf-row {
+  min-height: 114rpx;
+}
+
+.detail__shelf-row > view {
+  min-width: 0;
+  flex: 1;
+}
+
+.detail__link {
+  flex: 0 0 auto;
+  margin-left: 18rpx;
+  color: #506c5b;
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.detail__link-arrow {
+  display: inline-block;
+  margin-left: 7rpx;
+  font-size: 38rpx;
+  font-weight: 400;
+  line-height: 20rpx;
+  vertical-align: -5rpx;
 }
 
 .detail__chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 12rpx;
+  gap: 10rpx;
 }
 
 .detail__chip {
-  padding: 10rpx 18rpx;
-  border-radius: var(--radius-pill);
-  color: var(--color-brand-forest);
-  background: var(--color-brand-forest-soft);
-  font-size: 22rpx;
+  padding: 5rpx 12rpx;
+  border-radius: 18rpx;
+  color: #506c5b;
+  background: #e2e7de;
+  font-size: 21rpx;
 }
 
-.detail__private {
-  margin-top: 12rpx;
-  color: var(--color-text-muted);
-  font-size: 20rpx;
+.detail__note-row {
+  padding: 28rpx 0 29rpx;
 }
 
 .detail__facts {
-  margin: 28rpx 0;
-  border-top: 1rpx solid var(--color-border-default);
+  position: relative;
+  min-height: 333rpx;
+  overflow: hidden;
+  padding: 29rpx;
 }
 
-.detail__facts view {
-  display: flex;
-  justify-content: space-between;
-  padding: 22rpx 2rpx;
-  border-bottom: 1rpx solid var(--color-border-default);
-  color: var(--color-text-secondary);
-  font-size: 23rpx;
+.detail__facts-title {
+  margin-bottom: 16rpx;
 }
 
-.detail__facts view text:last-child {
-  color: var(--color-text-primary);
+.detail__facts-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.953fr) minmax(0, 1fr);
+  border-top: 1rpx solid #dcd1c4;
+}
+
+.detail__fact {
+  box-sizing: border-box;
+  min-height: 85rpx;
+  padding: 14rpx 12rpx 13rpx 10rpx;
+  border-bottom: 1rpx solid #dcd1c4;
+  color: #47311c;
+  font-size: 24rpx;
+  line-height: 1.35;
+}
+
+.detail__fact:nth-child(odd) {
+  border-right: 1rpx solid #dcd1c4;
+}
+
+.detail__fact text {
+  display: block;
+}
+
+.detail__fact text + text {
+  margin-top: 5rpx;
+  color: #6d6457;
+}
+
+.detail__branch {
+  position: absolute;
+  top: 28rpx;
+  right: 20rpx;
+  z-index: 2;
+  width: 106rpx;
+  height: 166rpx;
+  opacity: 0.84;
+  pointer-events: none;
+}
+
+.detail__actions {
+  display: grid;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 12;
+  grid-template-columns: 506rpx minmax(0, 1fr);
+  grid-template-rows: 77rpx 68rpx;
+  gap: 15rpx 0;
+  box-sizing: border-box;
+  height: calc(228rpx + env(safe-area-inset-bottom));
+  padding: 21rpx 40rpx calc(17rpx + env(safe-area-inset-bottom));
+  border-radius: 28rpx 28rpx 0 0;
+  background: rgba(252, 248, 242, 0.96);
+  box-shadow: 0 -10rpx 28rpx rgba(119, 88, 56, 0.1);
+}
+
+.detail__actions ui-button:first-child {
+  display: block;
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.detail__actions ui-button:nth-child(2) {
+  display: block;
+  grid-column: 1;
+  width: 100%;
+}
+
+.detail__bear {
+  position: absolute;
+  right: 24rpx;
+  bottom: calc(11rpx + env(safe-area-inset-bottom));
+  z-index: 1;
+  width: 248rpx;
+  height: 132rpx;
+  opacity: 0.82;
+  pointer-events: none;
+}
+
+@media (max-width: 340px) {
+  .detail__content,
+  .detail__actions {
+    padding-right: 28rpx;
+    padding-left: 28rpx;
+  }
+
+  .detail__hero {
+    gap: 22rpx;
+  }
+
+  .detail__hero book-cover,
+  .detail__hero .detail__cover {
+    flex-basis: 220rpx;
+    width: 220rpx;
+  }
+
+  .detail__title {
+    font-size: 35rpx;
+  }
+
+  .detail__hero-copy {
+    padding-top: 36rpx;
+  }
+
+  .detail__actions {
+    grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr);
+  }
 }

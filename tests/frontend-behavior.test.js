@@ -151,14 +151,61 @@ test("library page uses the persisted Qiniu cover URL without per-book temp URL 
   assert.doesNotMatch(mapBookSource[0], /getTempFileUrl/);
 });
 
-test("book detail stays editable and saves without a header edit mode", () => {
+test("book detail stays editable and exposes actions without a header edit mode", () => {
   const source = fs.readFileSync(path.join(root, "miniprogram/pages/book-detail/index.wxml"), "utf8");
-  assert.doesNotMatch(source, /slot="action"/);
+  assert.match(source, /slot="action"/);
   assert.doesNotMatch(source, /disabled="\{\{!editing\}\}"/);
   assert.match(source, /bind:tap="saveBook"/);
+  assert.match(source, /bindtap="openActions"/);
   const controller = fs.readFileSync(path.join(root, "miniprogram/pages/book-detail/index.js"), "utf8");
   assert.match(controller, /saveBook\s*\(/);
+  assert.match(controller, /openActions\s*\(/);
   assert.doesNotMatch(controller, /toggleEdit\s*\(/);
+});
+
+test("book detail follows the watercolor editor composition and keeps its core actions", () => {
+  const template = fs.readFileSync(path.join(root, "miniprogram/pages/book-detail/index.wxml"), "utf8");
+  const script = fs.readFileSync(path.join(root, "miniprogram/pages/book-detail/index.js"), "utf8");
+  const styles = fs.readFileSync(path.join(root, "miniprogram/pages/book-detail/index.wxss"), "utf8");
+  const buttonStyles = fs.readFileSync(path.join(root, "miniprogram/components/ui-button/index.wxss"), "utf8");
+  const fieldTemplate = fs.readFileSync(path.join(root, "miniprogram/components/text-field/index.wxml"), "utf8");
+  const fieldStyles = fs.readFileSync(path.join(root, "miniprogram/components/text-field/index.wxss"), "utf8");
+  const assetDir = path.join(root, "miniprogram/assets/book-detail");
+
+  assert.match(template, /slot="action"/);
+  assert.match(template, /variant="detail"/);
+  assert.match(template, /detail__hero/);
+  assert.match(template, /detail__management/);
+  assert.match(template, /detail__facts-grid/);
+  assert.match(template, /detail__actions/);
+  assert.match(template, /book-detail\/more-dots\.png/);
+  assert.match(template, /book-detail\/branch-watercolor\.png/);
+  assert.match(template, /book-detail\/bear-watercolor\.png/);
+  assert.match(template, /bindtap="openActions"/);
+  assert.match(template, /type="danger"[^>]*text="保存修改"/);
+  assert.match(template, /type="danger-secondary"[^>]*text="从绘本馆删除"/);
+  assert.match(template, /text-field variant="detail"/);
+  assert.match(template, /size="detail-primary"/);
+  assert.match(template, /size="detail-secondary"/);
+  assert.match(script, /openActions\s*\(/);
+  assert.match(script, /categoryLabel/);
+  assert.match(styles, /paper-texture\.png/);
+  assert.match(styles, /detail__content[\s\S]*?padding:\s*34rpx\s+40rpx\s+40rpx/);
+  assert.match(styles, /detail__hero book-cover[\s\S]*?width:\s*260rpx/);
+  assert.match(styles, /detail__management[\s\S]*?min-height:\s*494rpx/);
+  assert.match(styles, /detail__facts[\s\S]*?min-height:\s*333rpx/);
+  assert.match(styles, /detail__branch[\s\S]*?width:\s*106rpx[\s\S]*?height:\s*166rpx/);
+  assert.match(styles, /detail__actions[\s\S]*?position:\s*fixed/);
+  assert.match(styles, /grid-template-columns:\s*506rpx\s+minmax\(0,\s*1fr\)/);
+  assert.match(buttonStyles, /button--danger-secondary/);
+  assert.match(buttonStyles, /button--detail-primary/);
+  assert.match(buttonStyles, /button--detail-secondary/);
+  assert.match(fieldTemplate, /field--' \+ variant/);
+  assert.match(fieldStyles, /field--detail \.field__control[\s\S]*?min-height:\s*158rpx/);
+
+  for (const name of ["more-dots.png", "branch-watercolor.png", "bear-watercolor.png"]) {
+    assert.equal(fs.existsSync(path.join(assetDir, name)), true, `${name} should exist`);
+  }
 });
 
 test("book detail deletion is single-flight and returns to the previous page", async () => {

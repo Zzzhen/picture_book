@@ -1,4 +1,4 @@
-<view class="field {{error ? 'field--error' : ''}}">
+<view class="field {{error ? 'field--error' : ''}} {{variant ? 'field--' + variant : ''}}">
   <view class="field__label-row">
     <text class="field__label">{{label}}</text>
     <text wx:if="{{required}}" class="field__required">必填</text>

@@ -1,5 +1,5 @@
 <view
-  class="header {{transparent ? 'header--transparent' : ''}}"
+  class="header {{transparent ? 'header--transparent' : ''}} {{variant ? 'header--' + variant : ''}}"
   style="padding-top: {{statusHeight}}px;"
 >
   <view class="header__bar" style="height: {{navigationHeight}}px;">
